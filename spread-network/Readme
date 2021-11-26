@@ -1,0 +1,14 @@
+
+This directory includes the Spread toolkit, its monitor (called spmonitor)
+and the sample user (spuser).
+
+The directory also includes a sample spread.conf file - configuring
+Spread. You HAVE to change the multicast address and the spread port
+(currently the multicast address is 226.1.2.5 and port 4813).
+You should use your assigned port and IP multicast address.
+
+The best would be to uncomment only the 5 computers you use.
+Do not forget to terminate all existing daemons before changing
+your daemon configuration (if you would like to switch computers).
+
+
