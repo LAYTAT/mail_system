@@ -6,5 +6,6 @@
 
 #include <iostream>
 
+using namespace std;
 
 #endif //MAIL_SYSTEM_SERVER_H

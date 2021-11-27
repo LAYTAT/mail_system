@@ -5,7 +5,7 @@ CFLAGS=-g -Wall # debug version
 CPPFLAGS=-I. -I include
 SP_LIBRARY= ./libspread-core.a  ./libspread-util.a
 
-all: server
+all: server client
 
 .o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
@@ -14,6 +14,12 @@ server: server.o
 	$(LD) -o $@ server.o -ldl $(SP_LIBRARY)
 
 server.o: server.cpp
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+
+client: client.o
+	$(LD) -o $@ server.o -ldl $(SP_LIBRARY)
+
+client.o: client.cpp
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 clean:

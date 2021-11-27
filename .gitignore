@@ -33,3 +33,5 @@
 .DS_Store
 *.xml
 *.iml
+client
+server
