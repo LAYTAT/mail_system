@@ -1,20 +1,20 @@
-CC=gcc
-LD=gcc
-CFLAGS=-g -Wall 
-CPPFLAGS=-I. -I/home/cs417/exercises/ex3/include
-SP_LIBRARY=/home/cs417/exercises/ex3/libspread-core.a /home/cs417/exercises/ex3/libspread-util.a
+CC=g++
+LD=g++
+CFLAGS=-g -Wall # debug version
+#CFLAGS= -std=c++11 -c -Ofast -march=native -flto -Wall -DNDEBUG -frename-registers -funroll-loops # TODO:release version
+CPPFLAGS=-I. -I include
+SP_LIBRARY= ./libspread-core.a  ./libspread-util.a
 
-all: sp_user class_user
+all: server
 
-.c.o:
+.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
-sp_user:  user.o
-	$(LD) -o $@ user.o -ldl $(SP_LIBRARY)
+server: server.o
+	$(LD) -o $@ server.o -ldl $(SP_LIBRARY)
 
-class_user:  class_user.o
-	$(LD) -o $@ class_user.o -ldl $(SP_LIBRARY)
+server.o: server.cpp
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 clean:
-	rm -f *.o sp_user class_user
-
+	rm -f *.o server
