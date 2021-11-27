@@ -17,10 +17,10 @@ server.o: server.cpp
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 client: client.o
-	$(LD) -o $@ server.o -ldl $(SP_LIBRARY)
+	$(LD) -o $@ client.o -ldl $(SP_LIBRARY)
 
 client.o: client.cpp
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 clean:
-	rm -f *.o server
+	rm -f *.o server client
