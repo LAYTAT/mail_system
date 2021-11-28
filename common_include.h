@@ -6,7 +6,9 @@
 #define MAIL_SYSTEM_COMMON_INCLUDE_H
 
 #define SUBJECT_LEN (128)
-#define MSG_LEN (1000)
+#define MSG_LEN (1300)
+#define EMAIL_LEN (1000)
+#define USER_NAME_LEN (64)
 
 #include <unordered_map>
 #include <memory>
@@ -17,7 +19,7 @@ struct Email{
     int to_user;
     int from_user;
     char subject[SUBJECT_LEN];
-    char msg_str[MSG_LEN];
+    char msg_str[EMAIL_LEN];
 };
 
 using Emails = vector<shared_ptr<Email>> ;
@@ -40,17 +42,34 @@ struct State{
 };
 
 struct Update{
+    int server_id;
+    int timestamp;
+    int mail_id;
+    Email data;
+};
+
+struct Message{
     enum class TYPE {
+        UPDATE,
+        LIST,
+        MEMBERSHIPS,
         READ,
         NEW,
         DELETE
     };
-    int server_id;
-    int timestamp;
-    int mail_id;
-    Update::TYPE type;
-    Email data;
+    char data[MSG_LEN];
+    Message::TYPE type;
 };
 
+struct Mail_Header{
+    char *  user_name[USER_NAME_LEN];
+    char *  sender_name[USER_NAME_LEN];
+    char    server;
+    int     num_of_emails;
+    int     index;
+    int64_t mail_id;
+    char *  subject[SUBJECT_LEN];
+    int     read_state;
+};
 
 #endif //MAIL_SYSTEM_COMMON_INCLUDE_H
