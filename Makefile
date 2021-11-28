@@ -1,6 +1,6 @@
 CC=g++
 LD=g++
-CFLAGS=-g -Wall # debug version
+CFLAGS=-g -std=c++11 -Wall # debug version
 #CFLAGS= -std=c++11 -c -Ofast -march=native -flto -Wall -DNDEBUG -frename-registers -funroll-loops # TODO:release version
 CPPFLAGS=-I. -I include
 SP_LIBRARY= ./libspread-core.a  ./libspread-util.a
