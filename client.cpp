@@ -16,6 +16,7 @@ bool    connected;
 char    spread_private_group[MAX_GROUP_NAME];
 int     ret;
 sp_time spread_connect_timeout;  // timeout for connecting to spread network
+bool    has_user_name;
 
 void	Bye();
 void    user_command();
@@ -60,11 +61,21 @@ void user_command()
     if( fgets( command, 130, stdin ) == nullptr )
         Bye();
 
+    stringstream ss;
+    ss << command;
+    string command_str;
+    ss >> command_str;
     switch( command[0] )
     {
         case 'c':
+            if(!has_user_name) {
+                cout << "please login first" << endl;
+            }
+
+            int server_number;
+            ss >> server_number;
             //check if the input is formatted correctly
-            if( command[2] < '1' || command[2] > '5' )
+            if( server_number < 1 || server_number > 5 )
             {
                 printf("Please select a server from 1 to 5.\n");
                 break;
@@ -89,6 +100,7 @@ void user_command()
 
         case 'u': // login as user
             ret = sscanf( &command[2], "%s", user_name);
+            has_user_name = true;
             if( ret < 1 ) {
                 cout << " invalid user name " << endl;
                 break;
@@ -96,6 +108,10 @@ void user_command()
             break;
 
         case 'l': // list all mails' headers
+            if(!has_user_name) {
+                cout << "please login first" << endl;
+            }
+
             if(!connected) {
                 cout << "Client has not connected to server " << endl;
                 break;
@@ -108,18 +124,34 @@ void user_command()
             break;
 
         case 'm': // write a new email
+            if(!has_user_name) {
+                cout << "please login first" << endl;
+            }
+
             cout << "write a new email" << endl;
             break;
 
         case 'd': // delete an email
+            if(!has_user_name) {
+                cout << "please login first" << endl;
+            }
+
             cout << "delete an email" << endl;
             break;
 
         case 'r': // read an email
+            if(!has_user_name) {
+                cout << "please login first" << endl;
+            }
+
             cout << "read an email" << endl;
             break;
 
         case 'v': // print available servers
+            if(!has_user_name) {
+                cout << "please login first" << endl;
+            }
+
             cout << "print available servers" << endl;
             break;
 
@@ -276,6 +308,7 @@ void variable_init(){
     connected = false;
     server = -1;
     ret = 0;
+    has_user_name = false;
     spread_connect_timeout.sec = 5;
     spread_connect_timeout.usec = 0;
 }

@@ -25,6 +25,7 @@ void connect_to_spread();
 void Bye();
 bool command_input_check(int , char * []);
 void variable_init();
+void create_server_public_group();
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
@@ -93,4 +94,9 @@ void variable_init(){
     ret = 0;
     spread_connect_timeout.sec = 5;
     spread_connect_timeout.usec = 0;
+}
+
+void create_server_public_group(){
+    //TODO: server create a public group with just itself in it.
+
 }

@@ -11,6 +11,7 @@
 #include <random>
 #include <time.h>
 #include "common_include.h"
+#include <sstream>
 
 using namespace std;
 

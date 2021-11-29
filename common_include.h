@@ -18,7 +18,6 @@
 #define MAX_VSSETS      (10)
 #define TOTAL_SERVER_NUMBER (5)
 #define SERVER_USER_NAME_FOR_SPREAD "SERVER_CKJL"
-
 #include <unordered_map>
 #include <memory>
 #include <vector>
