@@ -92,7 +92,7 @@ void user_command()
             //connect to a specified server
             server = command[2] - '0';
             client_server_group = spread_user + to_string(server);
-            cout << "join with client_server_group: " << client_server_group << endl;
+//            cout << "join with client_server_group: " << client_server_group << endl;
             ret = SP_join( spread_mbox,  client_server_group.c_str());
             if( ret < 0 ) SP_error( ret );
             // TODO: send this client-server-group to the server
@@ -171,7 +171,7 @@ void user_command()
 
             break;
     }
-    printf("\nUser> ");
+    cout << "\nUser> " << endl;
     fflush(stdout);
 }
 
