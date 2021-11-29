@@ -70,6 +70,7 @@ void user_command()
         case 'c':
             if(!has_user_name) {
                 cout << "please login first" << endl;
+                break;
             }
 
             int server_number;
@@ -110,6 +111,7 @@ void user_command()
         case 'l': // list all mails' headers
             if(!has_user_name) {
                 cout << "please login first" << endl;
+                break;
             }
 
             if(!connected) {
@@ -126,6 +128,7 @@ void user_command()
         case 'm': // write a new email
             if(!has_user_name) {
                 cout << "please login first" << endl;
+                break;
             }
 
             cout << "write a new email" << endl;
@@ -134,6 +137,7 @@ void user_command()
         case 'd': // delete an email
             if(!has_user_name) {
                 cout << "please login first" << endl;
+                break;
             }
 
             cout << "delete an email" << endl;
@@ -142,6 +146,7 @@ void user_command()
         case 'r': // read an email
             if(!has_user_name) {
                 cout << "please login first" << endl;
+                break;
             }
 
             cout << "read an email" << endl;
@@ -150,6 +155,7 @@ void user_command()
         case 'v': // print available servers
             if(!has_user_name) {
                 cout << "please login first" << endl;
+                break;
             }
 
             cout << "print available servers" << endl;
