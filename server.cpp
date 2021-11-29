@@ -26,7 +26,7 @@ void connect_to_spread();
 void Bye();
 
 int main(int argc, char * argv[]){
-    if( argc != 2 or !isdigit(*argv[1]) or ((*argv[1]) >= '1' and (*argv[1]) <= '5') ) {
+    if( argc != 2 or !isdigit(*argv[1]) or !((*argv[1]) >= '1' and (*argv[1]) <= '5') ) {
         cout << "please enter the server id as : ./server <server_id>" << endl;
         cout << "server_id is one of {1,2,3,4,5}" << endl;
         return 0;
