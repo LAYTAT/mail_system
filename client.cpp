@@ -99,6 +99,7 @@ void user_command()
             if( ret < 0 ) SP_error( ret );
             // TODO: send this client-server-group to the server
             snd_msg_buf.type = Message::TYPE::NEW_CONNECTION;
+            snd_msg_buf.size = client_server_group.size();
             memcpy(&snd_msg_buf.data, client_server_group.c_str(), client_server_group.size()); //data:   client_server_group + spread_private_group
             send_to_server();
             break;

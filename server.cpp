@@ -8,7 +8,6 @@ int     To_exit = 0;
 mailbox spread_mbox;
 string  spread_name;
 string  spread_user;
-string  client_server_group;
 char    user_name[80];
 bool    connected;
 char    spread_private_group[MAX_GROUP_NAME];
@@ -72,6 +71,9 @@ int main(int argc, char * argv[]){
             switch (rcv_buf.type) {
                 case Message::TYPE::NEW_CONNECTION: { //
                     cout << "new connection." << endl;
+                    char client_server_group[rcv_buf.size];
+                    memcpy(client_server_group, rcv_buf.data, rcv_buf.size);
+                    SP_join(spread_mbox, client_server_group);
                     break;
                 }
 

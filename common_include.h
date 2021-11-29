@@ -72,6 +72,7 @@ struct Message{
     };
     Message::TYPE type;
     char data[MSG_LEN];
+    int16_t size;
 };
 
 struct Mail_Header{
