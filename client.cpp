@@ -171,7 +171,7 @@ void user_command()
 
             break;
     }
-    cout << "\nUser> " << endl;
+    cout << "\nUser> ";
     fflush(stdout);
 }
 
@@ -241,8 +241,7 @@ void response_to_spread(){
             }
         if( Is_reg_memb_mess( service_type ) )
         {
-            printf("Received REGULAR membership for group %s with %d members, where I am member %d:\n",
-                   sender_group, num_groups, mess_type );
+            cout << "Received REGULAR membership for group" << sender_group << "with " << num_groups  <<" members, where I am member " << mess_type << endl;
             if( Is_caused_join_mess( service_type ) )
             {
                 printf("JOIN of %s\n", memb_info.changed_member );
