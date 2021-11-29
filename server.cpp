@@ -7,7 +7,6 @@
 int     To_exit = 0;
 mailbox spread_mbox;
 string  spread_name;
-int     server;  // 1 - 5
 string  spread_user;
 string  client_server_group;
 char    user_name[80];
@@ -25,10 +24,13 @@ void stamp_on_sending_buffer();
 void connect_to_spread();
 void Bye();
 bool command_input_check(int , char * []);
+void variable_init();
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
         return 0;
+
+    variable_init();
 
     connect_to_spread();
 
@@ -76,7 +78,19 @@ bool command_input_check(int argc, char * argv[]){
     s1 >> server_id;
 
     if(server_id < 1 || server_id > 5) {
+        cout << "server_id is one of {1,2,3,4,5}" << endl;
         return false;
     }
     return true;
+}
+
+void variable_init(){
+    // local variables init
+    srand(time(nullptr));
+    spread_name = to_string(SPREAD_NAME);
+    spread_user = SERVER_USER_NAME_FOR_SPREAD + to_string(server_id);
+    connected = false;
+    ret = 0;
+    spread_connect_timeout.sec = 5;
+    spread_connect_timeout.usec = 0;
 }

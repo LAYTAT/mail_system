@@ -17,13 +17,14 @@
 #define MAX_MEMBERS     (100)
 #define MAX_VSSETS      (10)
 #define TOTAL_SERVER_NUMBER (5)
+#define SERVER_USER_NAME_FOR_SPREAD "SERVER_CKJL"
 
 #include <unordered_map>
 #include <memory>
 #include <vector>
 using namespace std;
 
-string  SERVER_PUBLIC_GROUPS[5] = {"ugrad1_public", "ugrad2_public", "ugrad3_public", "ugrad4_public", "ugrad5_public"};
+string  SERVER_PUBLIC_GROUPS[5] = {"ugrad1_public_ckjl", "ugrad2_public_ckjl", "ugrad3_public_ckjl", "ugrad4_public_ckjl", "ugrad5_public_ckjl"};
 
 struct Email{
     int mail_id;
