@@ -44,6 +44,7 @@ int main(int argc, char * argv[]){
 
     while(1){
         // sp_receive
+        cout << "before SP_receive" << endl;
         ret = SP_receive(spread_mbox, &service_type, sender_group, MAX_GROUP, &num_groups, target_groups, &mess_type, &endian_mismatch, sizeof(Message), (char *)&rcv_buf);
         cout << "client private group : " << sender_group << endl;
     }
