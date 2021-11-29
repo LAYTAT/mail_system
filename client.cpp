@@ -122,6 +122,7 @@ void user_command()
                 cout << "Client has not connected to server " << endl;
                 break;
             }
+
             snd_msg_buf.type = Message::TYPE::LIST;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
@@ -134,12 +135,22 @@ void user_command()
                 break;
             }
 
+            if(!connected) {
+                cout << "Client has not connected to server " << endl;
+                break;
+            }
+
             cout << "write a new email" << endl;
             break;
 
         case 'd': // delete an email
             if(!has_user_name) {
                 cout << "please login first" << endl;
+                break;
+            }
+
+            if(!connected) {
+                cout << "Client has not connected to server " << endl;
                 break;
             }
 
@@ -152,12 +163,22 @@ void user_command()
                 break;
             }
 
+            if(!connected) {
+                cout << "Client has not connected to server " << endl;
+                break;
+            }
+
             cout << "read an email" << endl;
             break;
 
         case 'v': // print available servers
             if(!has_user_name) {
                 cout << "please login first" << endl;
+                break;
+            }
+
+            if(!connected) {
+                cout << "Client has not connected to server " << endl;
                 break;
             }
 
@@ -255,15 +276,19 @@ void response_to_spread(){
                 }
             }else if( Is_caused_leave_mess( service_type ) ){
                 printf("Due to the LEAVE of %s\n", memb_info.changed_member );
-                printf("2 received membership message that left group %s\n", sender_group );
-                if( sender_group == client_server_group ) {
+                printf("1 received membership message that left group %s\n", sender_group );
+                if( sender_group == client_server_group && connected) {
+                    connected = false;
+                    SP_leave(spread_mbox, client_server_group.c_str());
                     cout << "The server has crashed or caused by network, please switch to another mail server " << endl;
                     // TODO: connected = false
                 }
             }
         }else if( Is_caused_leave_mess( service_type ) ){
-            printf("1 received membership message that left group %s\n", sender_group );
-            if( sender_group == client_server_group ) {
+            printf("2 received membership message that left group %s\n", sender_group );
+            if( sender_group == client_server_group && connected) {
+                connected = false;
+                SP_leave(spread_mbox, client_server_group.c_str());
                 cout << "The server has crashed or caused by network, please switch to another mail server " << endl;
             }
         }else printf("received incorrecty membership message of type 0x%x\n", service_type );

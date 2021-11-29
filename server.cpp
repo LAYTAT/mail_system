@@ -67,7 +67,54 @@ int main(int argc, char * argv[]){
             }
             exit( 0 );
         }
-        cout << "client private group : " << sender_group << endl;
+
+        if (Is_regular_mess( service_type )) {
+            switch (rcv_buf.type) {
+                case Message::TYPE::NEW_CONNECTION: { //
+                    cout << "new connection." << endl;
+                    break;
+                }
+
+                case Message::TYPE::NEW_EMAIL: { // add a new email in one user's mailbox and send this update to other servers
+                    cout << "NEW_EMAIL." << endl;
+                    break;
+                }
+
+                case Message::TYPE::LIST : { // send back headers for a user
+                    cout << "LIST." << endl;
+                    break;
+                }
+
+                case Message::TYPE::READ : { // mark email as read and send back the email content
+                    cout << "READ." << endl;
+                    break;
+                }
+
+                case Message::TYPE::DELETE : { // delete email
+                    cout << "DELETE." << endl;
+                    break;
+                }
+
+                case Message::TYPE::MEMBERSHIPS : { // user request for listing membership
+                    cout << "MEMBERSHIPS." << endl;
+                    break;
+                }
+
+                case Message::TYPE::UPDATE : { // process update from the servers_group
+                    cout << "MEMBERSHIPS." << endl;
+                    break;
+                }
+
+                default:
+                    break;
+            }
+        } else if(Is_membership_mess( service_type )) {
+            if (Is_caused_join_mess( service_type )) {
+
+            } else if (Is_caused_leave_mess( service_type )) {
+
+            }
+        }
     }
 
     return 0;

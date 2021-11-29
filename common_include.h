@@ -66,7 +66,7 @@ struct Message{
         LIST,
         MEMBERSHIPS,
         READ,
-        NEW,
+        NEW_EMAIL,
         DELETE,
         NEW_CONNECTION
     };
