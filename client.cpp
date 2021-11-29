@@ -4,16 +4,7 @@
 
 #include "client.h"
 
-#define SPREAD_NAME (10280)
-#define SPREAD_PRIORITY (0)
-#define RECEIVE_GROUP_MEMBERSHIP (1) // 1 if ture, 0 if false
-#define KEYBOARD_INPUT_FD (0)
-#define MAX_MESSLEN     (102400)
-#define MAX_MEMBERS     (100)
-#define MAX_VSSETS      (10)
-#define TOTAL_SERVER_NUMBER (5)
-
-// local variables
+// local variables for client program
 int     To_exit = 0;
 mailbox spread_mbox;
 string  spread_name;
@@ -89,6 +80,7 @@ void user_command()
             //connect to a specified server
             server = command[2] - '0';
             client_server_group = spread_user + to_string(server);
+            cout << "join with client_server_group: " << client_server_group << endl;
             ret = SP_join( spread_mbox,  client_server_group.c_str());
             if( ret < 0 ) SP_error( ret );
             // TODO: send this client-server-group to the server
@@ -247,7 +239,7 @@ void show_menu(){
     printf("\tm -- write an E-mail\n");
     printf("\td <mail_number> -- delete the mail_number th message in the list\n");
     printf("\n");
-    printf("\tr -- read a message \n");
+    printf("\tr <mail_number> -- read the mail_number th message in the list \n");
     printf("\tv -- print the all available server\n");
     printf("\n");
     printf("\tq -- quit\n");

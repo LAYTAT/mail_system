@@ -7,6 +7,8 @@
 #include <iostream>
 #include "common_include.h"
 #include "include/sp.h"
+#include <sstream>
+#include <cctype>
 
 using namespace std;
 
