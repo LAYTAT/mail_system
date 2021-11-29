@@ -16,6 +16,7 @@
 #define MAX_MESSLEN     (102400)
 #define MAX_MEMBERS     (100)
 #define MAX_VSSETS      (10)
+#define MAX_GROUP (10)
 #define TOTAL_SERVER_NUMBER (5)
 #define SERVER_USER_NAME_FOR_SPREAD "SERVER_CKJL"
 #include <unordered_map>
@@ -23,7 +24,7 @@
 #include <vector>
 using namespace std;
 
-string  SERVER_PUBLIC_GROUPS[5] = {"ugrad1_public_ckjl", "ugrad2_public_ckjl", "ugrad3_public_ckjl", "ugrad4_public_ckjl", "ugrad5_public_ckjl"};
+string  SERVER_PUBLIC_GROUPS[6] = {"","ugrad1_public_ckjl", "ugrad2_public_ckjl", "ugrad3_public_ckjl", "ugrad4_public_ckjl", "ugrad5_public_ckjl"};
 
 struct Email{
     int mail_id;
@@ -66,10 +67,12 @@ struct Message{
         MEMBERSHIPS,
         READ,
         NEW,
-        DELETE
+        DELETE,
+        NEW_CONNECTION
     };
-    char data[MSG_LEN];
     Message::TYPE type;
+    char data[MSG_LEN];
+    int16_t size;
 };
 
 struct Mail_Header{

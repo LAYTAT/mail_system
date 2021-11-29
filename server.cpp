@@ -15,6 +15,13 @@ char    spread_private_group[MAX_GROUP_NAME];
 int     ret;
 sp_time spread_connect_timeout;  // timeout for connecting to spread network
 int     server_id;
+int     service_type;
+char    sender_group[MAX_GROUP_NAME];
+int     num_groups;
+char    target_groups[MAX_MEMBERS][MAX_GROUP_NAME];
+int16_t mess_type;
+int     endian_mismatch;
+Message rcv_buf;
 
 // functions
 void process_client_request();
@@ -34,6 +41,12 @@ int main(int argc, char * argv[]){
     variable_init();
 
     connect_to_spread();
+
+    while(1){
+        // sp_receive
+        ret = SP_receive(spread_mbox, &service_type, sender_group, MAX_GROUP, &num_groups, target_groups, &mess_type, &endian_mismatch, sizeof(Message), (char *)&rcv_buf);
+        cout << "client private group : " << sender_group << endl;
+    }
 
     return 0;
 }
@@ -92,6 +105,7 @@ void variable_init(){
     spread_user = SERVER_USER_NAME_FOR_SPREAD + to_string(server_id);
     connected = false;
     ret = 0;
+    service_type = 0;
     spread_connect_timeout.sec = 5;
     spread_connect_timeout.usec = 0;
 }

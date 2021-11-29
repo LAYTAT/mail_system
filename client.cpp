@@ -17,6 +17,7 @@ char    spread_private_group[MAX_GROUP_NAME];
 int     ret;
 sp_time spread_connect_timeout;  // timeout for connecting to spread network
 bool    has_user_name;
+Message snd_msg_buf;
 
 void	Bye();
 void    user_command();
@@ -26,6 +27,7 @@ void    connect_to_spread();
 void    event_system_bind();
 void    timer_start();
 void    variable_init();
+void    send_to_server();
 
 int main(){
 
@@ -90,13 +92,17 @@ void user_command()
             }
 
             //connect to a specified server
-            server = command[2] - '0';
+            server = server_number;
             client_server_group = spread_user + to_string(server);
-//            cout << "join with client_server_group: " << client_server_group << endl;
+            cout << "join with client_server_group: " << client_server_group << endl;
             ret = SP_join( spread_mbox,  client_server_group.c_str());
             if( ret < 0 ) SP_error( ret );
             // TODO: send this client-server-group to the server
-            connected = true;
+            snd_msg_buf.type = Message::TYPE::NEW_CONNECTION;
+            snd_msg_buf.size = client_server_group.size();
+            memcpy(&snd_msg_buf.data, client_server_group.c_str(), client_server_group.size()); //data:   client_server_group + spread_private_group
+            memcpy(&snd_msg_buf.data[client_server_group.size()], spread_private_group, sizeof spread_private_group);
+            send_to_server();
             break;
 
         case 'u': // login as user
@@ -118,9 +124,8 @@ void user_command()
                 cout << "Client has not connected to server " << endl;
                 break;
             }
-            Message msg;
-            msg.type = Message::TYPE::LIST;
-            ret= SP_multicast(spread_mbox, AGREED_MESS, SERVER_PUBLIC_GROUPS[server].c_str(), (short int)Message::TYPE::LIST, sizeof(Message), (const char *) &msg);
+            snd_msg_buf.type = Message::TYPE::LIST;
+            send_to_server();
             if( ret < 0 ) SP_error( ret );
 
             break;
@@ -245,7 +250,10 @@ void response_to_spread(){
             if( Is_caused_join_mess( service_type ) )
             {
                 printf("JOIN of %s\n", memb_info.changed_member );
-                // TODO: if server has joined SERVER_PUBLIC_GROUPS, then client and server are connected
+                // if server has joined client-server-group, then client and server are connected
+                if(strcmp(sender_group, client_server_group.c_str()) == 0) {
+                    connected = true;
+                }
             }else if( Is_caused_leave_mess( service_type ) ){
                 printf("Due to the LEAVE of %s\n", memb_info.changed_member );
                 printf("2 received membership message that left group %s\n", sender_group );
@@ -326,4 +334,9 @@ void event_system_bind(){
 
     // bind spread message with message processing function
     E_attach_fd(spread_mbox, READ_FD, reinterpret_cast<void (*)(int, int, void *)>(response_to_spread), 0, nullptr, HIGH_PRIORITY );
+}
+
+void send_to_server() {
+    ret = SP_multicast( spread_mbox, AGREED_MESS, SERVER_PUBLIC_GROUPS[server].c_str(), (short int)snd_msg_buf.type, sizeof(Message), (const char *)&snd_msg_buf);
+    memset(&snd_msg_buf, 0 , sizeof(Message));
 }
