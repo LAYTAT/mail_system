@@ -18,7 +18,8 @@
 #define MAX_VSSETS      (10)
 #define MAX_GROUP (10)
 #define TOTAL_SERVER_NUMBER (5)
-#define SERVER_USER_NAME_FOR_SPREAD "SERVER_CKJL"
+#define SERVER_USER_NAME_FOR_SPREAD "SVR_CKJL"
+#define SERVERS_GROUP "SERVERS_GROUP_CKJL"
 #include <unordered_map>
 #include <memory>
 #include <vector>
@@ -72,7 +73,6 @@ struct Message{
     };
     Message::TYPE type;
     char data[MSG_LEN];
-    int16_t size;
 };
 
 struct Mail_Header{
