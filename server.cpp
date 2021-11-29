@@ -24,19 +24,14 @@ void update_knowledge();
 void stamp_on_sending_buffer();
 void connect_to_spread();
 void Bye();
+bool command_input_check(int , char * []);
 
 int main(int argc, char * argv[]){
-    if( argc != 2 or !isdigit(*argv[1]) or !((*argv[1]) >= '1' and (*argv[1]) <= '5') ) {
-        cout << "please enter the server id as : ./server <server_id>" << endl;
-        cout << "server_id is one of {1,2,3,4,5}" << endl;
+    if(!command_input_check(argc, argv))
         return 0;
-    } else {
-        //TODO: delete this after debugging
-        cout << "input server successfully" << endl;
-    }
-    stringstream s1(argv[1]);
-    s1 >> server_id;
-    // TODO: connect to spread
+
+    connect_to_spread();
+
     return 0;
 }
 
@@ -63,9 +58,25 @@ void connect_to_spread(){
         SP_error( ret );
         Bye();
     }
-    cout << "Email Client: connected to "<< spread_name <<" with private group " <<  spread_private_group << endl;
+    cout << "Email Server: connected to "<< spread_name <<" with private group " <<  spread_private_group << endl;
 }
 
 void Bye(){
     // TODO: bye
+}
+
+bool command_input_check(int argc, char * argv[]){
+    if( argc != 2 or !isdigit(*argv[1])) {
+        cout << "please enter the server id as : ./server <server_id>" << endl;
+        cout << "server_id is one of {1,2,3,4,5}" << endl;
+        return 0;
+    }
+
+    stringstream s1(argv[1]);
+    s1 >> server_id;
+
+    if(server_id < 1 || server_id > 5) {
+        return false;
+    }
+    return true;
 }
