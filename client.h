@@ -6,6 +6,11 @@
 #define MAIL_SYSTEM_CLIENT_H
 
 #include <iostream>
+#include "include/sp.h"
+#include <string>
+#include <random>
+#include <time.h>
+#include "common_include.h"
 
 using namespace std;
 

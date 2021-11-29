@@ -14,6 +14,9 @@
 #include <memory>
 #include <vector>
 using namespace std;
+
+string  SERVER_PUBLIC_GROUPS[5] = {"ugrad1_public", "ugrad2_public", "ugrad3_public", "ugrad4_public", "ugrad5_public"};
+
 struct Email{
     int mail_id;
     int to_user;

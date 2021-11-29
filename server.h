@@ -5,6 +5,8 @@
 #define MAIL_SYSTEM_SERVER_H
 
 #include <iostream>
+#include "common_include.h"
+#include "include/sp.h"
 
 using namespace std;
 

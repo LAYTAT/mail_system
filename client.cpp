@@ -3,11 +3,6 @@
 //
 
 #include "client.h"
-#include "include/sp.h"
-#include <string>
-#include <random>
-#include <time.h>
-#include "common_include.h"
 
 #define SPREAD_NAME (10280)
 #define SPREAD_PRIORITY (0)
@@ -16,60 +11,43 @@
 #define MAX_MESSLEN     (102400)
 #define MAX_MEMBERS     (100)
 #define MAX_VSSETS      (10)
+#define TOTAL_SERVER_NUMBER (5)
 
 // local variables
 int     To_exit = 0;
 mailbox spread_mbox;
+string  spread_name;
 int     server;  // 1 - 5
 string  spread_user;
 string  client_server_group;
 char    user_name[80];
 bool    connected;
-char    server_public_group[MAX_GROUP_NAME];
 char    spread_private_group[MAX_GROUP_NAME];
+int     ret;
+sp_time spread_connect_timeout;  // timeout for connecting to spread network
 
 void	Bye();
 void    user_command();
 void    response_to_spread();
 void    show_menu();
+void    connect_to_spread();
+void    event_system_bind();
+void    timer_start();
+void    variable_init();
 
 int main(){
-    // local variables
-    srand(time(nullptr));
-    string  spread_name = to_string(SPREAD_NAME);
-    spread_user = to_string(rand()% RAND_MAX);
-    connected = false;
-    server = -1;
 
-    int ret = 0;
-    // connect to Spread timeout
-    sp_time test_timeout;
-    test_timeout.sec = 5;
-    test_timeout.usec = 0;
+    variable_init();
 
-    ret = SP_connect_timeout(spread_name.c_str(), spread_user.c_str(), SPREAD_PRIORITY, RECEIVE_GROUP_MEMBERSHIP, &spread_mbox, spread_private_group, test_timeout);
-    if( ret != ACCEPT_SESSION )
-    {
-        SP_error( ret );
-        Bye();
-    }
-
-    cout << "Email Client: connected to "<< spread_name <<" with private group " <<  spread_private_group << endl;
+    connect_to_spread();
 
     // initialize event system
     E_init();
 
-    // bind keyboard event with user input function
-    E_attach_fd(KEYBOARD_INPUT_FD, READ_FD, reinterpret_cast<void (*)(int, int, void *)>(user_command), 0, nullptr, LOW_PRIORITY );
-
-    // bind spread message with message processing function
-    E_attach_fd(spread_mbox, READ_FD, reinterpret_cast<void (*)(int, int, void *)>(response_to_spread), 0, nullptr, HIGH_PRIORITY );
+    event_system_bind();
 
     // show menu to the client user
     show_menu();
-
-    printf("\nUser> ");
-    fflush(stdout);
 
     E_handle_events();
 
@@ -94,7 +72,6 @@ void user_command()
     switch( command[0] )
     {
         case 'c':
-
             //check if the input is formatted correctly
             if( command[2] < '1' || command[2] > '5' )
             {
@@ -114,6 +91,7 @@ void user_command()
             client_server_group = spread_user + to_string(server);
             ret = SP_join( spread_mbox,  client_server_group.c_str());
             if( ret < 0 ) SP_error( ret );
+            // TODO: send this client-server-group to the server
             connected = true;
             break;
 
@@ -132,27 +110,25 @@ void user_command()
             }
             Message msg;
             msg.type = Message::TYPE::LIST;
-            ret= SP_multicast( spread_mbox, AGREED_MESS, server_public_group, (short int)Message::TYPE::LIST, sizeof(Message), (const char *) &msg);
+            ret= SP_multicast(spread_mbox, AGREED_MESS, SERVER_PUBLIC_GROUPS[server].c_str(), (short int)Message::TYPE::LIST, sizeof(Message), (const char *) &msg);
             if( ret < 0 ) SP_error( ret );
-
-
 
             break;
 
         case 'm': // write a new email
-
+            cout << "write a new email" << endl;
             break;
 
         case 'd': // delete an email
-
+            cout << "delete an email" << endl;
             break;
 
         case 'r': // read an email
-
+            cout << "read an email" << endl;
             break;
 
         case 'v': // print available servers
-
+            cout << "print available servers" << endl;
             break;
 
         case 'q':
@@ -240,11 +216,13 @@ void response_to_spread(){
             if( Is_caused_join_mess( service_type ) )
             {
                 printf("JOIN of %s\n", memb_info.changed_member );
+                // TODO: if server has joined SERVER_PUBLIC_GROUPS, then client and server are connected
             }else if( Is_caused_leave_mess( service_type ) ){
                 printf("Due to the LEAVE of %s\n", memb_info.changed_member );
                 printf("2 received membership message that left group %s\n", sender_group );
                 if( sender_group == client_server_group ) {
                     cout << "The server has crashed or caused by network, please switch to another mail server " << endl;
+                    // TODO: connected = false
                 }
             }
         }else if( Is_caused_leave_mess( service_type ) ){
@@ -274,6 +252,8 @@ void show_menu(){
     printf("\n");
     printf("\tq -- quit\n");
     fflush(stdout);
+    printf("\nUser> ");
+    fflush(stdout);
 }
 
 void    Bye()
@@ -284,4 +264,34 @@ void    Bye()
     SP_disconnect( spread_mbox );
 
     exit( 0 );
+}
+
+void connect_to_spread(){
+    ret = SP_connect_timeout(spread_name.c_str(), spread_user.c_str(), SPREAD_PRIORITY, RECEIVE_GROUP_MEMBERSHIP, &spread_mbox, spread_private_group, spread_connect_timeout);
+    if( ret != ACCEPT_SESSION )
+    {
+        SP_error( ret );
+        Bye();
+    }
+    cout << "Email Client: connected to "<< spread_name <<" with private group " <<  spread_private_group << endl;
+}
+
+void variable_init(){
+    // local variables init
+    srand(time(nullptr));
+    spread_name = to_string(SPREAD_NAME);
+    spread_user = to_string(rand()% RAND_MAX);
+    connected = false;
+    server = -1;
+    ret = 0;
+    spread_connect_timeout.sec = 5;
+    spread_connect_timeout.usec = 0;
+}
+
+void event_system_bind(){
+    // bind keyboard event with user input function
+    E_attach_fd(KEYBOARD_INPUT_FD, READ_FD, reinterpret_cast<void (*)(int, int, void *)>(user_command), 0, nullptr, LOW_PRIORITY );
+
+    // bind spread message with message processing function
+    E_attach_fd(spread_mbox, READ_FD, reinterpret_cast<void (*)(int, int, void *)>(response_to_spread), 0, nullptr, HIGH_PRIORITY );
 }
