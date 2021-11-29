@@ -9,6 +9,7 @@
 #include "include/sp.h"
 #include <sstream>
 #include <cctype>
+#include <cstring>
 
 using namespace std;
 

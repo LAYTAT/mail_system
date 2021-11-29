@@ -7,9 +7,9 @@
 
 #include <iostream>
 #include "include/sp.h"
-#include <string.h>
+#include <cstring>
 #include <random>
-#include <time.h>
+#include <ctime>
 #include "common_include.h"
 #include <sstream>
 
