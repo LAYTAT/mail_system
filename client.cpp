@@ -261,6 +261,8 @@ void response_to_spread(){
             }
         }else printf("received incorrecty membership message of type 0x%x\n", service_type );
     }
+    cout << "\nUser> ";
+    fflush(stdout);
 }
 
 void show_menu(){
