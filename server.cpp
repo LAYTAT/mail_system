@@ -42,6 +42,8 @@ int main(int argc, char * argv[]){
 
     connect_to_spread();
 
+    create_server_public_group();
+
     while(1){
         // sp_receive
         cout << "before SP_receive" << endl;
@@ -113,5 +115,5 @@ void variable_init(){
 
 void create_server_public_group(){
     //TODO: server create a public group with just itself in it.
-
+    ret = SP_join( spread_mbox,  SERVER_PUBLIC_GROUPS[server_id].c_str());
 }
