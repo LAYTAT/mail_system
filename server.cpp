@@ -21,6 +21,11 @@ char    target_groups[MAX_MEMBERS][MAX_GROUP_NAME];
 int16_t mess_type;
 int     endian_mismatch;
 Message rcv_buf;
+membership_info  memb_info;
+vs_set_info      vssets[MAX_VSSETS];
+unsigned int     my_vsset_index;
+int      num_vs_sets;
+char     members[MAX_MEMBERS][MAX_GROUP_NAME];
 
 // functions
 void process_client_request();
@@ -113,6 +118,28 @@ int main(int argc, char * argv[]){
         } else if(Is_membership_mess( service_type )) {
             if (Is_caused_join_mess( service_type )) {
 
+            }else if( Is_caused_network_mess( service_type ) ){
+                printf("Due to NETWORK change with %u VS sets\n", memb_info.num_vs_sets);
+                num_vs_sets = SP_get_vs_sets_info((const char *)&rcv_buf, &vssets[0], MAX_VSSETS, &my_vsset_index );
+                if (num_vs_sets < 0) {
+                    printf("BUG: membership message has more then %d vs sets. Recompile with larger MAX_VSSETS\n", MAX_VSSETS);
+                    SP_error( num_vs_sets );
+                    exit( 1 );
+                }
+                for(int i = 0; i < num_vs_sets; i++ )
+                {
+                    printf("%s VS set %d has %u members:\n",
+                           (i  == my_vsset_index) ?
+                           ("LOCAL") : ("OTHER"), i, vssets[i].num_members );
+                    ret = SP_get_vs_set_members((const char *)&rcv_buf, &vssets[i], members, MAX_MEMBERS);
+                    if (ret < 0) {
+                        printf("VS Set has more then %d members. Recompile with larger MAX_MEMBERS\n", MAX_MEMBERS);
+                        SP_error( ret );
+                        exit( 1 );
+                    }
+                    for(int j = 0; j < vssets[i].num_members; j++ )
+                        printf("\t%s\n", members[j] );
+                }
             } else if (Is_caused_leave_mess( service_type )) {
 
             }
