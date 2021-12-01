@@ -18,6 +18,7 @@ int     ret;
 sp_time spread_connect_timeout;  // timeout for connecting to spread network
 bool    has_user_name;
 Message snd_msg_buf;
+string  server_name;
 
 void	Bye();
 void    user_command();
@@ -93,6 +94,7 @@ void user_command()
 
             //connect to a specified server
             server = server_number;
+            server_name = SERVER_USER_NAME_FOR_SPREAD + to_string(server);
             client_server_group = spread_user + to_string(server);
             cout << "join with client_server_group: " << client_server_group << endl;
             ret = SP_join( spread_mbox,  client_server_group.c_str());
@@ -269,11 +271,14 @@ void response_to_spread(){
             cout << "Received REGULAR membership for group" << sender_group << "with " << num_groups  <<" members, where I am member " << mess_type << endl;
             if( Is_caused_join_mess( service_type ) )
             {
-                printf("JOIN of %s\n", memb_info.changed_member );
                 // if server has joined client-server-group, then client and server are connected
-                if(strcmp(sender_group, client_server_group.c_str()) == 0) {
+                static string joined_member_name_str(memb_info.changed_member);
+                cout << "New member: " << joined_member_name_str << " has joined the group " << sender_group << endl;
+                if(strcmp(sender_group, client_server_group.c_str()) == 0 && joined_member_name_str.find(server_name) != string::npos) {
                     connected = true;
-                    cout << "connected to server! " << endl;
+                    cout << "connected to server " << endl;
+                } else {
+                    cout << "Some strange member has joined the group" << endl;
                 }
             }else if( Is_caused_leave_mess( service_type ) ){
                 printf("Due to the LEAVE of %s\n", memb_info.changed_member );
