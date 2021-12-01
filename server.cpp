@@ -119,6 +119,7 @@ int main(int argc, char * argv[]){
                     for(auto server_idx : servers_group_member_set) {
                         ret_str[server_idx] = 1;
                     }
+                    cout << "     replying to " << sender_group << endl;
                     int ret_str_len = strlen(ret_str.c_str());
                     snd_buf.size = ret_str_len;
                     memcpy(snd_buf.data, ret_str.c_str(), ret_str_len);
