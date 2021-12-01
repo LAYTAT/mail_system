@@ -78,7 +78,10 @@ void user_command()
             }
 
             int server_number;
-            ss >> server_number;
+            if( !(ss >> server_number) ) {
+                cout << "please enter the server id." << endl;
+                break;
+            }
             cout << " request to connect with server " << server_number << endl;
             //check if the input is formatted correctly
             if( server_number < 1 || server_number > 5 )
