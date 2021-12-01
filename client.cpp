@@ -178,7 +178,7 @@ void user_command()
             new_email.header.sendtime = get_time();
             Update new_update;
             new_update.email = new_email;
-            memcpy(&snd_buf.data, &new_update, sizeof(Update));
+            memcpy(snd_buf.data, &new_update, sizeof(Update));
             snd_buf.type = Message::TYPE::NEW_EMAIL;
             cout << "Before sending :" << endl;
             new_update.email.print();
