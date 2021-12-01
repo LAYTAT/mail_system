@@ -41,7 +41,7 @@ bool command_input_check(int , char * []);
 void variable_init();
 void create_server_public_group();
 void join_servers_group();
-void send_to_client(const char * client)
+void send_to_client(const char * client);
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
