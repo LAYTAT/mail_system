@@ -89,6 +89,10 @@ void user_command()
                 break;
             }
 
+            if (server_number == server) {
+                cout << "You are already connected with server " << server << endl;
+            }
+
             cout << " request to connect with server " << server_number << endl;
 
             //if already connected to a server then disconnect first before connecting to a new server
@@ -108,7 +112,7 @@ void user_command()
             // TODO: send this client-server-group to the server
             snd_buf.type = Message::TYPE::NEW_CONNECTION;
             snd_buf.size = strlen(client_server_group.c_str());
-            memcpy(&snd_buf.data, client_server_group.c_str(), strlen(client_server_group.c_str())); //data:   client_server_group + spread_private_group
+            memcpy(&snd_buf.data, client_server_group.c_str(), strlen(client_server_group.c_str())); //email:   client_server_group + spread_private_group
             send_to_server();
             break;
 
@@ -140,6 +144,7 @@ void user_command()
             break;
 
         case 'm': // write a new email
+        {
             if(!has_user_name) {
                 cout << "please login first" << endl;
                 break;
@@ -152,11 +157,34 @@ void user_command()
 
             cout << "write a new email" << endl;
             // TODO: add the request content
+
+            Email new_email;
+            cout << "to: <user name>" << endl;
+            cout << "to: ";
+            cin >> new_email.header.user_name;
+            cout << "subject: <subject string>" << endl;
+            cout << "subject:";
+            cin >> new_email.header.subject;
+            cout << "mail content: <content string>" << endl;
+            cout << "mail content:";
+            string tmp_str_msg_content;
+            cin >> tmp_str_msg_content;
+            if(tmp_str_msg_content.size() > EMAIL_CONTENT_LEN) {
+                cout << "please wrong a content with less than " << EMAIL_CONTENT_LEN << " characters " << endl;
+                break;
+            }
+            memcpy(new_email.msg_str, tmp_str_msg_content.c_str(), strlen(tmp_str_msg_content.c_str()));
+
+            Update new_update;
+            new_update.email = new_email;
+            memcpy(&snd_buf.data, &new_update, sizeof(Update));
             snd_buf.type = Message::TYPE::NEW_EMAIL;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
             break;
+        }
+
 
         case 'd': // delete an email
             if(!has_user_name) {

@@ -7,7 +7,7 @@
 
 #define SUBJECT_LEN (128)
 #define MSG_LEN (1300)
-#define EMAIL_LEN (1000)
+#define EMAIL_CONTENT_LEN (1000)
 #define USER_NAME_LEN (64)
 #define SPREAD_NAME (10280)
 #define SPREAD_PRIORITY (0)
@@ -26,31 +26,43 @@
 #include <vector>
 using namespace std;
 
-string  SERVER_PUBLIC_GROUPS[6] = {"","ugrad1_public_ckjl", "ugrad2_public_ckjl", "ugrad3_public_ckjl", "ugrad4_public_ckjl", "ugrad5_public_ckjl"};
+const string  SERVER_PUBLIC_GROUPS[6] = {"","ugrad1_public_ckjl", "ugrad2_public_ckjl", "ugrad3_public_ckjl", "ugrad4_public_ckjl", "ugrad5_public_ckjl"};
+
+struct Mail_Header{
+
+    Mail_Header():
+            read_state(false)
+    {}
+
+    int     server{};
+    int64_t mail_id{};
+    char    user_name[USER_NAME_LEN];
+    char    sender_name[USER_NAME_LEN];
+    char    subject[SUBJECT_LEN];
+    bool    read_state;
+};
 
 struct Email{
-    int mail_id;
-    int to_user;
-    int from_user;
-    char subject[SUBJECT_LEN];
-    char msg_str[EMAIL_LEN];
+    Mail_Header header;
+    char msg_str[EMAIL_CONTENT_LEN];
 };
 
 using Emails = vector<shared_ptr<Email>> ;
 struct Email_Box{
-    Email_Box(): emails(){}
+    explicit Email_Box(vector<shared_ptr<Email>> & emails_vec): emails(emails_vec){}
     Email_Box(const Email_Box&) = delete;
     Email_Box& operator=(const Email_Box &) = delete;
-    ~Email_Box(){}
-
+    ~Email_Box()= default;
     Emails emails;
 };
 
 struct Update{
-    int server_id;
-    int timestamp;
-    int mail_id;
-    Email data;
+    Update(): email() {}
+    ~Update()= default;
+    int server_id{};
+    int timestamp{};
+    int mail_id{};
+    Email email;
 };
 
 struct Message{
@@ -68,15 +80,6 @@ struct Message{
     int16_t size;
 };
 
-struct Mail_Header{
-    char *  user_name[USER_NAME_LEN];
-    char *  sender_name[USER_NAME_LEN];
-    char    server;
-    int     num_of_emails;
-    int     index;
-    int64_t mail_id;
-    char *  subject[SUBJECT_LEN];
-    int     read_state;
-};
+
 
 #endif //MAIL_SYSTEM_COMMON_INCLUDE_H

@@ -181,7 +181,7 @@ int main(int argc, char * argv[]){
                     cout << "==================== JOIN ======================" << endl;
                     cout << " Group: " << sender_group << ", joined member = " << memb_info.changed_member << endl;
                     string joined_member_name(memb_info.changed_member);
-                    cout << "joined_member_name = " << joined_member_name << endl;
+                    cout << "   joined_member_name = " << joined_member_name << endl;
                     /*if (strcmp(sender_group, SERVERS_GROUP) == 0 ) //from the servers group
                     {
                         cout << "==================== servers group ======================" << endl;
