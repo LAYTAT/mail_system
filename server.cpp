@@ -140,12 +140,16 @@ int main(int argc, char * argv[]){
                        sender_group, num_groups, mess_type );
 
                 if(strcmp(sender_group, SERVERS_GROUP) == 0) { // if membership message from servers group
-                    servers_group_member_set.clear();
-                    cout << "Membership change in servers_group: " << endl;
+                    cout << " Membership change in servers_group: " << endl;
+                    cout << "     New members in the servers_group : " << endl;
                     for(int i=0; i < num_groups; i++ ) {
                         string member_in_servers_group(target_groups[i]);
                         cout << member_in_servers_group << endl;
-                        servers_group_member_set.insert(member_in_servers_group);
+                        if(servers_group_member_set.count(member_in_servers_group) == 0) // new group member
+                        {
+                            cout << member_in_servers_group << endl;
+                            servers_group_member_set.insert(member_in_servers_group);
+                        }
                     }
                 }
 
@@ -157,7 +161,7 @@ int main(int argc, char * argv[]){
                     cout << " Group: " << sender_group << ", joined member = " << memb_info.changed_member << endl;
                     string joined_member_name(memb_info.changed_member);
                     cout << "joined_member_name = " << joined_member_name << endl;
-                    if (strcmp(sender_group, SERVERS_GROUP) == 0 ) //from the servers group
+                    /*if (strcmp(sender_group, SERVERS_GROUP) == 0 ) //from the servers group
                     {
                         cout << "==================== servers group ======================" << endl;
                         if(joined_member_name.find(spread_user) == string::npos) { //ot the server itself
@@ -169,7 +173,7 @@ int main(int argc, char * argv[]){
                         } else {
                             cout << "Current server " << spread_user << " has join the servers_group !";
                         }
-                    }
+                    }*/
 
                 }else if( Is_caused_leave_mess( service_type ) ){
                     printf("Due to the LEAVE of %s\n", memb_info.changed_member );
