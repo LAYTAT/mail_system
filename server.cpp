@@ -144,7 +144,6 @@ int main(int argc, char * argv[]){
                     cout << "     New members in the servers_group : " << endl;
                     for(int i=0; i < num_groups; i++ ) {
                         string member_in_servers_group(target_groups[i]);
-                        cout << member_in_servers_group << endl;
                         if(servers_group_member_set.count(member_in_servers_group) == 0) // new group member
                         {
                             cout << member_in_servers_group << endl;
