@@ -92,6 +92,11 @@ int main(int argc, char * argv[]){
                 case Message::TYPE::NEW_EMAIL: { // add a new email in one user's mailbox and send this update to other servers
                     cout << sender_group << " has request a NEW_EMAIL." << endl;
                     // TODO: process the request
+
+                    // TODO: store update to file
+                    Email rcvd_new_email;
+                    memcpy(&rcvd_new_email, rcv_buf.data, sizeof(Email));
+                    rcvd_new_email.print();
                     break;
                 }
 

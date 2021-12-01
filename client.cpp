@@ -11,7 +11,7 @@ string  spread_name;
 int     server;  // 1 - 5
 string  spread_user;
 string  client_server_group;
-char    user_name[80];
+char    user_name[USER_NAME_LEN];
 bool    connected;
 char    spread_private_group[MAX_GROUP_NAME];
 int     ret;
@@ -173,8 +173,9 @@ void user_command()
                 cout << "please wrong a content with less than " << EMAIL_CONTENT_LEN << " characters " << endl;
                 break;
             }
+            memcpy(new_email.header.sender_name, user_name, strlen(user_name));
             memcpy(new_email.msg_str, tmp_str_msg_content.c_str(), strlen(tmp_str_msg_content.c_str()));
-
+            new_email.header.sendtime = get_time();
             Update new_update;
             new_update.email = new_email;
             memcpy(&snd_buf.data, &new_update, sizeof(Update));
