@@ -122,6 +122,7 @@ int main(int argc, char * argv[]){
                     cout << "     replying to " << sender_group << endl;
                     int ret_str_len = strlen(ret_str.c_str());
                     snd_buf.size = ret_str_len;
+                    snd_buf.type = Message::TYPE::MEMBERSHIPS;
                     memcpy(snd_buf.data, ret_str.c_str(), ret_str_len);
                     send_to_client(sender_group);
                     break;
@@ -191,13 +192,13 @@ int main(int argc, char * argv[]){
                     printf("Due to the LEAVE of %s\n", memb_info.changed_member );
                     if(string(memb_info.changed_member) != servers_group_str ) {
                         cout << "A client has left group " << sender_group << endl;
-                        cout << "This server is also leaving group " << sender_group << endl;
+                        cout << "   This server is also leaving group " << sender_group << endl;
                         SP_leave(spread_mbox, sender_group);
                     }
                 }else if( Is_caused_disconnect_mess( service_type ) ){
                     if(string(memb_info.changed_member) != servers_group_str ) {
-                        cout << "A client has left group " << sender_group << endl;
-                        cout << "This server is also leaving group " << sender_group << endl;
+                        cout << "A client has been disconnected from the group " << sender_group << endl;
+                        cout << "   This server is also leaving group " << sender_group << endl;
                         SP_leave(spread_mbox, sender_group);
                     }
                     printf("Due to the DISCONNECT of %s\n", memb_info.changed_member );

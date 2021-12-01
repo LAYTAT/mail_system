@@ -82,13 +82,14 @@ void user_command()
                 cout << "please enter the server id." << endl;
                 break;
             }
-            cout << " request to connect with server " << server_number << endl;
             //check if the input is formatted correctly
             if( server_number < 1 || server_number > 5 )
             {
                 printf("Please select a server from 1 to 5.\n");
                 break;
             }
+
+            cout << " request to connect with server " << server_number << endl;
 
             //if already connected to a server then disconnect first before connecting to a new server
             if (server != -1) {
@@ -288,6 +289,7 @@ void response_to_spread(){
                 break;
             }
             default:
+                cout << "wrong type of reponse message from the server." << endl;
                 break;
         }
     } else if (Is_membership_mess( service_type)){
