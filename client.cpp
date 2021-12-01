@@ -163,10 +163,10 @@ void user_command()
             cout << "to: ";
             cin.getline(new_email.header.user_name, USER_NAME_LEN);
             cout << "subject: <subject string>" << endl;
-            cout << "subject:";
+            cout << "subject: ";
             cin.getline(new_email.header.subject, SUBJECT_LEN);
             cout << "mail content: <content string>" << endl;
-            cout << "mail content:";
+            cout << "mail content: ";
             cin.getline(new_email.msg_str, EMAIL_CONTENT_LEN);
             memcpy(new_email.header.sender_name, user_name, strlen(user_name));
             new_email.header.sendtime = get_time();

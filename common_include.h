@@ -99,8 +99,7 @@ struct Message{
 long int get_time(){
     struct timeval t;
     gettimeofday(&t, nullptr);
-    return ((t.tv_sec - t.tv_sec)*1000000L
-            +t.tv_usec) - t.tv_usec;
+    return (t.tv_sec * 1000000L +t.tv_usec);
 }
 
 #endif //MAIL_SYSTEM_COMMON_INCLUDE_H
