@@ -119,6 +119,7 @@ void user_command()
                 cout << " invalid user name " << endl;
                 break;
             }
+            cout << " Hello User " << user_name << endl;
             break;
 
         case 'l': // list all mails' headers
