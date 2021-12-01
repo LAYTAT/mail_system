@@ -38,6 +38,7 @@ void Bye();
 bool command_input_check(int , char * []);
 void variable_init();
 void create_server_public_group();
+void join_servers_group();
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
@@ -45,9 +46,11 @@ int main(int argc, char * argv[]){
 
     variable_init();
 
-    connect_to_spread();
+    connect_to_spread(); // the programm will exit if connection to spread has failed
 
     create_server_public_group();
+
+    join_servers_group();
 
     while(1){
         // sp_receive
@@ -141,12 +144,14 @@ int main(int argc, char * argv[]){
                 if( Is_caused_join_mess( service_type ) )
                 {
                     string joined_member_name(memb_info.changed_member);
-                    if ( joined_member_name.find(spread_user) != string::npos ) // not the server itself
+                    cout << "joined_member_name = " << joined_member_name << endl;
+                    if ( joined_member_name.find(spread_user) != string::npos  ) // not the server itself and from the servers group
                     {
                         printf("Due to the JOIN of %s\n", memb_info.changed_member );
                         cout << "Now we start reconcile with " << memb_info.changed_member << endl;
                         reconcile();
                     }
+
                 }else if( Is_caused_leave_mess( service_type ) ){
                     printf("Due to the LEAVE of %s\n", memb_info.changed_member );
                     if(string(memb_info.changed_member) != servers_group_str ) {
@@ -165,7 +170,7 @@ int main(int argc, char * argv[]){
                     printf("Due to NETWORK change with %u VS sets\n", memb_info.num_vs_sets);
                     num_vs_sets = SP_get_vs_sets_info((const char *)&rcv_buf, &vssets[0], MAX_VSSETS, &my_vsset_index );
                     if (num_vs_sets < 0) {
-                        printf("BUG: membership message has more then %d vs sets. Recompile with larger MAX_VSSETS\n", MAX_VSSETS);
+                        printf("BUG: membership message has more than %d vs sets. Recompile with larger MAX_VSSETS\n", MAX_VSSETS);
                         SP_error( num_vs_sets );
                         exit( 1 );
                     }
@@ -222,7 +227,12 @@ void connect_to_spread(){
 }
 
 void Bye(){
-    // TODO: bye
+    To_exit = 1;
+    printf("\nBye.\n");
+
+    SP_disconnect( spread_mbox );
+
+    exit( 0 );
 }
 
 bool command_input_check(int argc, char * argv[]){
@@ -257,4 +267,10 @@ void variable_init(){
 void create_server_public_group(){
     //TODO: server create a public group with just itself in it.
     ret = SP_join( spread_mbox,  SERVER_PUBLIC_GROUPS[server_id].c_str());
+    if( ret < 0 ) SP_error( ret );
+}
+
+void join_servers_group(){
+    ret = SP_join(spread_mbox, SERVERS_GROUP);
+    if( ret < 0 ) SP_error( ret );
 }
