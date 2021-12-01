@@ -37,12 +37,12 @@ struct Mail_Header{
             read_state(false)
     {}
     void print(){
-        cout << "   mail_id: " << mail_id << endl;
-        cout << "   to user: " << user_name << endl;
-        cout << "   from user: " << sender_name << endl;
-        cout << "   subject: " << subject << endl;
-        cout << "   sendtime: " << sendtime << endl;
-        cout << "   read state: " << (read_state ? "read" : "unread") << endl;
+        cout << "       mail_id: " << mail_id << endl;
+        cout << "       to user: " << user_name << endl;
+        cout << "       from user: " << sender_name << endl;
+        cout << "      subject: " << subject << endl;
+        cout << "      sendtime: " << sendtime << endl;
+        cout << "      read state: " << (read_state ? "read" : "unread") << endl;
     }
     int     server{};
     int64_t mail_id{};
@@ -56,9 +56,9 @@ struct Mail_Header{
 struct Email{
     Mail_Header header;
     void print(){
-        cout << "This is the email:";
+        cout << "   This is the email:";
         header.print();
-        cout << "   Content: " << msg_str << endl;
+        cout << "       Content: " << msg_str << endl;
     }
     char msg_str[EMAIL_CONTENT_LEN];
 };

@@ -94,9 +94,9 @@ int main(int argc, char * argv[]){
                     // TODO: process the request
 
                     // TODO: store update to file
-                    Email rcvd_new_email;
-                    memcpy(&rcvd_new_email, rcv_buf.data, sizeof(Email));
-                    rcvd_new_email.print();
+                    Update rcvd_new_update;
+                    memcpy(&rcvd_new_update, rcv_buf.data, sizeof(Update));
+                    rcvd_new_update.email.print();
                     break;
                 }
 
