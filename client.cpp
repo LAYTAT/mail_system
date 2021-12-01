@@ -161,20 +161,14 @@ void user_command()
             Email new_email;
             cout << "to: <user name>" << endl;
             cout << "to: ";
-            cin >> new_email.header.user_name;
+            cin.getline(new_email.header.user_name, USER_NAME_LEN);
             cout << "subject: <subject string>" << endl;
             cout << "subject:";
-            cin >> new_email.header.subject;
+            cin.getline(new_email.header.subject, SUBJECT_LEN);
             cout << "mail content: <content string>" << endl;
             cout << "mail content:";
-            string tmp_str_msg_content;
-            cin >> tmp_str_msg_content;
-            if(tmp_str_msg_content.size() > EMAIL_CONTENT_LEN) {
-                cout << "please wrong a content with less than " << EMAIL_CONTENT_LEN << " characters " << endl;
-                break;
-            }
+            cin.getline(new_email.msg_str, EMAIL_CONTENT_LEN);
             memcpy(new_email.header.sender_name, user_name, strlen(user_name));
-            memcpy(new_email.msg_str, tmp_str_msg_content.c_str(), strlen(tmp_str_msg_content.c_str()));
             new_email.header.sendtime = get_time();
             Update new_update;
             new_update.email = new_email;
