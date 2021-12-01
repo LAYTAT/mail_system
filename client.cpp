@@ -95,13 +95,13 @@ void user_command()
             //connect to a specified server
             server = server_number;
             server_name = SERVER_USER_NAME_FOR_SPREAD + to_string(server);
-            client_server_group = spread_user + to_string(server);
+            client_server_group = spread_user + "_" +to_string(server);
             cout << "join with client_server_group: " << client_server_group << endl;
             ret = SP_join( spread_mbox,  client_server_group.c_str());
             if( ret < 0 ) SP_error( ret );
             // TODO: send this client-server-group to the server
             snd_msg_buf.type = Message::TYPE::NEW_CONNECTION;
-            snd_msg_buf.size = client_server_group.size();
+            snd_msg_buf.size = sizeof client_server_group.c_str();
             memcpy(&snd_msg_buf.data, client_server_group.c_str(), client_server_group.size()); //data:   client_server_group + spread_private_group
             send_to_server();
             break;
