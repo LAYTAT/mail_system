@@ -151,19 +151,15 @@ int main(int argc, char * argv[]){
 
                 printf("grp id is %d %d %d\n",memb_info.gid.id[0], memb_info.gid.id[1], memb_info.gid.id[2] );
 
-                if(strcmp(sender_group, SERVERS_GROUP) == 0 ) {
-                    cout << "From Servers group : Membership messagge";
-                }
-
                 if( Is_caused_join_mess( service_type ) )
                 {
-                    cout << "==================== JOIN ====================== " << endl;
+                    cout << "==================== JOIN ======================" << endl;
                     cout << " Group: " << sender_group << ", joined member = " << memb_info.changed_member << endl;
                     string joined_member_name(memb_info.changed_member);
                     cout << "joined_member_name = " << joined_member_name << endl;
                     if (strcmp(sender_group, SERVERS_GROUP) == 0 ) //from the servers group
                     {
-                        cout << "From Servers group : Join message." << endl;
+                        cout << "==================== servers group ======================" << endl;
                         if(joined_member_name.find(spread_user) == string::npos) { //ot the server itself
                             cout << "Another server has join the servers_group ======= " << endl;
                             cout << "The current members in the group : " << endl;
