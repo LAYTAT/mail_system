@@ -41,6 +41,7 @@ bool command_input_check(int , char * []);
 void variable_init();
 void create_server_public_group();
 void join_servers_group();
+void send_to_client(const char * client)
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
@@ -80,10 +81,10 @@ int main(int argc, char * argv[]){
         if (Is_regular_mess( service_type )) {
             switch (rcv_buf.type) {
                 case Message::TYPE::NEW_CONNECTION: { //
-                    cout << "new connection." << endl;
+                    cout << "new connection from client." << endl;
                     char client_server_group[rcv_buf.size];
                     memcpy(client_server_group, rcv_buf.data, rcv_buf.size);
-                    cout << "I am server " << server_id << " and I am gonna join group: " << client_server_group << " now." << endl;
+                    cout << "   where I am server " << server_id << " and I am gonna join group: " << client_server_group << " now." << endl;
                     SP_join(spread_mbox, client_server_group);
                     break;
                 }
@@ -121,6 +122,7 @@ int main(int argc, char * argv[]){
                     int ret_str_len = strlen(ret_str.c_str());
                     snd_buf.size = ret_str_len;
                     memcpy(snd_buf.data, ret_str.c_str(), ret_str_len);
+                    send_to_client(sender_group);
                     break;
                 }
 
@@ -307,7 +309,7 @@ void join_servers_group(){
     if( ret < 0 ) SP_error( ret );
 }
 
-void send_to_client(const string & client) {
-    ret = SP_multicast(spread_mbox, AGREED_MESS, client.c_str(), (short int)snd_buf.type, sizeof(Message), (const char *)&snd_buf);
+void send_to_client(const char * client) {
+    ret = SP_multicast(spread_mbox, AGREED_MESS, client, (short int)snd_buf.type, sizeof(Message), (const char *)&snd_buf);
     memset(&snd_buf, 0 , sizeof(Message));
 }
