@@ -9,7 +9,7 @@
 #define MSG_LEN (1300)
 #define EMAIL_CONTENT_LEN (1000)
 #define USER_NAME_LEN (64)
-#define SPREAD_NAME (10280)
+#define SPREAD_NAME (10040)  //10040 10280
 #define SPREAD_PRIORITY (0)
 #define RECEIVE_GROUP_MEMBERSHIP (1) // 1 if ture, 0 if false
 #define KEYBOARD_INPUT_FD (0)
