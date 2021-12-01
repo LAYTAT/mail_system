@@ -144,6 +144,11 @@ void user_command()
             }
 
             cout << "write a new email" << endl;
+
+            snd_msg_buf.type = Message::TYPE::NEW_EMAIL;
+            send_to_server();
+            if( ret < 0 ) SP_error( ret );
+
             break;
 
         case 'd': // delete an email
@@ -156,6 +161,10 @@ void user_command()
                 cout << "Client has not connected to server " << endl;
                 break;
             }
+
+            snd_msg_buf.type = Message::TYPE::DELETE;
+            send_to_server();
+            if( ret < 0 ) SP_error( ret );
 
             cout << "delete an email" << endl;
             break;
@@ -171,6 +180,10 @@ void user_command()
                 break;
             }
 
+            snd_msg_buf.type = Message::TYPE::READ;
+            send_to_server();
+            if( ret < 0 ) SP_error( ret );
+
             cout << "read an email" << endl;
             break;
 
@@ -184,6 +197,10 @@ void user_command()
                 cout << "Client has not connected to server " << endl;
                 break;
             }
+
+            snd_msg_buf.type = Message::TYPE::MEMBERSHIPS;
+            send_to_server();
+            if( ret < 0 ) SP_error( ret );
 
             cout << "print available servers" << endl;
             break;

@@ -83,32 +83,38 @@ int main(int argc, char * argv[]){
                 }
 
                 case Message::TYPE::NEW_EMAIL: { // add a new email in one user's mailbox and send this update to other servers
-                    cout << "NEW_EMAIL." << endl;
+                    cout << sender_group << " has request a NEW_EMAIL." << endl;
+                    // TODO: process the request
                     break;
                 }
 
                 case Message::TYPE::LIST : { // send back headers for a user
-                    cout << "LIST." << endl;
+                    cout << sender_group << " has request a LIST." << endl;
+                    // TODO: process the request and get the infomations
                     break;
                 }
 
                 case Message::TYPE::READ : { // mark email as read and send back the email content
-                    cout << "READ." << endl;
+                    cout << sender_group << " has request a READ." << endl;
+                    // TODO: process the request and get the infomations
                     break;
                 }
 
                 case Message::TYPE::DELETE : { // delete email
-                    cout << "DELETE." << endl;
+                    cout << sender_group << " has request a DELETE." << endl;
+                    // TODO: process the request
                     break;
                 }
 
                 case Message::TYPE::MEMBERSHIPS : { // user request for listing membership
-                    cout << "MEMBERSHIPS." << endl;
+                    cout << sender_group << " has request a MEMBERSHIPS." << endl;
+                    // TODO: process the request and get the infomations
                     break;
                 }
 
                 case Message::TYPE::UPDATE : { // process update from the servers_group
-                    cout << "Update." << endl;
+                    cout << sender_group << " has request a Update." << endl;
+                    // TODO: process the update on the state
                     break;
                 }
 
@@ -123,7 +129,7 @@ int main(int argc, char * argv[]){
                 SP_error( ret );
                 exit( 1 );
             }
-            if     ( Is_reg_memb_mess( service_type ) )
+            if( Is_reg_memb_mess( service_type ) )
             {
                 printf("Received REGULAR membership for group %s with %d members, where I am member %d:\n",
                        sender_group, num_groups, mess_type );
@@ -134,6 +140,8 @@ int main(int argc, char * argv[]){
                 if( Is_caused_join_mess( service_type ) )
                 {
                     printf("Due to the JOIN of %s\n", memb_info.changed_member );
+                    cout << "Now we start reconcile with " << memb_info.changed_member << endl;
+                    reconcile();
                 }else if( Is_caused_leave_mess( service_type ) ){
                     printf("Due to the LEAVE of %s\n", memb_info.changed_member );
                 }else if( Is_caused_disconnect_mess( service_type ) ){
@@ -168,7 +176,6 @@ int main(int argc, char * argv[]){
             }else printf("received incorrecty membership message of type 0x%x\n", service_type );
         }else printf("received message of unknown message type 0x%x with ret %d\n", service_type, ret);
     }
-
     return 0;
 }
 
