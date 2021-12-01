@@ -221,6 +221,7 @@ void user_command()
 
             break;
     }
+    show_menu();
     cout << "\nUser> ";
     fflush(stdout);
 }
@@ -282,6 +283,7 @@ void response_to_spread(){
                         cout << "       " << server_idx << endl;
                     }
                 }
+                cout << endl;
                 break;
                 }
             case Message::TYPE::READ: {
@@ -333,7 +335,8 @@ void response_to_spread(){
             }
         }else printf("received incorrecty membership message of type 0x%x\n", service_type );
     } else printf("received message of unknown message type 0x%x with ret %d\n", service_type, ret);
-    show_menu();
+    printf("\nUser> ");
+    fflush(stdout);
 }
 
 void show_menu(){
