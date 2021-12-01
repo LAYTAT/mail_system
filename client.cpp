@@ -222,7 +222,6 @@ void user_command()
 
             break;
     }
-    show_menu();
     cout << "\nUser> ";
     fflush(stdout);
 }
