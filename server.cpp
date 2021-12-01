@@ -140,13 +140,13 @@ int main(int argc, char * argv[]){
                        sender_group, num_groups, mess_type );
 
                 if(strcmp(sender_group, SERVERS_GROUP) == 0) { // if membership message from servers group
-                    cout << " Membership change in servers_group: " << endl;
-                    cout << "     New members in the servers_group : " << endl;
+                    cout << "Membership change in servers_group: " << endl;
+                    cout << "   New members in the servers_group : " << endl;
                     for(int i=0; i < num_groups; i++ ) {
                         string member_in_servers_group(target_groups[i]);
                         if(servers_group_member_set.count(member_in_servers_group) == 0) // new group member
                         {
-                            cout << member_in_servers_group << endl;
+                            cout << "       " << member_in_servers_group << endl;
                             servers_group_member_set.insert(member_in_servers_group);
                         }
                     }
