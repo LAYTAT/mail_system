@@ -11,6 +11,7 @@
 #include <cctype>
 #include <cstring>
 #include "state.h"
+#include <unordered_set>
 #include "knowledge.h"
 #include "log.h"
 

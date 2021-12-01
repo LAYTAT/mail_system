@@ -18,6 +18,7 @@ int     service_type;
 char    sender_group[MAX_GROUP_NAME];
 int     num_groups;
 char    target_groups[MAX_MEMBERS][MAX_GROUP_NAME];
+unordered_set<string> servers_group_member_set;
 int16_t mess_type;
 int     endian_mismatch;
 Message rcv_buf;
@@ -137,19 +138,41 @@ int main(int argc, char * argv[]){
             {
                 printf("Received REGULAR membership for group %s with %d members, where I am member %d:\n",
                        sender_group, num_groups, mess_type );
-                for(int i=0; i < num_groups; i++ )
-                    printf("\t%s\n", &target_groups[i][0] );
+
+                if(strcmp(sender_group, SERVERS_GROUP) == 0) { // if membership message from servers group
+                    servers_group_member_set.clear();
+                    cout << "Membership change in servers_group: " << endl;
+                    for(int i=0; i < num_groups; i++ ) {
+                        string member_in_servers_group(target_groups[i]);
+                        cout << member_in_servers_group << endl;
+                        servers_group_member_set.insert(member_in_servers_group);
+                    }
+                }
+
                 printf("grp id is %d %d %d\n",memb_info.gid.id[0], memb_info.gid.id[1], memb_info.gid.id[2] );
+
+                if(strcmp(sender_group, SERVERS_GROUP) == 0 ) {
+                    cout << "From Servers group : Membership messagge";
+                }
 
                 if( Is_caused_join_mess( service_type ) )
                 {
+                    cout << "==================== JOIN ====================== " << endl;
+                    cout << " Group: " << sender_group << ", joined member = " << memb_info.changed_member << endl;
                     string joined_member_name(memb_info.changed_member);
                     cout << "joined_member_name = " << joined_member_name << endl;
-                    if ( joined_member_name.find(spread_user) != string::npos  ) // not the server itself and from the servers group
+                    if (strcmp(sender_group, SERVERS_GROUP) == 0 ) //from the servers group
                     {
-                        printf("Due to the JOIN of %s\n", memb_info.changed_member );
-                        cout << "Now we start reconcile with " << memb_info.changed_member << endl;
-                        reconcile();
+                        cout << "From Servers group : Join message." << endl;
+                        if(joined_member_name.find(spread_user) == string::npos) { //ot the server itself
+                            cout << "Another server has join the servers_group ======= " << endl;
+                            cout << "The current members in the group : " << endl;
+                            string new_member_in_servers_group(memb_info.changed_member);
+                            cout << "Now we start reconcile with " << new_member_in_servers_group << endl;
+                            reconcile();
+                        } else {
+                            cout << "Current server " << spread_user << " has join the servers_group !";
+                        }
                     }
 
                 }else if( Is_caused_leave_mess( service_type ) ){
