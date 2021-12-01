@@ -10,6 +10,9 @@
 #include <sstream>
 #include <cctype>
 #include <cstring>
+#include "state.h"
+#include "knowledge.h"
+#include "log.h"
 
 using namespace std;
 

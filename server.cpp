@@ -50,7 +50,6 @@ int main(int argc, char * argv[]){
 
     while(1){
         // sp_receive
-        cout << "before SP_receive" << endl;
         ret = SP_receive(spread_mbox, &service_type, sender_group, MAX_MEMBERS, &num_groups, target_groups, &mess_type, &endian_mismatch, sizeof(Message), (char *)&rcv_buf);
         if( ret < 0 )
         {
@@ -117,7 +116,7 @@ int main(int argc, char * argv[]){
             }
         } else if(Is_membership_mess( service_type )) {
             if (Is_caused_join_mess( service_type )) {
-
+                printf("JOIN of %s\n", memb_info.changed_member );
             }else if( Is_caused_network_mess( service_type ) ){
                 printf("Due to NETWORK change with %u VS sets\n", memb_info.num_vs_sets);
                 num_vs_sets = SP_get_vs_sets_info((const char *)&rcv_buf, &vssets[0], MAX_VSSETS, &my_vsset_index );

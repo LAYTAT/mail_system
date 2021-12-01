@@ -19,6 +19,8 @@
 #define TOTAL_SERVER_NUMBER (5)
 #define SERVER_USER_NAME_FOR_SPREAD "SVR_CKJL"
 #define SERVERS_GROUP "SERVERS_GROUP_CKJL"
+#define STATE_FILE_PREFIX "state_file_"
+#define LOG_FILE_PREFIX "log_file_"
 #include <unordered_map>
 #include <memory>
 #include <vector>
@@ -42,15 +44,6 @@ struct Email_Box{
     ~Email_Box(){}
 
     Emails emails;
-};
-
-struct State{
-    State(const State&) = delete;
-    State& operator=(const State &) = delete;
-    ~State(){}
-
-    unordered_map<int, shared_ptr<Email_Box>> user_2_mailbox;
-    unordered_map<int, shared_ptr<Email>> mail_id_2_email;
 };
 
 struct Update{
