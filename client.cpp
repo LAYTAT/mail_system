@@ -317,8 +317,7 @@ void response_to_spread(){
             }
         }else printf("received incorrecty membership message of type 0x%x\n", service_type );
     } else printf("received message of unknown message type 0x%x with ret %d\n", service_type, ret);
-    cout << "\nUser> ";
-    fflush(stdout);
+    show_menu();
 }
 
 void show_menu(){

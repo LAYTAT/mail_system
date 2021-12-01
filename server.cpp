@@ -139,9 +139,13 @@ int main(int argc, char * argv[]){
 
                 if( Is_caused_join_mess( service_type ) )
                 {
-                    printf("Due to the JOIN of %s\n", memb_info.changed_member );
-                    cout << "Now we start reconcile with " << memb_info.changed_member << endl;
-                    reconcile();
+                    string joined_member_name(memb_info.changed_member);
+                    if ( joined_member_name.find(spread_user) != string::npos ) // not the server itself
+                    {
+                        printf("Due to the JOIN of %s\n", memb_info.changed_member );
+                        cout << "Now we start reconcile with " << memb_info.changed_member << endl;
+                        reconcile();
+                    }
                 }else if( Is_caused_leave_mess( service_type ) ){
                     printf("Due to the LEAVE of %s\n", memb_info.changed_member );
                 }else if( Is_caused_disconnect_mess( service_type ) ){
