@@ -325,6 +325,15 @@ void response_to_spread(){
                     cout << "The server has crashed or caused by network, please switch to another mail server " << endl;
                     // TODO: connected = false
                 }
+            }else if( Is_caused_disconnect_mess( service_type ) ){
+                if(string(memb_info.changed_member) != client_server_group && connected ) {
+                    cout << "A client has been disconnected from the group " << sender_group << endl;
+                    cout << "   This server is also leaving group " << sender_group << endl;
+                    SP_leave(spread_mbox, sender_group);
+                }
+                printf("Due to the DISCONNECT of %s\n", memb_info.changed_member );
+            } else {
+                cout << "!!!!Received other type of message, deal with it" << endl;
             }
         }else if( Is_caused_leave_mess( service_type ) ){
             printf("2 received membership message that left group %s\n", sender_group );
