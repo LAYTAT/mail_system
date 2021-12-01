@@ -155,6 +155,11 @@ int main(int argc, char * argv[]){
                         SP_leave(spread_mbox, sender_group);
                     }
                 }else if( Is_caused_disconnect_mess( service_type ) ){
+                    if(string(memb_info.changed_member) != servers_group_str ) {
+                        cout << "A client has left group " << sender_group << endl;
+                        cout << "This server is also leaving group " << sender_group << endl;
+                        SP_leave(spread_mbox, sender_group);
+                    }
                     printf("Due to the DISCONNECT of %s\n", memb_info.changed_member );
                 }else if( Is_caused_network_mess( service_type ) ){
                     printf("Due to NETWORK change with %u VS sets\n", memb_info.num_vs_sets);
@@ -194,6 +199,7 @@ void process_client_request(){
 }
 
 void reconcile(){
+    cout << "reconciling!" << endl;
     //TODO
 }
 
