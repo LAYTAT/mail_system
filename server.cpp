@@ -117,7 +117,7 @@ int main(int argc, char * argv[]){
                     cout << sender_group << " has request a MEMBERSHIPS." << endl;
                     string ret_str = "000000";
                     for(auto server_idx : servers_group_member_set) {
-                        ret_str[server_idx] = 1;
+                        ret_str[server_idx] = '1';
                     }
                     cout << "     replying to " << sender_group << " with " << ret_str << endl;
                     int ret_str_len = strlen(ret_str.c_str());
