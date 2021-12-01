@@ -125,7 +125,7 @@ void user_command()
                 cout << "Client has not connected to server " << endl;
                 break;
             }
-
+            // TODO: add the request content
             snd_msg_buf.type = Message::TYPE::LIST;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
@@ -144,7 +144,7 @@ void user_command()
             }
 
             cout << "write a new email" << endl;
-
+            // TODO: add the request content
             snd_msg_buf.type = Message::TYPE::NEW_EMAIL;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
@@ -161,7 +161,7 @@ void user_command()
                 cout << "Client has not connected to server " << endl;
                 break;
             }
-
+            // TODO: add the request content
             snd_msg_buf.type = Message::TYPE::DELETE;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
@@ -179,7 +179,7 @@ void user_command()
                 cout << "Client has not connected to server " << endl;
                 break;
             }
-
+            // TODO: add the request content
             snd_msg_buf.type = Message::TYPE::READ;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
