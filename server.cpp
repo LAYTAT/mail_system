@@ -198,13 +198,13 @@ int main(int argc, char * argv[]){
 
                 }else if( Is_caused_leave_mess( service_type ) ){
                     printf("Due to the LEAVE of %s\n", memb_info.changed_member );
-                    if(string(memb_info.changed_member) != servers_group_str ) {
+                    if(sender_group != servers_group_str ) { // client has leaved
                         cout << "A client has left group " << sender_group << endl;
                         cout << "   This server is also leaving group " << sender_group << endl;
                         SP_leave(spread_mbox, sender_group);
                     }
                 }else if( Is_caused_disconnect_mess( service_type ) ){
-                    if(string(memb_info.changed_member) != servers_group_str ) {
+                    if(sender_group != servers_group_str ) {// client has disconnected
                         cout << "A client has been disconnected from the group " << sender_group << endl;
                         cout << "   This server is also leaving group " << sender_group << endl;
                         SP_leave(spread_mbox, sender_group);
