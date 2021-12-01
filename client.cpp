@@ -272,7 +272,8 @@ void response_to_spread(){
             if( Is_caused_join_mess( service_type ) )
             {
                 // if server has joined client-server-group, then client and server are connected
-                static string joined_member_name_str(memb_info.changed_member);
+                string joined_member_name_str(memb_info.changed_member);
+                printf("Due to the JOIN of %s\n", memb_info.changed_member );
                 cout << "New member: " << joined_member_name_str << " has joined the group " << sender_group << endl;
                 if(strcmp(sender_group, client_server_group.c_str()) == 0 && joined_member_name_str.find(server_name) != string::npos) {
                     connected = true;
@@ -298,7 +299,7 @@ void response_to_spread(){
                 cout << "The server has crashed or caused by network, please switch to another mail server " << endl;
             }
         }else printf("received incorrecty membership message of type 0x%x\n", service_type );
-    }
+    } else printf("received message of unknown message type 0x%x with ret %d\n", service_type, ret);
     cout << "\nUser> ";
     fflush(stdout);
 }
