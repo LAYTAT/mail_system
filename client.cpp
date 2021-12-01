@@ -17,7 +17,8 @@ char    spread_private_group[MAX_GROUP_NAME];
 int     ret;
 sp_time spread_connect_timeout;  // timeout for connecting to spread network
 bool    has_user_name;
-Message snd_msg_buf;
+Message snd_buf;
+Message rcv_buf;
 string  server_name;
 
 void	Bye();
@@ -101,9 +102,9 @@ void user_command()
             ret = SP_join( spread_mbox,  client_server_group.c_str());
             if( ret < 0 ) SP_error( ret );
             // TODO: send this client-server-group to the server
-            snd_msg_buf.type = Message::TYPE::NEW_CONNECTION;
-            snd_msg_buf.size = strlen(client_server_group.c_str());
-            memcpy(&snd_msg_buf.data, client_server_group.c_str(), strlen(client_server_group.c_str())); //data:   client_server_group + spread_private_group
+            snd_buf.type = Message::TYPE::NEW_CONNECTION;
+            snd_buf.size = strlen(client_server_group.c_str());
+            memcpy(&snd_buf.data, client_server_group.c_str(), strlen(client_server_group.c_str())); //data:   client_server_group + spread_private_group
             send_to_server();
             break;
 
@@ -127,7 +128,7 @@ void user_command()
                 break;
             }
             // TODO: add the request content
-            snd_msg_buf.type = Message::TYPE::LIST;
+            snd_buf.type = Message::TYPE::LIST;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
@@ -146,7 +147,7 @@ void user_command()
 
             cout << "write a new email" << endl;
             // TODO: add the request content
-            snd_msg_buf.type = Message::TYPE::NEW_EMAIL;
+            snd_buf.type = Message::TYPE::NEW_EMAIL;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
@@ -163,7 +164,7 @@ void user_command()
                 break;
             }
             // TODO: add the request content
-            snd_msg_buf.type = Message::TYPE::DELETE;
+            snd_buf.type = Message::TYPE::DELETE;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
@@ -181,7 +182,7 @@ void user_command()
                 break;
             }
             // TODO: add the request content
-            snd_msg_buf.type = Message::TYPE::READ;
+            snd_buf.type = Message::TYPE::READ;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
@@ -199,7 +200,7 @@ void user_command()
                 break;
             }
 
-            snd_msg_buf.type = Message::TYPE::MEMBERSHIPS;
+            snd_buf.type = Message::TYPE::MEMBERSHIPS;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
@@ -229,7 +230,6 @@ void response_to_spread(){
     char                target_groups[MAX_MEMBERS][MAX_GROUP_NAME];
     int16_t             mess_type;
     int                 endian_mismatch;
-    Message             mess;
     membership_info     memb_info;
     int                 num_vs_sets;
     vs_set_info         vssets[MAX_VSSETS];
@@ -237,14 +237,14 @@ void response_to_spread(){
     char                members[MAX_MEMBERS][MAX_GROUP_NAME];
 
     ret = SP_receive(spread_mbox, &service_type, sender_group, MAX_GROUP_SIZE, &num_groups, target_groups,
-                     &mess_type, &endian_mismatch, sizeof(mess), (char *) &mess);
+                     &mess_type, &endian_mismatch, sizeof(Message), (char *) &rcv_buf);
     if( ret < 0 )
     {
         if ( (ret == GROUPS_TOO_SHORT) || (ret == BUFFER_TOO_SHORT) ) {
             service_type = DROP_RECV;
             printf("\n========Buffers or Groups too Short=======\n");
             ret = SP_receive( spread_mbox, &service_type, sender_group, MAX_MEMBERS, &num_groups, target_groups,
-                              &mess_type, &endian_mismatch, sizeof(Message), (char *) &mess );
+                              &mess_type, &endian_mismatch, sizeof(Message), (char *) &rcv_buf );
         }
     }
     if (ret < 0 )
@@ -261,13 +261,23 @@ void response_to_spread(){
     // response to regular messages
     if( Is_regular_mess( service_type ) )
     {
-        switch (mess.type) {
+        switch (rcv_buf.type) {
             case Message::TYPE::LIST: {
                 // todo: print out list of headers
                 break;
             }
             case Message::TYPE::MEMBERSHIPS: {
                 // todo: print out the servers
+                cout << "received membership reply from server " << endl;
+                char rcvd[rcv_buf.size];
+                memcpy(rcvd, rcv_buf.data, rcv_buf.size);
+                string rcvd_str(rcvd);
+                cout << "   These are the mail servers in the current mail server's network component: " << endl;
+                for(int server_idx = 1; server_idx < rcvd_str.size(); server_idx++) {
+                    if(rcvd_str[server_idx] == '1') {
+                        cout << "       " << server_idx << endl;
+                    }
+                }
                 break;
                 }
             case Message::TYPE::READ: {
@@ -278,7 +288,7 @@ void response_to_spread(){
                 break;
         }
     } else if (Is_membership_mess( service_type)){
-            ret = SP_get_memb_info( (const char *)&mess, service_type, &memb_info );
+            ret = SP_get_memb_info( (const char *)&rcv_buf, service_type, &memb_info );
             if (ret < 0) {
                 printf("BUG: membership message does not have valid body\n");
                 SP_error( ret );
@@ -385,6 +395,6 @@ void event_system_bind(){
 }
 
 void send_to_server() {
-    ret = SP_multicast( spread_mbox, AGREED_MESS, SERVER_PUBLIC_GROUPS[server].c_str(), (short int)snd_msg_buf.type, sizeof(Message), (const char *)&snd_msg_buf);
-    memset(&snd_msg_buf, 0 , sizeof(Message));
+    ret = SP_multicast(spread_mbox, AGREED_MESS, SERVER_PUBLIC_GROUPS[server].c_str(), (short int)snd_buf.type, sizeof(Message), (const char *)&snd_buf);
+    memset(&snd_buf, 0 , sizeof(Message));
 }

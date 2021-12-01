@@ -22,6 +22,7 @@ unordered_set<int> servers_group_member_set;
 int16_t mess_type;
 int     endian_mismatch;
 Message rcv_buf;
+Message snd_buf;
 membership_info  memb_info;
 vs_set_info      vssets[MAX_VSSETS];
 unsigned int     my_vsset_index;
@@ -113,7 +114,13 @@ int main(int argc, char * argv[]){
 
                 case Message::TYPE::MEMBERSHIPS : { // user request for listing membership
                     cout << sender_group << " has request a MEMBERSHIPS." << endl;
-                    // TODO: process the request and get the infomations
+                    string ret_str = "000000";
+                    for(auto server_idx : servers_group_member_set) {
+                        ret_str[server_idx] = 1;
+                    }
+                    int ret_str_len = strlen(ret_str.c_str());
+                    snd_buf.size = ret_str_len;
+                    memcpy(snd_buf.data, ret_str.c_str(), ret_str_len);
                     break;
                 }
 
@@ -298,4 +305,9 @@ void create_server_public_group(){
 void join_servers_group(){
     ret = SP_join(spread_mbox, SERVERS_GROUP);
     if( ret < 0 ) SP_error( ret );
+}
+
+void send_to_client(const string & client) {
+    ret = SP_multicast(spread_mbox, AGREED_MESS, client.c_str(), (short int)snd_buf.type, sizeof(Message), (const char *)&snd_buf);
+    memset(&snd_buf, 0 , sizeof(Message));
 }
