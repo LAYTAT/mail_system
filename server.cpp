@@ -26,6 +26,7 @@ vs_set_info      vssets[MAX_VSSETS];
 unsigned int     my_vsset_index;
 int      num_vs_sets;
 char     members[MAX_MEMBERS][MAX_GROUP_NAME];
+string  servers_group_str(SERVERS_GROUP);
 
 // functions
 void process_client_request();
@@ -148,6 +149,11 @@ int main(int argc, char * argv[]){
                     }
                 }else if( Is_caused_leave_mess( service_type ) ){
                     printf("Due to the LEAVE of %s\n", memb_info.changed_member );
+                    if(string(memb_info.changed_member) != servers_group_str ) {
+                        cout << "A client has left group " << sender_group << endl;
+                        cout << "This server is also leaving group " << sender_group << endl;
+                        SP_leave(spread_mbox, sender_group);
+                    }
                 }else if( Is_caused_disconnect_mess( service_type ) ){
                     printf("Due to the DISCONNECT of %s\n", memb_info.changed_member );
                 }else if( Is_caused_network_mess( service_type ) ){
