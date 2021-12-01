@@ -20,6 +20,7 @@ public:
     // we use this function to get the list concerning one user.
     shared_ptr<Email_Box> get_email_box(const int user_name) {
         // TODO
+        return nullptr;
     }
 
     // When receivs an update, we use this funtion to commit the

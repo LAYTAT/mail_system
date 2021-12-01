@@ -107,42 +107,65 @@ int main(int argc, char * argv[]){
                 }
 
                 case Message::TYPE::UPDATE : { // process update from the servers_group
-                    cout << "MEMBERSHIPS." << endl;
+                    cout << "Update." << endl;
                     break;
                 }
 
                 default:
                     break;
             }
-        } else if(Is_membership_mess( service_type )) {
-            if (Is_caused_join_mess( service_type )) {
-                cout << "New member has join the group : " << memb_info.changed_member << endl;
-            }else if( Is_caused_network_mess( service_type ) ){
-                printf("Due to NETWORK change with %u VS sets\n", memb_info.num_vs_sets);
-                num_vs_sets = SP_get_vs_sets_info((const char *)&rcv_buf, &vssets[0], MAX_VSSETS, &my_vsset_index );
-                if (num_vs_sets < 0) {
-                    printf("BUG: membership message has more then %d vs sets. Recompile with larger MAX_VSSETS\n", MAX_VSSETS);
-                    SP_error( num_vs_sets );
-                    exit( 1 );
-                }
-                for(int i = 0; i < num_vs_sets; i++ )
+        }else if( Is_membership_mess( service_type ) )
+        {
+            ret = SP_get_memb_info((const char *)&rcv_buf, service_type, &memb_info );
+            if (ret < 0) {
+                printf("BUG: membership message does not have valid body\n");
+                SP_error( ret );
+                exit( 1 );
+            }
+            if     ( Is_reg_memb_mess( service_type ) )
+            {
+                printf("Received REGULAR membership for group %s with %d members, where I am member %d:\n",
+                       sender_group, num_groups, mess_type );
+                for(int i=0; i < num_groups; i++ )
+                    printf("\t%s\n", &target_groups[i][0] );
+                printf("grp id is %d %d %d\n",memb_info.gid.id[0], memb_info.gid.id[1], memb_info.gid.id[2] );
+
+                if( Is_caused_join_mess( service_type ) )
                 {
-                    printf("%s VS set %d has %u members:\n",
-                           (i  == my_vsset_index) ?
-                           ("LOCAL") : ("OTHER"), i, vssets[i].num_members );
-                    ret = SP_get_vs_set_members((const char *)&rcv_buf, &vssets[i], members, MAX_MEMBERS);
-                    if (ret < 0) {
-                        printf("VS Set has more then %d members. Recompile with larger MAX_MEMBERS\n", MAX_MEMBERS);
-                        SP_error( ret );
+                    printf("Due to the JOIN of %s\n", memb_info.changed_member );
+                }else if( Is_caused_leave_mess( service_type ) ){
+                    printf("Due to the LEAVE of %s\n", memb_info.changed_member );
+                }else if( Is_caused_disconnect_mess( service_type ) ){
+                    printf("Due to the DISCONNECT of %s\n", memb_info.changed_member );
+                }else if( Is_caused_network_mess( service_type ) ){
+                    printf("Due to NETWORK change with %u VS sets\n", memb_info.num_vs_sets);
+                    num_vs_sets = SP_get_vs_sets_info((const char *)&rcv_buf, &vssets[0], MAX_VSSETS, &my_vsset_index );
+                    if (num_vs_sets < 0) {
+                        printf("BUG: membership message has more then %d vs sets. Recompile with larger MAX_VSSETS\n", MAX_VSSETS);
+                        SP_error( num_vs_sets );
                         exit( 1 );
                     }
-                    for(int j = 0; j < vssets[i].num_members; j++ )
-                        printf("\t%s\n", members[j] );
+                    for(int i = 0; i < num_vs_sets; i++ )
+                    {
+                        printf("%s VS set %d has %u members:\n",
+                               (i  == my_vsset_index) ?
+                               ("LOCAL") : ("OTHER"), i, vssets[i].num_members );
+                        ret = SP_get_vs_set_members((const char *)& rcv_buf, &vssets[i], members, MAX_MEMBERS);
+                        if (ret < 0) {
+                            printf("VS Set has more then %d members. Recompile with larger MAX_MEMBERS\n", MAX_MEMBERS);
+                            SP_error( ret );
+                            exit( 1 );
+                        }
+                        for(int j = 0; j < vssets[i].num_members; j++ )
+                            printf("\t%s\n", members[j] );
+                    }
                 }
-            } else if (Is_caused_leave_mess( service_type )) {
-
-            }
-        }
+            }else if( Is_transition_mess(   service_type ) ) {
+                printf("received TRANSITIONAL membership for group %s\n", sender_group );
+            }else if( Is_caused_leave_mess( service_type ) ){
+                printf("received membership message that left group %s\n", sender_group );
+            }else printf("received incorrecty membership message of type 0x%x\n", service_type );
+        }else printf("received message of unknown message type 0x%x with ret %d\n", service_type, ret);
     }
 
     return 0;
