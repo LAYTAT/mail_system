@@ -153,17 +153,21 @@ int main(int argc, char * argv[]){
                 if(strcmp(sender_group, SERVERS_GROUP) == 0) { // if membership message from servers group
                     cout << "Membership change in servers_group: " << endl;
                     cout << "   New members in the servers_group : " << endl;
+                    unordered_set<int> cur_member_in_servers_group;
+                    unordered_set<int> new_member_in_servers_group; // TODO: reconcile on this
                     for(int i=0; i < num_groups; i++ ) {
                         string member_in_servers_group(target_groups[i]);
                         int find_idx = member_in_servers_group.find(SERVER_USER_NAME_FOR_SPREAD);
                         find_idx += strlen(SERVER_USER_NAME_FOR_SPREAD);
                         int server_id_tmp = member_in_servers_group[find_idx] - '0';
+                        cur_member_in_servers_group.insert(server_id_tmp);
                         if(servers_group_member_set.count(server_id_tmp) == 0) // new group member
                         {
                             cout << "       server_id:" << server_id_tmp << endl;
-                            servers_group_member_set.insert(server_id_tmp);
+                            new_member_in_servers_group.insert(server_id_tmp);
                         }
                     }
+                    servers_group_member_set = cur_member_in_servers_group;
                 }
 
                 printf("grp id is %d %d %d\n",memb_info.gid.id[0], memb_info.gid.id[1], memb_info.gid.id[2] );
