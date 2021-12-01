@@ -18,7 +18,7 @@ int     service_type;
 char    sender_group[MAX_GROUP_NAME];
 int     num_groups;
 char    target_groups[MAX_MEMBERS][MAX_GROUP_NAME];
-unordered_set<string> servers_group_member_set;
+unordered_set<int> servers_group_member_set;
 int16_t mess_type;
 int     endian_mismatch;
 Message rcv_buf;
@@ -144,10 +144,13 @@ int main(int argc, char * argv[]){
                     cout << "   New members in the servers_group : " << endl;
                     for(int i=0; i < num_groups; i++ ) {
                         string member_in_servers_group(target_groups[i]);
-                        if(servers_group_member_set.count(member_in_servers_group) == 0) // new group member
+                        int find_idx = member_in_servers_group.find(SERVER_USER_NAME_FOR_SPREAD);
+                        find_idx += strlen(SERVER_USER_NAME_FOR_SPREAD);
+                        int server_id_tmp = member_in_servers_group[find_idx] - '0';
+                        if(servers_group_member_set.count(server_id_tmp) == 0) // new group member
                         {
-                            cout << "       " << member_in_servers_group << endl;
-                            servers_group_member_set.insert(member_in_servers_group);
+                            cout << "       server_id:" << server_id_tmp << endl;
+                            servers_group_member_set.insert(server_id_tmp);
                         }
                     }
                 }
