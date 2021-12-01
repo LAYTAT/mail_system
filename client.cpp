@@ -308,13 +308,18 @@ void response_to_spread(){
             {
                 // if server has joined client-server-group, then client and server are connected
                 string joined_member_name_str(memb_info.changed_member);
-                printf("Due to the JOIN of %s\n", memb_info.changed_member );
-                cout << "New member: " << joined_member_name_str << " has joined the group " << sender_group << endl;
-                if(strcmp(sender_group, client_server_group.c_str()) == 0 && joined_member_name_str.find(server_name) != string::npos) {
-                    connected = true;
-                    cout << "connected to server " << endl;
+                printf("    Due to the JOIN of %s\n", memb_info.changed_member );
+                cout << "       New member: " << joined_member_name_str << " has joined the group " << sender_group << endl;
+                if(strcmp(sender_group, client_server_group.c_str()) == 0) {
+                    if ( joined_member_name_str.find(server_name) != string::npos) {
+                        connected = true;
+                        cout << "       connected to server " << endl;
+                    } else if (joined_member_name_str.find(spread_user)) {
+                        cout << "       Current client joined the group" << endl;
+                    }
+
                 } else {
-                    cout << "Some strange member has joined the group" << endl;
+                    cout << "Some strange member has joined the group " << sender_group << endl;
                 }
             }else if( Is_caused_leave_mess( service_type ) ){
                 printf("Due to the LEAVE of %s\n", memb_info.changed_member );
@@ -327,23 +332,23 @@ void response_to_spread(){
                 }
             }else if( Is_caused_disconnect_mess( service_type ) ){
                 if(string(memb_info.changed_member) != client_server_group && connected ) {
-                    cout << "A client has been disconnected from the group " << sender_group << endl;
-                    cout << "   This server is also leaving group " << sender_group << endl;
+                    cout << "   A client has been disconnected from the group " << sender_group << endl;
+                    cout << "       This server is also leaving group " << sender_group << endl;
                     SP_leave(spread_mbox, sender_group);
                 }
-                printf("Due to the DISCONNECT of %s\n", memb_info.changed_member );
+                printf("    Due to the DISCONNECT of %s\n", memb_info.changed_member );
             } else {
-                cout << "!!!!Received other type of message, deal with it" << endl;
+                cout << "   !!!!Received other type of message, deal with it" << endl;
             }
         }else if( Is_caused_leave_mess( service_type ) ){
-            printf("2 received membership message that left group %s\n", sender_group );
+            printf("    2 received membership message that left group %s\n", sender_group );
             if( sender_group == client_server_group && connected) {
                 connected = false;
                 SP_leave(spread_mbox, client_server_group.c_str());
-                cout << "The server has crashed or caused by network, please switch to another mail server " << endl;
+                cout << "       The server has crashed or caused by network, please switch to another mail server " << endl;
             }
-        }else printf("received incorrecty membership message of type 0x%x\n", service_type );
-    } else printf("received message of unknown message type 0x%x with ret %d\n", service_type, ret);
+        }else printf("  received incorrecty membership message of type 0x%x\n", service_type );
+    } else printf(" received message of unknown message type 0x%x with ret %d\n", service_type, ret);
     printf("\nUser> ");
     fflush(stdout);
 }

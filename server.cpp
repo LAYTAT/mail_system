@@ -168,13 +168,13 @@ int main(int argc, char * argv[]){
                         }
                     }
                     servers_group_member_set = cur_member_in_servers_group;
-                    cout << "Current members in the group " << endl;
+                    cout << "   Current members in the group " << endl;
                     for(auto idx : servers_group_member_set) {
                         cout << "       " << idx << endl;
                     }
                 }
 
-                printf("grp id is %d %d %d\n",memb_info.gid.id[0], memb_info.gid.id[1], memb_info.gid.id[2] );
+                printf("    grp id is %d %d %d\n",memb_info.gid.id[0], memb_info.gid.id[1], memb_info.gid.id[2] );
 
                 if( Is_caused_join_mess( service_type ) )
                 {
