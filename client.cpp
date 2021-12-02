@@ -120,8 +120,7 @@ void user_command()
             break;
 
         case 'u': // login as user
-            cin.getline(user_name, USER_NAME_LEN);
-            // TODO(low priority) : check getline return, show stream error
+            ret = sscanf( &command[2], "%s", user_name);
             has_user_name = true;
             if( ret < 1 ) {
                 cout << " invalid user name " << endl;
