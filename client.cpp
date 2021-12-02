@@ -407,7 +407,7 @@ void response_to_spread(){
             if( sender_group == client_server_group && connected) {
                 connected = false;
                 SP_leave(spread_mbox, client_server_group.c_str());
-                cout << "       The server has crashed or caused by network, please switch to another mail server " << endl;
+                cout << "       The server has crashed or shut down, please switch to another mail server " << endl;
             }
         }else printf("  received incorrecty membership message of type 0x%x\n", service_type );
     } else printf(" received message of unknown message type 0x%x with ret %d\n", service_type, ret);
@@ -421,7 +421,7 @@ void show_menu(){
     printf("Email Client Menu:\n");
     printf("----------\n");
     printf("\n");
-    printf("\tu <to_user_name> -- login with a user name.\n");
+    printf("\tu <user_name> -- login with a user name.\n");
     printf("\tc <server_number> -- connect with a server.\n");
     printf("\n");
     printf("\tl -- list headers of received E-mails\n");

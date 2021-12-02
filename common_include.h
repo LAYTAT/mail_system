@@ -44,12 +44,12 @@ struct Mail_Header{
         cout << "       mail_id: " << mail_id << endl;
         cout << "       to user: " << to_user_name << endl;
         cout << "       from user: " << from_user_name << endl;
-        cout << "      subject: " << subject << endl;
-        cout << "      sendtime: " << sendtime << endl;
-        cout << "      read state: " << (read_state ? "read" : "unread") << endl;
+        cout << "       subject: " << subject << endl;
+        cout << "       sendtime: " << sendtime << endl;
+        cout << "       read state: " << (read_state ? "read" : "unread") << endl;
     }
     int     server{};
-    string mail_id{};
+    string mail_id;
     char    to_user_name[USER_NAME_LEN];
     char    from_user_name[USER_NAME_LEN];
     char    subject[SUBJECT_LEN];
