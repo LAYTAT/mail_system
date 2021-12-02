@@ -111,6 +111,7 @@ int main(int argc, char * argv[]){
                         rcvd_new_update.timestamp = get_server_timestamp();
                         string mail_id_str_to_be_assign = to_string(server_id) + to_string(rcvd_new_update.timestamp);
                         memcpy(rcvd_new_update.email.header.mail_id, mail_id_str_to_be_assign.c_str(), strlen(mail_id_str_to_be_assign.c_str()));
+                        rcvd_new_update.email.header.mail_id[strlen(mail_id_str_to_be_assign.c_str()) + 1] = 0;
                         cout << "       Server " << server_id
                         << " put on it logicaltime stamp "
                         << rcvd_new_update.timestamp << endl;
