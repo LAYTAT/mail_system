@@ -19,6 +19,7 @@ public:
     // When the user requires the headers of all received emails,
     // we use this function to get the list concerning one user.
     const Email_Box& get_email_box(const string & username) {
+        cout << " get email box of user " << username << endl;
         return user_2_mailbox[username];
     }
 
@@ -38,6 +39,7 @@ public:
     }
 
     vector<Mail_Header> get_header_list(const string & username){
+        cout << " get header list " << endl;
         auto mailbox = get_email_box(username);
         vector<Mail_Header> ret;
         for(auto mid : mailbox) {

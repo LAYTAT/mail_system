@@ -111,7 +111,7 @@ int main(int argc, char * argv[]){
                         rcvd_new_update.timestamp = get_server_timestamp();
                         string mail_id_str_to_be_assign = to_string(server_id) + to_string(rcvd_new_update.timestamp);
                         memcpy(rcvd_new_update.email.header.mail_id, mail_id_str_to_be_assign.c_str(), strlen(mail_id_str_to_be_assign.c_str()));
-                        rcvd_new_update.email.header.mail_id[strlen(mail_id_str_to_be_assign.c_str()) + 1] = 0;
+                        rcvd_new_update.email.header.mail_id[strlen(mail_id_str_to_be_assign.c_str())] = 0; // null character
                         cout << "       Server " << server_id
                         << " put on it logicaltime stamp "
                         << rcvd_new_update.timestamp << endl;
@@ -136,7 +136,7 @@ int main(int argc, char * argv[]){
                     auto headers_to_return = server_state.get_header_list(read_request_user_name_str);
                     header_buf.size = headers_to_return.size();
                     memcpy(header_buf.data, headers_to_return.data(), (sizeof(headers_to_return) + (sizeof(Mail_Header) * headers_to_return.size())));
-                    send_headers_client(read_request_user_name);
+                    send_headers_client(sender_group);
                     break;
                 }
 
@@ -368,6 +368,7 @@ void send_to_client(const char * client) {
 }
 
 void send_headers_client(const char * client) {
+    cout << " send_headers_client " << endl;
     ret = SP_multicast(spread_mbox, AGREED_MESS, client, (short int)Message::TYPE::HEADER, sizeof(Header_List), (const char *)&header_buf);
     memset(&header_buf, 0 , sizeof(Header_List));
 }
