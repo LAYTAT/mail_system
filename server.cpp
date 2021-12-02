@@ -160,6 +160,7 @@ int main(int argc, char * argv[]){
                     cout << "   requested read on mail with mail_id " << ret_update.email.header.mail_id << endl;
                     server_state.update(ret_update, Message::TYPE::READ);
                     memcpy(snd_buf.data, &ret_update.email, sizeof(Email));
+                    snd_buf.type = Message::TYPE::READ;
                     send_to_client(sender_group);
                     break;
                 }
