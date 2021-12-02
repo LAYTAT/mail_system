@@ -203,10 +203,17 @@ void user_command()
                 break;
             }
 
+            if(delete_idx < 0 || delete_idx >= headers.size()) {
+                cout << "please enter the right idx to be delete" << endl;
+                break;
+            }
+
             // TODO: add the request content
             snd_buf.type = Message::TYPE::DELETE;
-            auto delete_mail_id = headers[delete_idx].mail_id;
+            char delete_mail_id[MAX_MAIL_ID_LEN];
+            memcpy(delete_mail_id, headers[delete_idx].mail_id, strlen(headers[delete_idx].mail_id));
             memcpy(snd_buf.data, delete_mail_id, MAX_MAIL_ID_LEN);
+            snd_buf.size = strlen(delete_mail_id);
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
@@ -337,7 +344,7 @@ void response_to_spread(){
                 for(int i = 0; i < headers.size(); i++) {
                     cout << "  " << i << "       "<< headers[i].from_user_name  << "         " <<
                     ((headers[i].read_state) ? "read" : "unread")  << "         " << headers[i].mail_id
-                    << "          " <<headers[i].subject << endl;
+                    << "            " <<headers[i].subject << endl;
                 }
                 // TODO(low level) : sort the viewing order for their actual sending time, use the email.header.sendtime for sorting
                 break;
