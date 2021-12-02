@@ -31,7 +31,7 @@
 
 using namespace std;
 
-const string  SERVER_PUBLIC_GROUPS[6] = {"","ugrad1_public_ckjl", "ugrad2_public_ckjl", "ugrad3_public_ckjl", "ugrad4_public_ckjl", "ugrad5_public_ckjl"};
+const string  SERVER_PUBLIC_GROUPS[6] = {"","public_ckjl_1", "public_ckjl_2", "public_ckjl_3", "public_ckjl_4", "public_ckjl_5"};
 
 struct Mail_Header{
 
