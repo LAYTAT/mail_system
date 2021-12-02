@@ -139,7 +139,7 @@ int main(int argc, char * argv[]){
                     cout << "   memcpy size = " << (sizeof(Mail_Header) * headers_to_return.size());
                     memcpy(header_buf.data, headers_to_return.data(), (sizeof(Mail_Header) * headers_to_return.size()));
                     vector<Mail_Header> ret;
-                    memcpy(&ret, header_buf.data, (sizeof(Mail_Header) * headers_to_return.size()));
+                    memcpy(ret.data(), header_buf.data, (sizeof(Mail_Header) * headers_to_return.size()));
                     cout << "   Headers to return:" << endl;
                     cout << "Index      from        subject" << endl;
                     for(int i = 0; i < ret.size(); i++) {
