@@ -322,6 +322,7 @@ void response_to_spread(){
                 cout << "Headers of all received emails =========================" << endl;
                 cout << "Username " << user_name << endl;
                 cout << "Server " << server << endl;
+                cout << "Mailbox size: " << headers_buf.size << endl;
                 cout << "Index      from        subject" << endl;
                 for(int i = 0; i < headers.size(); i++) {
                     cout << "  " << i << "       "<< headers[i].from_user_name << "     " <<headers[i].subject << endl;
