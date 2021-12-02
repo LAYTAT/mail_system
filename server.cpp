@@ -135,7 +135,7 @@ int main(int argc, char * argv[]){
                     cout << "User " << read_request_user_name << " has request to read his email" << endl;
                     auto headers_to_return = server_state.get_header_list(read_request_user_name_str);
                     header_buf.size = headers_to_return.size();
-                    memcpy(header_buf.data, headers_to_return.data(), (sizeof(headers_to_return) + (sizeof(Mail_Header) * headers_to_return.size())));
+                    memcpy(header_buf.data, headers_to_return.data(), (sizeof(vector<Mail_Header>) + (sizeof(Mail_Header) * headers_to_return.size())));
                     send_headers_client(sender_group);
                     break;
                 }
