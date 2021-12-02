@@ -42,7 +42,7 @@ public:
         cout << " get header list " << endl;
         auto mailbox = get_email_box(username);
         vector<Mail_Header> ret;
-        for(auto mid : mailbox) {
+        for(auto& mid : mailbox) {
             ret.push_back(mail_id_2_email[mid]->get_header());
         }
         return ret;

@@ -132,7 +132,7 @@ int main(int argc, char * argv[]){
                     char read_request_user_name[rcv_buf.size];
                     memcpy(read_request_user_name, rcv_buf.data, rcv_buf.size);
                     string read_request_user_name_str(read_request_user_name);
-                    cout << "User " << read_request_user_name << " has request to read his email" << endl;
+                    cout << "User " << read_request_user_name << " has request to list his email" << endl;
                     auto headers_to_return = server_state.get_header_list(read_request_user_name_str);
                     header_buf.size = headers_to_return.size();
                     cout << "   return list size = " << headers_to_return.size();
