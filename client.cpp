@@ -237,11 +237,12 @@ void user_command()
             // TODO: add the request content
             snd_buf.type = Message::TYPE::READ;
             auto read_mail_id = headers[read_idx].mail_id;
-            memcpy(snd_buf.data, read_mail_id, MAX_MAIL_ID_LEN);
+            snd_buf.size = strlen(read_mail_id);
+            memcpy(snd_buf.data, read_mail_id, strlen(read_mail_id));
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
-            cout << "read email at idx : " << read_idx << " with mail_id" << read_mail_id << endl;
+            cout << "read email at idx : " << read_idx << " with mail_id " << read_mail_id << endl;
 
             break;
         }

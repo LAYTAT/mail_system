@@ -37,7 +37,7 @@ public:
                 break;
             case Message::TYPE::DELETE:
             case Message::TYPE::READ: {
-                string mail_id_str(update.email.header.mail_id, MAX_MAIL_ID_LEN);
+                string mail_id_str(update.email.header.mail_id, strlen(update.email.header.mail_id));
                 update_email(mail_id_str, type);
                 update.email = get_email(mail_id_str);
                 break;
