@@ -297,11 +297,11 @@ void response_to_spread(){
     ret = SP_receive(spread_mbox, &service_type, sender_group, MAX_GROUP_SIZE, &num_groups, target_groups,
                      &mess_type, &endian_mismatch, sizeof(Header_List), (char *) &headers_buf);
     if((Message::TYPE)mess_type == Message::TYPE::HEADER) {
-        cout << "Received: header list." << endl;
+//        cout << "Received: header list." << endl;
         rcv_buf.type =  Message::TYPE::HEADER;
     } else {
         memcpy(&rcv_buf, &headers_buf, sizeof(Message));
-        cout << "Received: normal Message." << endl;
+//        cout << "Received: normal Message." << endl;
     };
     if( ret < 0 )
     {
@@ -331,13 +331,15 @@ void response_to_spread(){
                 // todo: print out list of headers
                 headers.resize(headers_buf.size);
                 memcpy(&headers[0], headers_buf.data, headers_buf.size * sizeof(Mail_Header));
-                cout << "This is you headers of all received emails =========================" << endl;
-                cout << "Username " << user_name << endl;
-                cout << "Server " << server << endl;
-                cout << "Mailbox size: " << headers_buf.size << endl;
-                cout << "index      from        subject         read state      mail_id" << endl;
+                cout << "This is you headers of all received emails:" << endl;
+                cout << "Username:" << user_name << endl;
+                cout << "Server:" << server << endl;
+                cout << "Mailbox size:" << headers_buf.size << endl;
+                cout << "index      from         read state      mail_id        subject" << endl;
                 for(int i = 0; i < headers.size(); i++) {
-                    cout << "  " << i << "       "<< headers[i].from_user_name << "     " <<headers[i].subject << "         " <<  ((headers[i].read_state) ? "read" : "unread")  << "       " << headers[i].mail_id << endl;
+                    cout << "  " << i << "       "<< headers[i].from_user_name  << "         " <<
+                    ((headers[i].read_state) ? "read" : "unread")  << "       " << headers[i].mail_id
+                    << "     " <<headers[i].subject << endl;
                 }
                 // TODO(low level) : sort the viewing order for their actual sending time, use the email.header.sendtime for sorting
                 break;
@@ -361,13 +363,12 @@ void response_to_spread(){
                 // todo: print out the email content
                 Email received_email;
                 memcpy(&received_email, &rcv_buf.data, sizeof(Email));
-                cout << " This is the content of the email at idx:" << read_idx <<" you have requested" << endl;
-                cout << " index      from        subject         read state" << endl;
-                cout << "  " << read_idx << "       "<< received_email.header.from_user_name << "     " <<received_email.header.subject << "         " <<  ((received_email.header.read_state) ? "read" : "unread") << endl;
+                cout << " This is the content of the email at idx:" << read_idx <<" you have requested:" << endl;
+                cout << " index      from        read state         subject" << endl;
+                cout << "  " << read_idx << "       "<< received_email.header.from_user_name  << "         " <<  ((received_email.header.read_state) ? "read  " : "unread") << "     " <<received_email.header.subject << endl;
                 cout << " content: " << endl;
-                cout << " ============================================ "  << endl;
                 cout << received_email.msg_str << endl;
-                cout << " ======================END====================== "  << endl;
+                cout << " ================================================= " << endl;
                 break;
             }
             case Message::TYPE::NEW_EMAIL_SUCCESS: {
@@ -393,13 +394,13 @@ void response_to_spread(){
             }
         if( Is_reg_memb_mess( service_type ) )
         {
-            cout << "Received REGULAR membership for group" << sender_group << "with " << num_groups  <<" members, where I am member " << mess_type << endl;
+//            cout << "Received REGULAR membership for group" << sender_group << "with " << num_groups  <<" members, where I am member " << mess_type << endl;
             if( Is_caused_join_mess( service_type ) )
             {
                 // if server has joined client-server-group, then client and server are connected
                 string joined_member_name_str(memb_info.changed_member);
-                printf("    Due to the JOIN of %s\n", memb_info.changed_member );
-                cout << "       New member: " << joined_member_name_str << " has joined the group " << sender_group << endl;
+//                printf("    Due to the JOIN of %s\n", memb_info.changed_member );
+//                cout << "       New member: " << joined_member_name_str << " has joined the group " << sender_group << endl;
                 if(strcmp(sender_group, client_server_group.c_str()) == 0) {
                     if ( joined_member_name_str.find(server_name) != string::npos) {
                         connected = true;
