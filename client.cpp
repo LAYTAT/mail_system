@@ -22,6 +22,7 @@ Message rcv_buf;
 string  server_name;
 Header_List headers_buf;
 vector<Mail_Header> headers;
+int     read_idx;
 
 void	Bye();
 void    user_command();
@@ -187,6 +188,7 @@ void user_command()
 
 
         case 'd': // delete an email
+        {
             if(!has_user_name) {
                 cout << "please login first" << endl;
                 break;
@@ -205,13 +207,17 @@ void user_command()
 
             // TODO: add the request content
             snd_buf.type = Message::TYPE::DELETE;
+            auto delete_mail_id = headers[delete_idx].mail_id;
+            memcpy(snd_buf.data, delete_mail_id, MAX_MAIL_ID_LEN);
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
-            cout << "delete an email" << endl;
+            cout << "delete an email with email_id " << delete_mail_id <<  " at idx " << delete_idx << endl;
             break;
+        }
 
         case 'r': // read an email
+        {
             if(!has_user_name) {
                 cout << "please login first" << endl;
                 break;
@@ -222,7 +228,7 @@ void user_command()
                 break;
             }
 
-            int read_idx;
+            read_idx;
             if( !(ss >> read_idx) ) {
                 cout << "please enter the read_idx idx." << endl;
                 break;
@@ -230,11 +236,15 @@ void user_command()
 
             // TODO: add the request content
             snd_buf.type = Message::TYPE::READ;
+            auto read_mail_id = headers[read_idx].mail_id;
+            memcpy(snd_buf.data, read_mail_id, MAX_MAIL_ID_LEN);
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
-            cout << "read an email" << endl;
+            cout << "read email at idx : " << read_idx << " with mail_id" << read_mail_id << endl;
+
             break;
+        }
 
         case 'v': // print available servers
             if(!has_user_name) {
@@ -320,14 +330,15 @@ void response_to_spread(){
                 // todo: print out list of headers
                 headers.resize(headers_buf.size);
                 memcpy(&headers[0], headers_buf.data, headers_buf.size * sizeof(Mail_Header));
-                cout << "Headers of all received emails =========================" << endl;
+                cout << "This is you headers of all received emails =========================" << endl;
                 cout << "Username " << user_name << endl;
                 cout << "Server " << server << endl;
                 cout << "Mailbox size: " << headers_buf.size << endl;
-                cout << "Index      from        subject" << endl;
+                cout << "index      from        subject         read state      mail_id" << endl;
                 for(int i = 0; i < headers.size(); i++) {
-                    cout << "  " << i << "       "<< headers[i].from_user_name << "     " <<headers[i].subject << endl;
+                    cout << "  " << i << "       "<< headers[i].from_user_name << "     " <<headers[i].subject << "         " <<  ((headers[i].read_state) ? "read" : "unread")  << "       " << headers[i].mail_id << endl;
                 }
+                // TODO(low level) : sort the viewing order for their actual sending time, use the email.header.sendtime for sorting
                 break;
             }
             case Message::TYPE::MEMBERSHIPS: {
@@ -347,10 +358,24 @@ void response_to_spread(){
                 }
             case Message::TYPE::READ: {
                 // todo: print out the email content
+                Email received_email;
+                memcpy(&received_email, &rcv_buf, sizeof(Email));
+                cout << " This is the content of the email at idx:" << read_idx <<" you have requested" << endl;
+                cout << " index      from        subject         read state" << endl;
+                cout << "  " << read_idx << "       "<< received_email.header.from_user_name << "     " <<received_email.header.subject << "         " <<  ((received_email.header.read_state) ? "read" : "unread") << endl;
+                cout << " content: " << endl;
+                cout << " ============================================ "  << endl;
+                cout << received_email.msg_str << endl;
+                cout << " ======================END====================== "  << endl;
                 break;
             }
             case Message::TYPE::NEW_EMAIL_SUCCESS: {
                 cout << "   Email sending success: You email is sent" << endl;
+                break;
+            };
+
+            case Message::TYPE::DELETE_EMAIL_SUCCESS: {
+                cout << "   Email deletion success: Requested email is deleted" << endl;
                 break;
             };
 
@@ -470,6 +495,7 @@ void variable_init(){
     has_user_name = false;
     spread_connect_timeout.sec = 5;
     spread_connect_timeout.usec = 0;
+    read_idx = -1;
 }
 
 void event_system_bind(){

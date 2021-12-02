@@ -96,7 +96,8 @@ struct Message{
         DELETE,
         NEW_CONNECTION,
         NEW_EMAIL_SUCCESS,
-        HEADER
+        HEADER,
+        DELETE_EMAIL_SUCCESS
     };
     Message::TYPE type;
     char data[MSG_LEN];

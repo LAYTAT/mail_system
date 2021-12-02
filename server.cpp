@@ -112,6 +112,7 @@ int main(int argc, char * argv[]){
                         string mail_id_str_to_be_assign = to_string(server_id) + to_string(rcvd_new_update.timestamp);
                         memcpy(rcvd_new_update.email.header.mail_id, mail_id_str_to_be_assign.c_str(), strlen(mail_id_str_to_be_assign.c_str()));
                         rcvd_new_update.email.header.mail_id[strlen(mail_id_str_to_be_assign.c_str())] = 0; // null character
+                        rcvd_new_update.email.header.sendtime = get_time();
                         cout << "       Server " << server_id
                         << " put on it logicaltime stamp "
                         << rcvd_new_update.timestamp << endl;
@@ -153,15 +154,23 @@ int main(int argc, char * argv[]){
                 case Message::TYPE::READ : { // mark email as read and send back the email content
                     cout << sender_group << " has request a READ." << endl;
                     // TODO: process the request and get the infomations
-                    char read_reques_user_name[rcv_buf.size];
-                    memcpy(read_reques_user_name, rcv_buf.data, rcv_buf.size);
-                    cout << "User " << read_reques_user_name << " has request to read his email" << endl;
+                    Update ret_update;
+                    memcpy(ret_update.email.header.mail_id, snd_buf.data, MAX_MAIL_ID_LEN); //used retrieval
+                    server_state.update(ret_update, Message::TYPE::READ);
+                    memcpy(snd_buf.data, &ret_update.email, sizeof(Email));
+                    send_to_client(sender_group);
                     break;
                 }
 
                 case Message::TYPE::DELETE : { // delete email
                     cout << sender_group << " has request a DELETE." << endl;
-                    // TODO: process the request
+                    // TODO: process the request and get the infomations
+                    string mail_id_str;
+                    mail_id_str.resize(MAX_MAIL_ID_LEN);
+                    memcpy(&mail_id_str[0], snd_buf.data, MAX_MAIL_ID_LEN); //used retrieval
+                    server_state.update(mail_id_str, Message::TYPE::READ);
+                    snd_buf.type = Message::TYPE::DELETE_EMAIL_SUCCESS;
+                    send_to_client(sender_group);
                     break;
                 }
 

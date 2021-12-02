@@ -23,7 +23,13 @@ public:
         return user_2_mailbox[username];
     }
 
-    void update(Update & update, const Message::TYPE type) {
+    void update(const string& mail_id, const Message::TYPE type) {
+        update_email(mail_id, type);
+    }
+
+
+    void update(Update& update, const Message::TYPE type) {
+        // write this update to file
         cout << "       update the state." << endl;
         switch (type) {
             case Message::TYPE::NEW_EMAIL:
@@ -32,11 +38,13 @@ public:
             case Message::TYPE::DELETE:
             case Message::TYPE::READ:
                 update_email(update.email.header.mail_id, type);
+                update.email = get_email(update.email.header.mail_id);
                 break;
             default:
                 cout << " a type is not dealt with " << endl;
                 break;
         }
+        // TODO: send this update to other servers
     }
 
     vector<Mail_Header> get_header_list(const string & username){
@@ -57,18 +65,16 @@ private:
     // When receivs an update, we use this funtion to commit the
     // the change to the state
     void update_email(const string& email_id, const Message::TYPE type) {
-        cout << "Updating the email " << email_id << endl;
+        cout << "   Updating the email " << email_id << endl;
         if(type == Message::TYPE::READ) {
+            cout << "       read email " << email_id << endl;
             assert(mail_id_2_email.count(email_id) == 1);
             mail_id_2_email[email_id]->header.read_state = true;
         } else if(type == Message::TYPE::DELETE) {
+            cout << "       delete email " << email_id << endl;
             mail_id_2_email.erase(email_id);
         }
         // TODO: change to state file
-    }
-
-    shared_ptr<Email> get_email(const string& email_id) {
-        return mail_id_2_email.at(email_id);
     }
 
     //When the user sends a new email to another user,
@@ -84,7 +90,9 @@ private:
         // TODO: change to state file
     }
 
-
+    Email get_email(const string & mail_id) {
+        return *mail_id_2_email[mail_id];
+    }
 
     unordered_map<string, Email_Box> user_2_mailbox;
     unordered_map<string, shared_ptr<Email>> mail_id_2_email;
