@@ -29,7 +29,6 @@
 #define SERVERS_GROUP "SERVERS_GROUP_CKJL"
 #define STATE_FILE_PREFIX "state_file_"
 #define LOG_FILE_PREFIX "log_file_"
-#define DEFAULT_MAIL_ID "default_m_id"
 
 using namespace std;
 
@@ -38,7 +37,6 @@ const string  SERVER_PUBLIC_GROUPS[6] = {"","public_ckjl_1", "public_ckjl_2", "p
 struct Mail_Header{
 
     Mail_Header():
-    mail_id(DEFAULT_MAIL_ID),
     read_state(false)
     {}
     void print(){
