@@ -64,12 +64,12 @@ public:
 
 private:
     void print_mails(){
-        cout << "   Current emails ===========begin" << endl;
-        cout << " mail_id   msg_str" << endl;
+        cout << " =========== Current emails =========== " << endl;
+        cout << " mail_id msg_str" << endl;
         for (const auto & p : mail_id_2_email) {
             cout << p.first  << "   " << p.second->msg_str << endl;
         }
-        cout << "   Current emails ===========end" << endl;
+        cout << " ====================================== " << endl;
     }
     // When receivs an update, we use this funtion to commit the
     // the change to the state

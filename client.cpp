@@ -160,8 +160,6 @@ void user_command()
                 break;
             }
 
-            cout << "write a new email" << endl;
-
             Email new_email;
             cout << "to: <user name>" << endl;
             cout << "to: ";
@@ -364,10 +362,12 @@ void response_to_spread(){
                 Email received_email;
                 memcpy(&received_email, &rcv_buf.data, sizeof(Email));
                 cout << " This is the content of the email at idx:" << read_idx <<" you have requested:" << endl;
-                cout << " index      from        read state         subject" << endl;
-                cout << "  " << read_idx << "       "<< received_email.header.from_user_name  << "         " <<  ((received_email.header.read_state) ? "read  " : "unread") << "     " <<received_email.header.subject << endl;
+                cout << " from        read state         subject" << endl;
+                cout << received_email.header.from_user_name  << "         "
+                <<  ((received_email.header.read_state) ? "read  " : "unread") << "     "
+                <<received_email.header.subject << endl;
                 cout << " content: " << endl;
-                cout << received_email.msg_str << endl;
+                cout << " " << received_email.msg_str << endl;
                 break;
             }
             case Message::TYPE::NEW_EMAIL_SUCCESS: {
@@ -422,21 +422,21 @@ void response_to_spread(){
                 }
             }else if( Is_caused_disconnect_mess( service_type ) ){
                 if(string(memb_info.changed_member) != client_server_group && connected ) {
-                    cout << "   Server has been disconnected " << sender_group << endl;
+                    cout << "Server has been disconnected, please switch to another mail server " << endl;
 //                    cout << "       This server is also leaving group " << sender_group << endl;
                     SP_leave(spread_mbox, sender_group);
                     connected = false;
                 }
 //                printf("    Due to the DISCONNECT of %s\n", memb_info.changed_member );
             } else {
-                cout << "   !!!!Received other type of message, deal with it" << endl;
+                cout << "!!!!Received other type of message, deal with it" << endl;
             }
         }else if( Is_caused_leave_mess( service_type ) ){
 //            printf("    2 received membership message that left group %s\n", sender_group );
             if( sender_group == client_server_group && connected) {
                 connected = false;
                 SP_leave(spread_mbox, client_server_group.c_str());
-                cout << "       The server has crashed or is shut down, please switch to another mail server " << endl;
+                cout << "The server has crashed or is shut down, please switch to another mail server " << endl;
             }
         }else printf("  received incorrecty membership message of type 0x%x\n", service_type );
     } else printf(" received message of unknown message type 0x%x with ret %d\n", service_type, ret);
