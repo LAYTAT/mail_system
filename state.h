@@ -54,6 +54,7 @@ private:
     // When receivs an update, we use this funtion to commit the
     // the change to the state
     void update_email(const string& email_id, const Message::TYPE type) {
+        cout << "Updating the email " << email_id << endl;
         if(type == Message::TYPE::READ) {
             assert(mail_id_2_email.count(email_id) == 1);
             mail_id_2_email[email_id]->header.read_state = true;
@@ -70,6 +71,7 @@ private:
     //When the user sends a new email to another user,
     // add the email to the receiving mailbox of the receiver.
     void new_email(shared_ptr<Email> email_ptr) {
+        cout << "add new email to state." << endl;
         string new_mail_id = email_ptr->header.mail_id;
         mail_id_2_email[new_mail_id] = email_ptr;
         user_2_mailbox[email_ptr->header.to_user_name].insert(new_mail_id);
