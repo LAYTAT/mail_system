@@ -155,6 +155,7 @@ int main(int argc, char * argv[]){
                     cout << sender_group << " has request a READ." << endl;
                     // TODO: process the request and get the infomations
                     Update ret_update;
+                    cout << "   rcv_buf.size = " << rcv_buf.size << endl;
                     memcpy(ret_update.email.header.mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
                     cout << "   requested read on mail with mail_id " << ret_update.email.header.mail_id << endl;
                     server_state.update(ret_update, Message::TYPE::READ);

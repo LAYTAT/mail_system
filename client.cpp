@@ -239,12 +239,11 @@ void user_command()
             char read_mail_id[MAX_MAIL_ID_LEN];
             memcpy(read_mail_id, headers[read_idx].mail_id, strlen(headers[read_idx].mail_id));
             snd_buf.size = strlen(read_mail_id);
+            cout << "   snd_buf.size  = " << snd_buf.size << endl;
             memcpy(snd_buf.data, read_mail_id, strlen(read_mail_id));
+            cout << "   read email at idx : " << read_idx << " with mail_id " << read_mail_id  << " snd_buf.size = " << snd_buf.size  << endl;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
-
-            cout << "read email at idx : " << read_idx << " with mail_id " << read_mail_id  << " snd_buf.size = " << snd_buf.size  << endl;
-
             break;
         }
 
