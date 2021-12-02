@@ -37,6 +37,15 @@ public:
         }
     }
 
+    vector<Mail_Header> get_header_list(const string & username){
+        auto mailbox = get_email_box(username);
+        vector<Mail_Header> ret;
+        for(auto mid : mailbox) {
+            ret.push_back(mail_id_2_email[mid]->get_header());
+        }
+        return ret;
+    }
+
     ~State(){}
 
 
@@ -66,6 +75,7 @@ private:
         user_2_mailbox[email_ptr->header.to_user_name].insert(new_mail_id);
         // TODO: change to state file
     }
+
 
 
     unordered_map<string, Email_Box> user_2_mailbox;

@@ -20,6 +20,8 @@ bool    has_user_name;
 Message snd_buf;
 Message rcv_buf;
 string  server_name;
+Header_List headers_buf;
+vector<Mail_Header> headers;
 
 void	Bye();
 void    user_command();
@@ -282,7 +284,14 @@ void response_to_spread(){
     char                members[MAX_MEMBERS][MAX_GROUP_NAME];
 
     ret = SP_receive(spread_mbox, &service_type, sender_group, MAX_GROUP_SIZE, &num_groups, target_groups,
-                     &mess_type, &endian_mismatch, sizeof(Message), (char *) &rcv_buf);
+                     &mess_type, &endian_mismatch, sizeof(Header_List), (char *) &headers_buf);
+    if((Message::TYPE)mess_type == Message::TYPE::HEADER) {
+        cout << "Received: header list." << endl;
+        rcv_buf.type =  Message::TYPE::HEADER;
+    } else {
+        memcpy(&rcv_buf, &headers_buf, sizeof(Message));
+        cout << "Received: normal Message." << endl;
+    };
     if( ret < 0 )
     {
         if ( (ret == GROUPS_TOO_SHORT) || (ret == BUFFER_TOO_SHORT) ) {
@@ -307,8 +316,17 @@ void response_to_spread(){
     if( Is_regular_mess( service_type ) )
     {
         switch (rcv_buf.type) {
-            case Message::TYPE::LIST: {
+            case Message::TYPE::HEADER: {
                 // todo: print out list of headers
+                headers.resize(headers_buf.size);
+                memcpy(&headers, headers_buf.data, sizeof(headers) + (sizeof(Mail_Header) * headers_buf.size));
+                cout << "Headers of all received emails =========================" << endl;
+                cout << "Username " << user_name << endl;
+                cout << "Server " << server << endl;
+                cout << "Index      from        subject" << endl;
+                for(int i = 0; i < headers.size(); i++) {
+                    cout << "  " << i << "       "<< headers[i].from_user_name << "     " <<headers[i].subject << endl;
+                }
                 break;
             }
             case Message::TYPE::MEMBERSHIPS: {

@@ -66,6 +66,9 @@ struct Email{
         header.print();
         cout << "       Content: " << msg_str << endl;
     }
+    Mail_Header get_header(){
+        return header;
+    }
     char msg_str[EMAIL_CONTENT_LEN];
 };
 
@@ -89,7 +92,8 @@ struct Message{
         NEW_EMAIL,
         DELETE,
         NEW_CONNECTION,
-        NEW_EMAIL_SUCCESS
+        NEW_EMAIL_SUCCESS,
+        HEADER
     };
     Message::TYPE type;
     char data[MSG_LEN];
@@ -101,5 +105,10 @@ long int get_time(){
     gettimeofday(&t, nullptr);
     return (t.tv_sec * 1000000L +t.tv_usec);
 }
+
+struct Header_List {
+    int size;
+    char data[MAX_MESSLEN - 4];
+};
 
 #endif //MAIL_SYSTEM_COMMON_INCLUDE_H
