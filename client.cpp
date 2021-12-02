@@ -159,7 +159,6 @@ void user_command()
             }
 
             cout << "write a new email" << endl;
-            // TODO: add the request content
 
             Email new_email;
             cout << "to: <user name>" << endl;
