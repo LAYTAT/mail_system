@@ -109,6 +109,8 @@ int main(int argc, char * argv[]){
                     if(rcvd_new_update.server_id == -1) {
                         rcvd_new_update.server_id = server_id;
                         rcvd_new_update.timestamp = get_server_timestamp();
+                        string mail_id_str_to_be_assign = to_string(server_id) + to_string(rcvd_new_update.timestamp);
+                        rcvd_new_update.email.header.mail_id = mail_id_str_to_be_assign;
                         cout << "       Server " << server_id
                         << " put on it logicaltime stamp "
                         << rcvd_new_update.timestamp << endl;

@@ -14,7 +14,7 @@ public:
 
     // add an update to the log file
     void add_to_log(shared_ptr<Update> update) {
-        cout << "Adding update to the log" << endl;
+        cout << "   Adding update to the log" << endl;
         server_2_updates[update->server_id].push_back(update);
         //TODO: add to file
     }
