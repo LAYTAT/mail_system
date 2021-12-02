@@ -123,6 +123,9 @@ int main(int argc, char * argv[]){
                 case Message::TYPE::LIST : { // send back headers for a user
                     cout << sender_group << " has request a LIST." << endl;
                     // TODO: process the request and get the infomations
+                    char read_reques_user_name[rcv_buf.size];
+                    memcpy(read_reques_user_name, rcv_buf.data, rcv_buf.size);
+                    cout << "User " << read_reques_user_name << " has request to read his email" << endl;
                     break;
                 }
 
