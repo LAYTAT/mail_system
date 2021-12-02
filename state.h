@@ -63,10 +63,18 @@ public:
 
 
 private:
-
+    void print_mails(){
+        cout << "   Current emails ===========begin" << endl;
+        cout << " mail_id   msg_str";
+        for (const auto & p : mail_id_2_email) {
+            cout << p.first  << "   " << p.second->msg_str << endl;
+        }
+        cout << "   Current emails ===========end" << endl;
+    }
     // When receivs an update, we use this funtion to commit the
     // the change to the state
     void update_email(const string& email_id, const Message::TYPE type) {
+        print_mails();
         cout << "   Updating the email " << email_id << endl;
         if(type == Message::TYPE::READ) {
             cout << "       read email " << email_id << endl;
@@ -76,6 +84,7 @@ private:
             cout << "       delete email " << email_id << endl;
             mail_id_2_email.erase(email_id);
         }
+        print_mails();
         // TODO: change to state file
     }
 
