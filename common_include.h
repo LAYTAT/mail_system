@@ -24,6 +24,7 @@
 #define MAX_MEMBERS     (100)
 #define MAX_VSSETS      (10)
 #define TOTAL_SERVER_NUMBER (5)
+#define MAX_MAIL_ID_LEN  (20)
 #define SERVER_USER_NAME_FOR_SPREAD "SVR_CKJL"
 #define SERVERS_GROUP "SERVERS_GROUP_CKJL"
 #define STATE_FILE_PREFIX "state_file_"
@@ -49,7 +50,7 @@ struct Mail_Header{
         cout << "       read state: " << (read_state ? "read" : "unread") << endl;
     }
     int     server{};
-    string mail_id;
+    char    mail_id[MAX_MAIL_ID_LEN];
     char    to_user_name[USER_NAME_LEN];
     char    from_user_name[USER_NAME_LEN];
     char    subject[SUBJECT_LEN];
