@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include "knowledge.h"
 #include "log.h"
+#include <memory>
 
 using namespace std;
 

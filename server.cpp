@@ -29,6 +29,9 @@ unsigned int     my_vsset_index;
 int      num_vs_sets;
 char     members[MAX_MEMBERS][MAX_GROUP_NAME];
 string  servers_group_str(SERVERS_GROUP);
+State   server_state;
+Log     server_log;
+int64_t server_timestamp;
 
 // functions
 void process_client_request();
@@ -42,6 +45,7 @@ void variable_init();
 void create_server_public_group();
 void join_servers_group();
 void send_to_client(const char * client);
+int64_t get_server_timestamp();
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
@@ -97,6 +101,22 @@ int main(int argc, char * argv[]){
                     Update rcvd_new_update;
                     memcpy(&rcvd_new_update, rcv_buf.data, sizeof(Update));
                     rcvd_new_update.email.print();
+
+                    // if this server is the one to receive this update first
+                    // put on server time stamp
+                    if(rcvd_new_update.server_id == -1) {
+                        rcvd_new_update.server_id = server_id;
+                        rcvd_new_update.timestamp = get_server_timestamp();
+                        cout << "       Server " << server_id
+                        << " put on it logicaltime stamp "
+                        << rcvd_new_update.timestamp << endl;
+                    }
+
+                    // add update to log and email to state
+                    server_log.add_to_log(make_shared<Update>(rcvd_new_update));
+                    server_state.update(rcvd_new_update, Message::TYPE::NEW_EMAIL);
+
+                    send_to_client(sender_group);
                     break;
                 }
 
@@ -109,6 +129,9 @@ int main(int argc, char * argv[]){
                 case Message::TYPE::READ : { // mark email as read and send back the email content
                     cout << sender_group << " has request a READ." << endl;
                     // TODO: process the request and get the infomations
+                    char read_reques_user_name[rcv_buf.size];
+                    memcpy(read_reques_user_name, rcv_buf.data, rcv_buf.size);
+                    cout << "User " << read_reques_user_name << " has request to read his email" << endl;
                     break;
                 }
 
@@ -311,6 +334,7 @@ void variable_init(){
     service_type = 0;
     spread_connect_timeout.sec = 5;
     spread_connect_timeout.usec = 0;
+    server_timestamp = 0;
 }
 
 void create_server_public_group(){
@@ -327,4 +351,9 @@ void join_servers_group(){
 void send_to_client(const char * client) {
     ret = SP_multicast(spread_mbox, AGREED_MESS, client, (short int)snd_buf.type, sizeof(Message), (const char *)&snd_buf);
     memset(&snd_buf, 0 , sizeof(Message));
+}
+
+int64_t get_server_timestamp(){
+    server_timestamp++;
+    return server_timestamp;
 }

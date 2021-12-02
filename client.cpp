@@ -136,8 +136,9 @@ void user_command()
                 cout << "Client has not connected to server " << endl;
                 break;
             }
-            // TODO: add the request content
             snd_buf.type = Message::TYPE::LIST;
+            memcpy(snd_buf.data, user_name, strlen(user_name));
+            snd_buf.size = strlen(user_name);
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
@@ -161,14 +162,14 @@ void user_command()
             Email new_email;
             cout << "to: <user name>" << endl;
             cout << "to: ";
-            cin.getline(new_email.header.user_name, USER_NAME_LEN);
+            cin.getline(new_email.header.to_user_name, USER_NAME_LEN);
             cout << "subject: <subject string>" << endl;
             cout << "subject: ";
             cin.getline(new_email.header.subject, SUBJECT_LEN);
             cout << "mail content: <content string>" << endl;
             cout << "mail content: ";
             cin.getline(new_email.msg_str, EMAIL_CONTENT_LEN);
-            memcpy(new_email.header.sender_name, user_name, strlen(user_name));
+            memcpy(new_email.header.from_user_name, user_name, strlen(user_name));
             new_email.header.sendtime = get_time();
             Update new_update;
             new_update.email = new_email;
@@ -193,6 +194,13 @@ void user_command()
                 cout << "Client has not connected to server " << endl;
                 break;
             }
+
+            int delete_idx;
+            if( !(ss >> delete_idx) ) {
+                cout << "please enter the delete idx." << endl;
+                break;
+            }
+
             // TODO: add the request content
             snd_buf.type = Message::TYPE::DELETE;
             send_to_server();
@@ -211,6 +219,13 @@ void user_command()
                 cout << "Client has not connected to server " << endl;
                 break;
             }
+
+            int read_idx;
+            if( !(ss >> read_idx) ) {
+                cout << "please enter the read_idx idx." << endl;
+                break;
+            }
+
             // TODO: add the request content
             snd_buf.type = Message::TYPE::READ;
             send_to_server();
@@ -298,11 +313,11 @@ void response_to_spread(){
             }
             case Message::TYPE::MEMBERSHIPS: {
                 // todo: print out the servers
-                cout << "received membership reply from server " << endl;
+                cout << "   received membership reply from server " << endl;
                 char rcvd[rcv_buf.size];
                 memcpy(rcvd, rcv_buf.data, rcv_buf.size);
                 string rcvd_str(rcvd);
-                cout << "   These are the mail servers in the current mail server's network component: " << endl;
+                cout << "       These are the mail servers in the current mail server's network component: " << endl;
                 for(int server_idx = 1; server_idx < rcvd_str.size(); server_idx++) {
                     if(rcvd_str[server_idx] == '1') {
                         cout << "       " << server_idx << endl;
@@ -315,8 +330,13 @@ void response_to_spread(){
                 // todo: print out the email content
                 break;
             }
+            case Message::TYPE::NEW_EMAIL_SUCCESS: {
+                cout << "   Email sending success: You email is sent" << endl;
+                break;
+            };
+
             default:
-                cout << "wrong type of reponse message from the server." << endl;
+                cout << "from the server: Unprocessed type." << endl;
                 break;
         }
     } else if (Is_membership_mess( service_type)){
@@ -384,7 +404,7 @@ void show_menu(){
     printf("Email Client Menu:\n");
     printf("----------\n");
     printf("\n");
-    printf("\tu <user_name> -- login with a user name.\n");
+    printf("\tu <to_user_name> -- login with a user name.\n");
     printf("\tc <server_number> -- connect with a server.\n");
     printf("\n");
     printf("\tl -- list headers of received E-mails\n");

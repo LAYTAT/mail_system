@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 #include <sys/time.h>
+#include <unordered_set>
 
 #define SUBJECT_LEN (128)
 #define MSG_LEN (1300)
@@ -38,22 +39,26 @@ struct Mail_Header{
     {}
     void print(){
         cout << "       mail_id: " << mail_id << endl;
-        cout << "       to user: " << user_name << endl;
-        cout << "       from user: " << sender_name << endl;
+        cout << "       to user: " << to_user_name << endl;
+        cout << "       from user: " << from_user_name << endl;
         cout << "      subject: " << subject << endl;
         cout << "      sendtime: " << sendtime << endl;
         cout << "      read state: " << (read_state ? "read" : "unread") << endl;
     }
     int     server{};
-    int64_t mail_id{};
-    char    user_name[USER_NAME_LEN];
-    char    sender_name[USER_NAME_LEN];
+    string mail_id{};
+    char    to_user_name[USER_NAME_LEN];
+    char    from_user_name[USER_NAME_LEN];
     char    subject[SUBJECT_LEN];
     bool    read_state;
     long int sendtime;
 };
 
 struct Email{
+
+    Email() = default;
+    Email(Email&) = default;
+
     Mail_Header header;
     void print(){
         cout << "   This is the email:";
@@ -63,20 +68,13 @@ struct Email{
     char msg_str[EMAIL_CONTENT_LEN];
 };
 
-using Emails = vector<shared_ptr<Email>> ;
-struct Email_Box{
-    explicit Email_Box(vector<shared_ptr<Email>> & emails_vec): emails(emails_vec){}
-    Email_Box(const Email_Box&) = delete;
-    Email_Box& operator=(const Email_Box &) = delete;
-    ~Email_Box()= default;
-    Emails emails;
-};
+using Email_Box = unordered_set<string>;
 
 struct Update{
-    Update(): email() {}
+    Update() = default;
     ~Update()= default;
-    int server_id{};
-    int timestamp{};
+    int server_id{-1};
+    int64_t timestamp{};
     int mail_id{};
     Email email;
 };
@@ -89,7 +87,8 @@ struct Message{
         READ,
         NEW_EMAIL,
         DELETE,
-        NEW_CONNECTION
+        NEW_CONNECTION,
+        NEW_EMAIL_SUCCESS
     };
     Message::TYPE type;
     char data[MSG_LEN];
