@@ -36,10 +36,12 @@ public:
                 new_email(make_shared<Email>(update.email));
                 break;
             case Message::TYPE::DELETE:
-            case Message::TYPE::READ:
-                update_email(update.email.header.mail_id, type);
+            case Message::TYPE::READ: {
+                string mail_id_str(update.email.header.mail_id, MAX_MAIL_ID_LEN);
+                update_email(mail_id_str, type);
                 update.email = get_email(update.email.header.mail_id);
                 break;
+            }
             default:
                 cout << " a type is not dealt with " << endl;
                 break;
