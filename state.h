@@ -75,9 +75,9 @@ private:
         string new_mail_id = email_ptr->header.mail_id;
         cout << "       new_mail_id = " << new_mail_id << endl;
         mail_id_2_email[new_mail_id] = email_ptr;
-        string mail_id(email_ptr->header.to_user_name);
-        cout << "       mail_id = " << mail_id << endl;
-        user_2_mailbox[mail_id].insert(new_mail_id);
+        string user_name(email_ptr->header.to_user_name);
+        cout << "       user_name = " << user_name << endl;
+        user_2_mailbox[user_name].insert(new_mail_id);
         // TODO: change to state file
     }
 
