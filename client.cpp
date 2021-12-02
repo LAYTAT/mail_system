@@ -236,7 +236,8 @@ void user_command()
 
             // TODO: add the request content
             snd_buf.type = Message::TYPE::READ;
-            auto read_mail_id = headers[read_idx].mail_id;
+            char read_mail_id[MAX_MAIL_ID_LEN];
+            memcpy(read_mail_id, headers[read_idx].mail_id, strlen(headers[read_idx].mail_id));
             snd_buf.size = strlen(read_mail_id);
             memcpy(snd_buf.data, read_mail_id, strlen(read_mail_id));
             send_to_server();
