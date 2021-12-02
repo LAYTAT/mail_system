@@ -136,8 +136,15 @@ int main(int argc, char * argv[]){
                     auto headers_to_return = server_state.get_header_list(read_request_user_name_str);
                     header_buf.size = headers_to_return.size();
                     cout << "   return list size = " << headers_to_return.size();
-                    cout << "   memcpy size = " << (sizeof(vector<Mail_Header>) + (sizeof(Mail_Header) * headers_to_return.size()));
+                    cout << "   memcpy size = " << (sizeof(Mail_Header) * headers_to_return.size());
                     memcpy(header_buf.data, headers_to_return.data(), (sizeof(Mail_Header) * headers_to_return.size()));
+                    vector<Mail_Header> ret;
+                    memcpy(&ret, header_buf.data, (sizeof(Mail_Header) * headers_to_return.size()));
+                    cout << "   Headers to return:" << endl;
+                    cout << "Index      from        subject" << endl;
+                    for(int i = 0; i < ret.size(); i++) {
+                        cout << "  " << i << "       "<< ret[i].from_user_name << "     " <<ret[i].subject << endl;
+                    }
                     send_headers_client(sender_group);
                     break;
                 }
