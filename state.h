@@ -12,7 +12,7 @@ class State{
 public:
     State(const State&) = delete;
     State& operator=(const State &) = delete;
-    State(){
+    State():user_2_mailbox(), mail_id_2_email(){
         // TODO: read the state from the file
     }
 
