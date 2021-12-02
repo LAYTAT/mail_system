@@ -176,8 +176,8 @@ void user_command()
             new_update.email = new_email;
             memcpy(snd_buf.data, &new_update, sizeof(Update));
             snd_buf.type = Message::TYPE::NEW_EMAIL;
-            cout << "Before sending :" << endl;
-            new_update.email.print();
+//            cout << "Before sending :" << endl;
+//            new_update.email.print();
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
@@ -364,7 +364,7 @@ void response_to_spread(){
                 cout << " This is the content of the email at idx:" << read_idx <<" you have requested:" << endl;
                 cout << " from        read state         subject" << endl;
                 cout << received_email.header.from_user_name  << "         "
-                <<  ((received_email.header.read_state) ? "read  " : "unread") << "     "
+                <<  ((received_email.header.read_state) ? "read  " : "unread") << "             "
                 <<received_email.header.subject << endl;
                 cout << " content: " << endl;
                 cout << " " << received_email.msg_str << endl;
@@ -403,10 +403,11 @@ void response_to_spread(){
                 if(strcmp(sender_group, client_server_group.c_str()) == 0) {
                     if ( joined_member_name_str.find(server_name) != string::npos) {
                         connected = true;
-                        cout << "       connected to server " << endl;
-                    } else if (joined_member_name_str.find(spread_user)) {
-                        cout << "       Current client joined the group" << endl;
+                        cout << "connected to server:" << server << endl;
                     }
+//                    else if (joined_member_name_str.find(spread_user)) {
+//                        cout << "Current client joined the group" << endl;
+//                    }
 
                 } else {
                     cout << "Some strange member has joined the group " << sender_group << endl;

@@ -51,7 +51,7 @@ public:
 
     vector<Mail_Header> get_header_list(const string & username){
         cout << " get header list for user " << username << endl;
-        auto mailbox = get_email_box(username);
+        const auto& mailbox = get_email_box(username);
         vector<Mail_Header> ret;
         for(auto& mid : mailbox) {
             ret.push_back(mail_id_2_email[mid]->get_header());
@@ -65,14 +65,14 @@ public:
 private:
     void print_mails(){
         cout << " =========== Current emails =========== " << endl;
-        cout << " mail_id msg_str" << endl;
+        cout << " mail_id     from    read     send time" << endl;
         for (const auto & p : mail_id_2_email) {
-            cout << p.first  << "   " << p.second->msg_str << endl;
+            cout << p.first  << "    " << p.second->header.from_user_name << "    "
+            << p.second->header.read_state << "   " << p.second->header.sendtime << endl;
         }
         cout << " ====================================== " << endl;
     }
-    // When receivs an update, we use this funtion to commit the
-    // the change to the state
+
     void update_email(const string& email_id, const Message::TYPE type) {
         print_mails();
         cout << "   Updating the email " << email_id << endl;
@@ -82,8 +82,8 @@ private:
             mail_id_2_email[email_id]->header.read_state = true;
         } else if(type == Message::TYPE::DELETE) {
             cout << "       delete email " << email_id << endl;
-            assert(mail_id_2_email.count(email_id) != 0);
-            assert(user_2_mailbox.count(mail_id_2_email[email_id]->header.to_user_name) != 0);
+            assert(mail_id_2_email.count(email_id) == 1);
+            assert(user_2_mailbox.count(mail_id_2_email[email_id]->header.to_user_name) == 1);
             user_2_mailbox[mail_id_2_email[email_id]->header.to_user_name].erase(email_id);
             mail_id_2_email.erase(email_id);
         }
@@ -91,8 +91,6 @@ private:
         // TODO: change to state file
     }
 
-    //When the user sends a new email to another user,
-    // add the email to the receiving mailbox of the receiver.
     void new_email(shared_ptr<Email> email_ptr) {
         cout << "   add new email to state." << endl;
         string new_mail_id(email_ptr->header.mail_id, strlen(email_ptr->header.mail_id));
