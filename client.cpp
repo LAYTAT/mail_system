@@ -319,7 +319,7 @@ void response_to_spread(){
             case Message::TYPE::HEADER: {
                 // todo: print out list of headers
                 headers.resize(headers_buf.size);
-                memcpy(headers.data(), headers_buf.data, sizeof(Mail_Header) * headers_buf.size);
+                memcpy(&headers[0], headers_buf.data, headers_buf.size * sizeof(Mail_Header));
                 cout << "Headers of all received emails =========================" << endl;
                 cout << "Username " << user_name << endl;
                 cout << "Server " << server << endl;

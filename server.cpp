@@ -23,7 +23,7 @@ int16_t mess_type;
 int     endian_mismatch;
 Message rcv_buf;
 Message snd_buf;
-Header_List header_buf;
+Header_List header_snd_buf;
 membership_info  memb_info;
 vs_set_info      vssets[MAX_VSSETS];
 unsigned int     my_vsset_index;
@@ -131,15 +131,15 @@ int main(int argc, char * argv[]){
                     // TODO: process the request and get the infomations
                     char read_request_user_name[rcv_buf.size];
                     memcpy(read_request_user_name, rcv_buf.data, rcv_buf.size);
-                    string read_request_user_name_str(read_request_user_name);
+                    string read_request_user_name_str(read_request_user_name, rcv_buf.size);
                     cout << "User " << read_request_user_name << " has request to list his email" << endl;
                     auto headers_to_return = server_state.get_header_list(read_request_user_name_str);
-                    header_buf.size = headers_to_return.size();
+                    header_snd_buf.size = headers_to_return.size();
                     cout << "   return list size = " << headers_to_return.size();
                     cout << "   memcpy size = " << (sizeof(Mail_Header) * headers_to_return.size());
-                    memcpy(header_buf.data, headers_to_return.data(), (sizeof(Mail_Header) * headers_to_return.size()));
+                    memcpy(header_snd_buf.data, headers_to_return.data(), (sizeof(Mail_Header) * headers_to_return.size()));
                     vector<Mail_Header> ret;
-                    memcpy(ret.data(), header_buf.data, (sizeof(Mail_Header) * headers_to_return.size()));
+                    memcpy(&ret[0], header_snd_buf.data, header_snd_buf.size * sizeof(Mail_Header));
                     cout << "   Headers to return:" << endl;
                     cout << "Index      from        subject" << endl;
                     for(int i = 0; i < ret.size(); i++) {
@@ -377,9 +377,9 @@ void send_to_client(const char * client) {
 }
 
 void send_headers_client(const char * client) {
-    cout << " send_headers_client " << endl;
-    ret = SP_multicast(spread_mbox, AGREED_MESS, client, (short int)Message::TYPE::HEADER, sizeof(Header_List), (const char *)&header_buf);
-    memset(&header_buf, 0 , sizeof(Header_List));
+    cout << " sending the headers to the client " << endl;
+    ret = SP_multicast(spread_mbox, AGREED_MESS, client, (short int)Message::TYPE::HEADER, sizeof(Header_List), (const char *)&header_snd_buf);
+    memset(&header_snd_buf, 0 , sizeof(Header_List));
 }
 
 int64_t get_server_timestamp(){
