@@ -156,6 +156,7 @@ int main(int argc, char * argv[]){
                     // TODO: process the request and get the infomations
                     Update ret_update;
                     memcpy(ret_update.email.header.mail_id, snd_buf.data, MAX_MAIL_ID_LEN); //used retrieval
+                    cout << "   requested read on mail with mail_id " << ret_update.email.header.mail_id << endl;
                     server_state.update(ret_update, Message::TYPE::READ);
                     memcpy(snd_buf.data, &ret_update.email, sizeof(Email));
                     send_to_client(sender_group);

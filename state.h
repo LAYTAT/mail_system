@@ -39,7 +39,7 @@ public:
             case Message::TYPE::READ: {
                 string mail_id_str(update.email.header.mail_id, MAX_MAIL_ID_LEN);
                 update_email(mail_id_str, type);
-                update.email = get_email(update.email.header.mail_id);
+                update.email = get_email(mail_id_str);
                 break;
             }
             default:
