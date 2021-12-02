@@ -82,6 +82,8 @@ private:
             mail_id_2_email[email_id]->header.read_state = true;
         } else if(type == Message::TYPE::DELETE) {
             cout << "       delete email " << email_id << endl;
+            assert(mail_id_2_email.count(email_id) == 1);
+            assert(user_2_mailbox.count(mail_id_2_email[email_id]->header.to_user_name));
             user_2_mailbox[mail_id_2_email[email_id]->header.to_user_name].erase(email_id);
             mail_id_2_email.erase(email_id);
         }
