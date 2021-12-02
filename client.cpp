@@ -242,7 +242,7 @@ void user_command()
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
-            cout << "read email at idx : " << read_idx << " with mail_id " << read_mail_id << endl;
+            cout << "read email at idx : " << read_idx << " with mail_id " << read_mail_id  << " snd_buf.size = " << snd_buf.size  << endl;
 
             break;
         }

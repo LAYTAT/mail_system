@@ -168,7 +168,7 @@ int main(int argc, char * argv[]){
                     // TODO: process the request and get the infomations
                     string mail_id_str;
                     mail_id_str.resize(MAX_MAIL_ID_LEN);
-                    memcpy(&mail_id_str[0], snd_buf.data, MAX_MAIL_ID_LEN); //used retrieval
+                    memcpy(&mail_id_str[0], rcv_buf.data, MAX_MAIL_ID_LEN); //used retrieval
                     cout << "   requested deletion on mail with mail_id: " << mail_id_str << endl;
                     server_state.update(mail_id_str, Message::TYPE::READ);
                     snd_buf.type = Message::TYPE::DELETE_EMAIL_SUCCESS;
