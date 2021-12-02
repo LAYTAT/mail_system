@@ -82,6 +82,7 @@ private:
             mail_id_2_email[email_id]->header.read_state = true;
         } else if(type == Message::TYPE::DELETE) {
             cout << "       delete email " << email_id << endl;
+            user_2_mailbox[mail_id_2_email[email_id]->header.to_user_name].erase(email_id);
             mail_id_2_email.erase(email_id);
         }
         print_mails();
