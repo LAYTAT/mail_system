@@ -71,10 +71,13 @@ private:
     //When the user sends a new email to another user,
     // add the email to the receiving mailbox of the receiver.
     void new_email(shared_ptr<Email> email_ptr) {
-        cout << "add new email to state." << endl;
+        cout << "   add new email to state." << endl;
         string new_mail_id = email_ptr->header.mail_id;
+        cout << "       new_mail_id = " << new_mail_id << endl;
         mail_id_2_email[new_mail_id] = email_ptr;
-        user_2_mailbox[email_ptr->header.to_user_name].insert(new_mail_id);
+        string mail_id(email_ptr->header.to_user_name);
+        cout << "       mail_id = " << mail_id << endl;
+        user_2_mailbox[mail_id].insert(new_mail_id);
         // TODO: change to state file
     }
 
