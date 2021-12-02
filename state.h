@@ -24,6 +24,7 @@ public:
     }
 
     void update(Update & update, const Message::TYPE type) {
+        cout << "       update the state." << endl;
         switch (type) {
             case Message::TYPE::NEW_EMAIL:
                 new_email(make_shared<Email>(update.email));
@@ -39,7 +40,7 @@ public:
     }
 
     vector<Mail_Header> get_header_list(const string & username){
-        cout << " get header list " << endl;
+        cout << " get header list for user " << username << endl;
         auto mailbox = get_email_box(username);
         vector<Mail_Header> ret;
         for(auto& mid : mailbox) {

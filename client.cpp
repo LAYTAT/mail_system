@@ -141,6 +141,7 @@ void user_command()
             snd_buf.type = Message::TYPE::LIST;
             memcpy(snd_buf.data, user_name, strlen(user_name));
             snd_buf.size = strlen(user_name);
+            cout << "Sending username:" << snd_buf.data << " for emails list." << endl;
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
