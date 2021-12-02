@@ -121,6 +121,7 @@ int main(int argc, char * argv[]){
                     server_log.add_to_log(make_shared<Update>(rcvd_new_update));
                     server_state.update(rcvd_new_update, Message::TYPE::NEW_EMAIL);
 
+                    snd_buf.type = Message::TYPE::NEW_EMAIL_SUCCESS;
                     send_to_client(sender_group);
                     break;
                 }
