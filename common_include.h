@@ -10,6 +10,7 @@
 #include <vector>
 #include <sys/time.h>
 #include <unordered_set>
+#include <cassert>
 
 #define SUBJECT_LEN (128)
 #define MSG_LEN (1300)
