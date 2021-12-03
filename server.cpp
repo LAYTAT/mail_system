@@ -35,10 +35,7 @@ Log     server_log;
 int64_t server_timestamp;
 
 // functions
-void process_client_request();
 void reconcile();
-void update_knowledge();
-void stamp_on_sending_buffer();
 void connect_to_spread();
 void Bye();
 bool command_input_check(int , char * []);
@@ -97,9 +94,7 @@ int main(int argc, char * argv[]){
 
                 case Message::TYPE::NEW_EMAIL: { // add a new email in one user's mailbox and send this update to other servers
                     cout << sender_group << " has request a NEW_EMAIL." << endl;
-                    // TODO: process the request
 
-                    // TODO: store update to file
                     Update rcvd_new_update;
                     memcpy(&rcvd_new_update, rcv_buf.data, sizeof(Update));
                     rcvd_new_update.email.print();
@@ -129,7 +124,6 @@ int main(int argc, char * argv[]){
 
                 case Message::TYPE::LIST : { // send back headers for a user
                     cout << sender_group << " has request a LIST." << endl;
-                    // TODO: process the request and get the infomations
                     char read_request_user_name[rcv_buf.size];
                     memcpy(read_request_user_name, rcv_buf.data, rcv_buf.size);
                     string read_request_user_name_str(read_request_user_name, rcv_buf.size);
@@ -153,7 +147,6 @@ int main(int argc, char * argv[]){
 
                 case Message::TYPE::READ : { // mark email as read and send back the email content
                     cout << sender_group << " has request a READ." << endl;
-                    // TODO: process the request and get the infomations
                     Update ret_update;
                     cout << "   rcv_buf.size = " << rcv_buf.size << endl;
                     memcpy(ret_update.email.header.mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
@@ -167,7 +160,6 @@ int main(int argc, char * argv[]){
 
                 case Message::TYPE::DELETE : { // delete email
                     cout << sender_group << " has request a DELETE." << endl;
-                    // TODO: process the request and get the infomations
                     string mail_id_str;
                     mail_id_str.resize(rcv_buf.size);
                     memcpy(&mail_id_str[0], rcv_buf.data, rcv_buf.size); //used retrieval
@@ -308,20 +300,8 @@ int main(int argc, char * argv[]){
     return 0;
 }
 
-void process_client_request(){
-    //TODO
-}
-
 void reconcile(){
     cout << "reconciling!" << endl;
-    //TODO
-}
-
-void update_knowledge(){
-    //TODO: after updates delete unneeded updates
-}
-
-void stamp_on_sending_buffer(){
     //TODO
 }
 
@@ -375,7 +355,6 @@ void variable_init(){
 }
 
 void create_server_public_group(){
-    //TODO: server create a public group with just itself in it.
     ret = SP_join( spread_mbox,  SERVER_PUBLIC_GROUPS[server_id].c_str());
     if( ret < 0 ) SP_error( ret );
 }

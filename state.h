@@ -7,7 +7,6 @@
 #include "common_include.h"
 #include "knowledge.h"
 
-// TODO: finish State class implementation
 class State{
 public:
     State(const State&) = delete;

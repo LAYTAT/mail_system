@@ -112,7 +112,6 @@ void user_command()
             cout << "join with client_server_group: " << client_server_group << endl;
             ret = SP_join( spread_mbox,  client_server_group.c_str());
             if( ret < 0 ) SP_error( ret );
-            // TODO: send this client-server-group to the server
             snd_buf.type = Message::TYPE::NEW_CONNECTION;
             snd_buf.size = strlen(client_server_group.c_str());
             memcpy(&snd_buf.data, client_server_group.c_str(), strlen(client_server_group.c_str())); //email:   client_server_group + spread_private_group
@@ -204,11 +203,10 @@ void user_command()
             }
 
             if(delete_idx < 0 || delete_idx >= headers.size()) {
-                cout << "please enter the right idx to be delete" << endl;
+                cout << "please enter the right idx to be deleted" << endl;
                 break;
             }
 
-            // TODO: add the request content
             snd_buf.type = Message::TYPE::DELETE;
             char delete_mail_id[MAX_MAIL_ID_LEN];
             memcpy(delete_mail_id, headers[delete_idx].mail_id, strlen(headers[delete_idx].mail_id));
@@ -239,7 +237,6 @@ void user_command()
                 break;
             }
 
-            // TODO: add the request content
             snd_buf.type = Message::TYPE::READ;
             char read_mail_id[MAX_MAIL_ID_LEN];
             memcpy(read_mail_id, headers[read_idx].mail_id, strlen(headers[read_idx].mail_id));
@@ -346,11 +343,10 @@ void response_to_spread(){
                     ((headers[i].read_state) ? "read" : "unread")  << "         " << headers[i].mail_id
                     << "            " <<headers[i].subject << endl;
                 }
-                // TODO(low level) : sort the viewing order for their actual sending time, use the email.header.sendtime for sorting
+                // TODO(low priority) : sort the viewing order for their actual sending time, use the email.header.sendtime for sorting
                 break;
             }
             case Message::TYPE::MEMBERSHIPS: {
-                // todo: print out the servers
                 cout << "   received membership reply from server " << endl;
                 char rcvd[rcv_buf.size];
                 memcpy(rcvd, rcv_buf.data, rcv_buf.size);
@@ -426,7 +422,6 @@ void response_to_spread(){
                     connected = false;
                     SP_leave(spread_mbox, client_server_group.c_str());
                     cout << "The server has crashed or caused by network, please switch to another mail server " << endl;
-                    // TODO: connected = false
                 }
             }else if( Is_caused_disconnect_mess( service_type ) ){
                 if(string(memb_info.changed_member) != client_server_group && connected ) {

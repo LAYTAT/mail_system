@@ -5,11 +5,10 @@
 #ifndef MAIL_SYSTEM_STATE_H
 #define MAIL_SYSTEM_STATE_H
 #include "common_include.h"
-// TODO: finish Log class implementation
 class Log {
-    // read the file from drive to RAMs
 public:
     Log(){
+        // TODO:read the file from drive to RAMs
     }
 
     // add an update to the log file
