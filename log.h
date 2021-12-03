@@ -15,7 +15,7 @@ struct MyComp {
 
 class Log {
 public:
-    Log():server_2_updates(){
+    Log():server_2_update_id(),id_2_update(){
         // TODO:read the file from drive to RAMs
     }
 
@@ -23,24 +23,22 @@ public:
     void add_to_log(shared_ptr<Update> update) {
         assert(update != nullptr);
         cout << "   Adding update to the log" << endl;
-        if(server_2_updates.count(update->server_id) == 0)
-            server_2_updates.insert(make_pair(update->server_id, set<shared_ptr<Update>, MyComp>(myComp)));
-        server_2_updates[update->server_id].insert(update);
+        server_2_update_id[update->server_id].insert(update->mail_id); // this update belongs to this server
+        assert(id_2_update.count(update->mail_id) == 0); // there is no such update before
+        id_2_update[update->mail_id] = update; // preserve the update in the memory
         //TODO: add to file
     }
 
     // delete update to an update
-    void delete_update(const int server_id, int64_t timestamp) {
-        vector<shared_ptr<Update>> new_vec;
-        while( (*server_2_updates[server_id].rbegin())->timestamp >= timestamp){
-            auto it = server_2_updates[server_id].end();
-            --it;
-            server_2_updates[server_id].erase(it);
-        }
+    void delete_update(const int server_id, const string & mail_id) {
+        assert(server_2_update_id.count(server_id) == 1); // must have it before delete it
+        server_2_update_id[server_id].erase(mail_id); // do not preserve this update for this server
+        id_2_update.erase(mail_id); // do not preserve this update in memory
         // TODO: delete from file
     }
 private:
-    unordered_map<int, set<shared_ptr<Update>, MyComp>> server_2_updates;
+    unordered_map<int, set<string>> server_2_update_id; // mail id
+    unordered_map<string, shared_ptr<Update>> id_2_update;
 };
 
 #endif //MAIL_SYSTEM_STATE_H
