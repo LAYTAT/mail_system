@@ -426,4 +426,5 @@ shared_ptr<Update> get_log_update(){
             cout << "received a type that is not processed." << endl;
             break;
     }
+    return new_update;
 }
