@@ -11,7 +11,7 @@ class State{
 public:
     State(const State&) = delete;
     State& operator=(const State &) = delete;
-    State(int server_id):user_2_mailbox(), mail_id_2_email(), server(server_id){
+    State(int server_id):user_2_mailbox(), mail_id_2_email(), server(server_id), server_timestamp(0){
         load_state_from_file();
         cout << "   STATE initialized" << endl;
     }
@@ -93,10 +93,11 @@ private:
         {
             auto mail_id = email_tmp.header.mail_id;
             auto user_name = email_tmp.header.to_user_name;
-            cout << "           " << mail_id << "          " << user_name << "          " << email_tmp.header.subject;
+            cout << "         " << mail_id << "            " << user_name << "       " << email_tmp.header.subject;
             user_2_mailbox[user_name].insert(user_name); // char[] to stirng, implicit conversion
             mail_id_2_email[mail_id] = make_shared<Email>(email_tmp);
         }
+        cout << "====================================================" << endl;
         fclose(state_fptr);
 
         // load time stamp
