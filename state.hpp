@@ -70,7 +70,7 @@ public:
 private:
     void load_state_from_file(){
         Email email_tmp;
-        string state_file_str = "./" + to_string(server) + "/" + to_string(server) + STATE_FILE_NAME;
+        string state_file_str = to_string(server) + "." + STATE_FILE_NAME;
         state_fptr = fopen(state_file_str.c_str(),"r");
         if (state_fptr == nullptr) perror ("Error opening file");
         while(fread(&email_tmp,sizeof(Email),1,state_fptr))
@@ -84,8 +84,8 @@ private:
     }
 
     void update_state_file(shared_ptr<Update>& update) {
-        string state_file_str = "./" + to_string(server) + "/" + STATE_FILE_NAME;
-        string tmp_state_file_str = "./" + to_string(server) + "/" + TEMP_FILE_NAME;
+        string state_file_str = to_string(server) + "." + STATE_FILE_NAME;
+        string tmp_state_file_str = to_string(server) + "." + TEMP_FILE_NAME;
         switch (update->type) {
             case Update::TYPE::READ: {
                 cout << "           Read email in file" << endl;
@@ -130,8 +130,7 @@ private:
 
             case Update::TYPE::NEW_EMAIL: {
                 cout << "           Append new email in file" << endl;
-                string state_file_name = "./" + to_string(server) + "/" + STATE_FILE_NAME;
-                state_fptr = fopen(state_file_name.c_str(),"a");
+                state_fptr = fopen(state_file_str.c_str(),"a");
                 if (state_fptr == nullptr) perror ("Error opening file");
                 constexpr static int number_of_updates = 1;
                 fwrite(&update->email, sizeof(Email), number_of_updates, state_fptr);

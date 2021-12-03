@@ -15,7 +15,7 @@ struct MyComp {
 
 class Log {
 public:
-    Log(int server_id):server_2_update_id(),id_2_update(), server(server_id){
+    Log(int server_id):server_2_update_id(),id_2_update(), server_id(server_id){
         for(int i = 0; i < TOTAL_SERVER_NUMBER; ++i) {
             count(i); // todo: delete this after debugging
             load_log_from_file_for_server(i);
@@ -45,7 +45,7 @@ private:
     void load_log_from_file_for_server(int i){
         Update update_tmp;
         int j;
-        string log_file_name = "./" + to_string(server) + "/" + to_string(i) + LOG_FILE_SUFFIX;
+        string log_file_name = to_string(server_id) + "_" + to_string(i) + LOG_FILE_SUFFIX;
         log_fptr = fopen(log_file_name.c_str(),"r");
         if (log_fptr == nullptr) perror ("Error opening file");
         while(fread(&update_tmp,sizeof(Update),1,log_fptr))
@@ -58,7 +58,7 @@ private:
 
     void count(int i){
         Update update_tmp;
-        string log_file_name = "./" + to_string(server) + "/" + to_string(i) + LOG_FILE_SUFFIX;
+        string log_file_name = to_string(server_id) + "_" + to_string(i) + LOG_FILE_SUFFIX;
         log_fptr = fopen(log_file_name.c_str(),"r");
         if (log_fptr == nullptr) perror ("Error opening file");
         fseek(log_fptr,0,SEEK_END);
@@ -68,7 +68,7 @@ private:
     }
 
     void append_to_log(shared_ptr<Update>& update){
-        string log_file_name = "./" + to_string(server) + "/" + to_string(update->server_id) + LOG_FILE_SUFFIX;
+        string log_file_name = to_string(server_id) + "_" + to_string(update->server_id) + LOG_FILE_SUFFIX;
         log_fptr = fopen(log_file_name.c_str(),"a");
         if (log_fptr == nullptr) perror ("Error opening file");
         constexpr static int number_of_updates = 1;
@@ -78,8 +78,8 @@ private:
 
     void delete_from_log(const int server, const int64_t & timestamp){
         int found=0;
-        string log_file_name = "./" + to_string(server) + "/" + to_string(server) + LOG_FILE_SUFFIX;
-        string tmp_file_name = "./" + to_string(server) + "/" + to_string(server) + TEMP_FILE_SUFFIX;
+        string log_file_name = to_string(server_id) + "_" + to_string(server) + LOG_FILE_SUFFIX;
+        string tmp_file_name = to_string(server_id) + "_" + to_string(server) + TEMP_FILE_SUFFIX;
         Update update_tmp;
         FILE * new_log_fptr;
         printf("Enter RollNo to Delete : ");
@@ -120,7 +120,7 @@ private:
     unordered_map<int, set<int64_t>> server_2_update_id; // timestamp
     unordered_map<int64_t, shared_ptr<Update>> id_2_update;
     FILE* log_fptr;
-    int server;
+    int server_id;
 };
 
 #endif //MAIL_SYSTEM_STATE_H

@@ -28,7 +28,7 @@
 #define SERVER_USER_NAME_FOR_SPREAD "SVR_CKJL"
 #define SERVERS_GROUP "SERVERS_GROUP_CKJL"
 #define STATE_FILE_NAME "state"
-#define LOG_FILE_SUFFIX ".file"
+#define LOG_FILE_SUFFIX ".log"
 #define TEMP_FILE_SUFFIX ".temp"
 #define TEMP_FILE_NAME "tmp"
 
