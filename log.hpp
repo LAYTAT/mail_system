@@ -54,8 +54,8 @@ private:
         while(fread(&update_tmp,sizeof(Update),1,log_fptr))
         {
             server_2_update_id[i].insert(update_tmp.timestamp);
-            id_2_update[update_tmp.timestamp] = make_shared<Update>();
-            memcpy(id_2_update[update_tmp.timestamp].get(), &update_tmp, sizeof(Update));
+            id_2_update[update_tmp.timestamp] = make_shared<Update>(update_tmp);
+//            memcpy(id_2_update[update_tmp.timestamp].get(), &update_tmp, sizeof(Update));
         }
         fclose(log_fptr);
     }
