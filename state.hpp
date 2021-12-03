@@ -18,7 +18,7 @@ public:
 
     const Email_Box& get_email_box(const string & username) {
         cout << " get email box of user " << username << endl;
-        if(user_2_mailbox.count(username)) {
+        if(user_2_mailbox.count(username) == 0) {
             cout << " Here is nothing for user " << username <<
             ", creating a empty mailbox for it." << endl;
         }
