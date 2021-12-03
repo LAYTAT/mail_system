@@ -47,7 +47,7 @@ void send_to_client(const char * client);
 int64_t get_server_timestamp();
 void send_headers_client(const char * client);
 void store_to_file();
-void get_log_update(shared_ptr<Update>);
+shared_ptr<Update> get_log_update();
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
@@ -99,8 +99,7 @@ int main(int argc, char * argv[]){
                     cout << sender_group << " has request a NEW_EMAIL." << endl;
 
                     // receive
-                    shared_ptr<Update> rcvd_new_update;
-                    get_log_update(rcvd_new_update);
+                    auto rcvd_new_update = get_log_update();
 
                     // save
                     server_log.add_to_log(rcvd_new_update);
@@ -141,8 +140,7 @@ int main(int argc, char * argv[]){
                     cout << sender_group << " has request a READ." << endl;
 
                     // receive
-                    shared_ptr<Update> ret_update;
-                    get_log_update(ret_update);
+                    auto ret_update = get_log_update();
 
                     // save
                     server_log.add_to_log(ret_update);
@@ -161,8 +159,7 @@ int main(int argc, char * argv[]){
                     cout << sender_group << " has request a DELETE." << endl;
 
                     // receive
-                    shared_ptr<Update> new_update;
-                    get_log_update(new_update);
+                    auto new_update = get_log_update();
 
                     // save
                     server_log.add_to_log(new_update);
@@ -391,8 +388,8 @@ void send_to_other_server(){
 }
 
 // init an update and stamp it with the server stamp
-void get_log_update(shared_ptr<Update> new_update){
-    new_update = make_shared<Update>();
+shared_ptr<Update> get_log_update(){
+    auto new_update = make_shared<Update>();
 
     switch (rcv_buf.type) {
         case Message::TYPE::READ: {
