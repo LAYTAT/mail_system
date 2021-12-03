@@ -16,9 +16,9 @@ struct MyComp {
 class Log {
 public:
     Log(int server_id):server_2_update_id(),id_2_update(), server_id(server_id){
-        for(int i = 0; i < TOTAL_SERVER_NUMBER; ++i) {
-            count(i); // todo: delete this after debugging
-            load_log_from_file_for_server(i);
+        for(int server_ = 1; server_ < TOTAL_SERVER_NUMBER + 1; ++server_) { // shift by
+            count(server_); // todo: delete this after debugging
+            load_log_from_file_for_server(server_);
         }
     }
 
