@@ -211,6 +211,13 @@ int main(int argc, char * argv[]){
                     memcpy(rcvd_update.get(), rcv_buf.data, sizeof (Update));
 
                     if(!server_state.is_update_needed(rcvd_update)) {
+                        cout << "update not needed." << endl;
+                        break;
+                    }
+
+                    // if my own update
+                    if(rcvd_update->server_id == server_id) {
+                        cout << "Received my own update, dismissed." << endl;
                         break;
                     }
 
