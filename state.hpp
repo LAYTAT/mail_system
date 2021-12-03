@@ -72,6 +72,7 @@ private:
         Email email_tmp;
         string state_file_str = to_string(server) + "." + STATE_FILE_NAME;
         state_fptr = fopen(state_file_str.c_str(),"r");
+        if (state_fptr == nullptr) state_fptr = fopen(state_file_str.c_str(), "w");
         if (state_fptr == nullptr) perror ("Error opening file");
         while(fread(&email_tmp,sizeof(Email),1,state_fptr))
         {

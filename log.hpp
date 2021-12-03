@@ -47,6 +47,7 @@ private:
         int j;
         string log_file_name = to_string(server_id) + "_" + to_string(i) + LOG_FILE_SUFFIX;
         log_fptr = fopen(log_file_name.c_str(),"r");
+        if (log_fptr == nullptr) log_fptr = fopen(log_file_name.c_str(), "w");
         if (log_fptr == nullptr) perror ("Error opening file");
         while(fread(&update_tmp,sizeof(Update),1,log_fptr))
         {
