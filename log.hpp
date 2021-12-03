@@ -70,6 +70,7 @@ private:
     void append_to_log(shared_ptr<Update>& update){
         string log_file_name = "./" + to_string(server) + "/" + to_string(update->server_id) + LOG_FILE_SUFFIX;
         log_fptr = fopen(log_file_name.c_str(),"a");
+        if (log_fptr == nullptr) perror ("Error opening file");
         constexpr static int number_of_updates = 1;
         fwrite(update.get(),sizeof(Update),number_of_updates,log_fptr);
         fclose(log_fptr);
@@ -84,7 +85,9 @@ private:
         printf("Enter RollNo to Delete : ");
 
         log_fptr = fopen(log_file_name.c_str(),"r");
+        if (log_fptr == nullptr) perror ("Error opening file");
         auto tmp_fptr = fopen(tmp_file_name.c_str(),"w");
+        if (tmp_fptr == nullptr) perror ("Error opening file");
         while(fread(&update_tmp,sizeof(Update),1,log_fptr)){
             if(update_tmp.timestamp == timestamp){
                 found = 1;
@@ -98,7 +101,9 @@ private:
 
         if(found){
             log_fptr = fopen(log_file_name.c_str(),"w");
+            if (log_fptr == nullptr) perror ("Error opening file");
             tmp_fptr = fopen(tmp_file_name.c_str(),"r");
+            if (tmp_fptr == nullptr) perror ("Error opening file");
 
             while(fread(&update_tmp,sizeof(Update),1,tmp_fptr)){
                 fwrite(&update_tmp,sizeof(Update),1,log_fptr);

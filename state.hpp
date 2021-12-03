@@ -72,6 +72,7 @@ private:
         Email email_tmp;
         string state_file_str = "./" + to_string(server) + "/" + to_string(server) + STATE_FILE_NAME;
         state_fptr = fopen(state_file_str.c_str(),"r");
+        if (state_fptr == nullptr) perror ("Error opening file");
         while(fread(&email_tmp,sizeof(Email),1,state_fptr))
         {
             auto mail_id = email_tmp.header.mail_id;
@@ -94,7 +95,10 @@ private:
                 string mail_id_str(update->mail_id);
 
                 state_fptr = fopen(state_file_str.c_str(),"r");
+                if (state_fptr == nullptr) perror ("Error opening file");
                 fp_tmp = fopen(tmp_state_file_str.c_str(), "w");
+                if (fp_tmp == nullptr) perror ("Error opening file");
+
                 while(fread(&email_tmp,sizeof(Email),1,state_fptr)){
                     if(email_tmp.header.mail_id == mail_id_str){ // implicit conversion
                         memcpy(&email_tmp, &update->email, sizeof(Email));
@@ -108,7 +112,9 @@ private:
 
                 if(found){
                     state_fptr = fopen(state_file_str.c_str(),"w");
+                    if (state_fptr == nullptr) perror ("Error opening file");
                     fp_tmp = fopen(tmp_state_file_str.c_str(), "r");
+                    if (fp_tmp == nullptr) perror ("Error opening file");
 
                     while(fread(&email_tmp, sizeof(Email), 1, fp_tmp)){
                         fwrite(&email_tmp,sizeof(Email),1, state_fptr);
@@ -126,6 +132,7 @@ private:
                 cout << "           Append new email in file" << endl;
                 string state_file_name = "./" + to_string(server) + "/" + STATE_FILE_NAME;
                 state_fptr = fopen(state_file_name.c_str(),"a");
+                if (state_fptr == nullptr) perror ("Error opening file");
                 constexpr static int number_of_updates = 1;
                 fwrite(&update->email, sizeof(Email), number_of_updates, state_fptr);
                 fclose(state_fptr);
@@ -140,7 +147,9 @@ private:
                 string mail_id_str(update->mail_id);
 
                 state_fptr = fopen(state_file_str.c_str(),"r");
+                if (state_fptr == nullptr) perror ("Error opening file");
                 fp_tmp = fopen(tmp_state_file_str.c_str(), "w");
+                if (fp_tmp == nullptr) perror ("Error opening file");
                 while(fread(&email_tmp,sizeof(Email),1,state_fptr)){
                     if(email_tmp.header.mail_id == mail_id_str){ // implicit conversion
                         found = 1;
@@ -154,7 +163,9 @@ private:
 
                 if(found){
                     state_fptr = fopen(state_file_str.c_str(),"w");
+                    if (state_fptr == nullptr) perror ("Error opening file");
                     fp_tmp = fopen(tmp_state_file_str.c_str(), "r");
+                    if (fp_tmp == nullptr) perror ("Error opening file");
 
                     while(fread(&email_tmp, sizeof(Email), 1, fp_tmp)){
                         fwrite(&email_tmp,sizeof(Email),1, state_fptr);
