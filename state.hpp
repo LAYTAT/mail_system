@@ -103,7 +103,7 @@ private:
         // load time stamp
         string timestamp_file_str = to_string(server) + "." + TIME_STAMP_FILE_NAME;
         auto timestamp_file_ptr = fopen(timestamp_file_str.c_str(),"r");
-        if (timestamp_file_ptr != nullptr) {
+        if (timestamp_file_ptr == nullptr) {
             server_timestamp = 0;
             timestamp_file_ptr = fopen(timestamp_file_str.c_str(),"w");
             if (timestamp_file_ptr != nullptr) perror ("Error opening file");
