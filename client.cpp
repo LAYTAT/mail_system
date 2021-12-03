@@ -94,6 +94,7 @@ void user_command()
 
             if (server_number == server && connected) {
                 cout << "You are already connected with server " << server << endl;
+                break;
             }
 
             cout << " request to connect with server " << server_number << endl;
