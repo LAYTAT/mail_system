@@ -14,6 +14,7 @@ public:
     State(int server_id):user_2_mailbox(), mail_id_2_email(), server(server_id), server_timestamp(0){
         load_state_from_file();
         cout << "   STATE initialized" << endl;
+        print_all_mails();
     }
 
     const Email_Box& get_email_box(const string & username) {
@@ -67,12 +68,39 @@ public:
         << " emails in his inbox" << endl;
         vector<Mail_Header> ret;
         for(auto& mid : mailbox) {
+            cout << "   mail id: " << mid << endl;
             assert(mail_id_2_email[mid] != nullptr);
             ret.push_back(mail_id_2_email[mid]->get_header_copy());
         }
         return ret;
     }
+
+    void print_all_mails(){
+        cout << "This is all the mails on this server " << endl;
+        for(const auto & p : user_2_mailbox) {
+            const auto & user = p.first;
+            const auto & mailbox = p.second;
+            cout << "   This is all the mails for user " << user << endl;
+            if(mailbox.size() == 0) {
+                cout << "       user " << user << " has no emails." << endl;
+            } else {
+                for(const auto & mid : mailbox) {
+                    if(mail_id_2_email.count(mid) == 0) {
+                        cout << "       mail id " << mid << " has no corresponding email." << endl;
+                    }else {
+                        if(mail_id_2_email[mid] == nullptr) {
+                            cout << "       mail id " << mid << " email has no content." << endl;
+                        } else {
+                            mail_id_2_email[mid]->print();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     ~State()= default;
+
 
     int64_t get_server_timestamp(){
         server_timestamp++;
