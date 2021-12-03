@@ -48,8 +48,18 @@ public:
 
             case Update::TYPE::DELETE: {
                 cout << "           delete email from RAM " << update->mail_id << endl;
-                assert(mail_id_2_email.count(update->mail_id) == 1);
-                assert(user_2_mailbox.count(mail_id_2_email[update->mail_id]->header.to_user_name) == 1);
+                if(mail_id_2_email.count(update->mail_id) == 0) {
+                    cout << "               deletion happens on a mail that this server does not have" << endl;
+                    break;
+                }
+                if (mail_id_2_email[update->mail_id] == nullptr) {
+                    cout << "               Do not have the content this mail with mail id " << update->mail_id << endl;
+                    break;
+                }
+                if(user_2_mailbox.count(mail_id_2_email[update->mail_id]->header.to_user_name) == 0) {
+                    cout <<  "              This server does not have mail box for user "
+                    <<  mail_id_2_email[update->mail_id]->header.to_user_name << endl;
+                }
                 user_2_mailbox[mail_id_2_email[update->mail_id]->header.to_user_name].erase(update->mail_id);
                 mail_id_2_email.erase(update->mail_id);
                 break;
