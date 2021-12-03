@@ -399,6 +399,7 @@ shared_ptr<Update> get_log_update(){
             new_update->server_id = server_id;
             new_update->timestamp = get_server_timestamp();
             new_update->type = Update::TYPE::READ;
+            new_update->email.header.read_state = true;
             break;
         }
         case Message::TYPE::DELETE: {

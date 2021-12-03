@@ -27,7 +27,7 @@ public:
 //    }
 
 
-    void update(shared_ptr<Update>& update) {
+    void update(shared_ptr<Update> update) {
         // write this update to file
         cout << "       update the state." << endl;
         switch (update->type) {
@@ -83,16 +83,16 @@ private:
 
     void new_email(shared_ptr<Email> email_ptr) {
         cout << "   add new email to state." << endl;
-        string new_mail_id(email_ptr->header.mail_id, strlen(email_ptr->header.mail_id));
-        cout << "       new_mail_id = " << new_mail_id << endl;
-        mail_id_2_email[new_mail_id] = email_ptr;
-        string user_name(email_ptr->header.to_user_name);
-        cout << "       user_name = " << user_name << endl;
-        user_2_mailbox[user_name].insert(new_mail_id);
+        cout << "       new_mail_id = " << email_ptr->header.mail_id << endl;
+        cout << "       user_name = " << email_ptr->header.to_user_name << endl;
+        
+        mail_id_2_email[email_ptr->header.mail_id] = email_ptr;
+        user_2_mailbox[email_ptr->header.to_user_name].insert(email_ptr->header.mail_id);
         // TODO: change to state file
     }
 
     Email get_email(const string & mail_id) {
+        assert(mail_id_2_email.count(mail_id) == 1);
         return *mail_id_2_email[mail_id];
     }
     unordered_map<string, Email_Box> user_2_mailbox;
