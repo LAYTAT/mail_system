@@ -11,6 +11,7 @@
 #include <sys/time.h>
 #include <unordered_set>
 #include <cassert>
+#include <cstring>
 
 #define SUBJECT_LEN (128)
 #define MSG_LEN (1400)

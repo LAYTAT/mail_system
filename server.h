@@ -9,7 +9,6 @@
 #include "include/sp.h"
 #include <sstream>
 #include <cctype>
-#include <cstring>
 #include "state.hpp"
 #include <unordered_set>
 #include "knowledge.hpp"
