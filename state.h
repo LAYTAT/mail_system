@@ -38,6 +38,7 @@ public:
                 cout << "       read email " << update->mail_id << endl;
                 assert(mail_id_2_email.count(update->mail_id) == 1);
                 mail_id_2_email[update->mail_id]->header.read_state = true;
+                update -> email = get_email(update->mail_id); // for return to user
                 break;
             }
 
