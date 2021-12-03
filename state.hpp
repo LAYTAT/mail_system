@@ -107,7 +107,7 @@ public:
 
         string timestamp_file_str = to_string(server) + "." + TIME_STAMP_FILE_NAME;
         auto timestamp_file_ptr = fopen(timestamp_file_str.c_str(),"w");
-        if (timestamp_file_ptr != nullptr)
+        if (timestamp_file_ptr == nullptr)
             perror ("Error opening file");
         fwrite(&server_timestamp, sizeof(int), 1, timestamp_file_ptr);
         fclose(state_fptr);

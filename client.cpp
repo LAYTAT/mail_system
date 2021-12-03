@@ -92,7 +92,7 @@ void user_command()
                 break;
             }
 
-            if (server_number == server) {
+            if (server_number == server && connected) {
                 cout << "You are already connected with server " << server << endl;
             }
 
