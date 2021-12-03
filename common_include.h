@@ -29,6 +29,7 @@
 #define SERVERS_GROUP "SERVERS_GROUP_CKJL"
 #define STATE_FILE_SUFFIX ".state"
 #define LOG_FILE_SUFFIX ".file"
+#define TEMP_FILE_SUFFIX ".temp"
 
 using namespace std;
 

@@ -79,35 +79,37 @@ private:
     void delete_from_log(const int server, const int64_t & timestamp){
         int i, j, found=0;
         string log_file_name = to_string(server) + LOG_FILE_SUFFIX;
+        string tmp_file_name = to_string(server) + TEMP_FILE_SUFFIX;
         Update update_tmp;
         FILE * new_log_fptr;
         printf("Enter RollNo to Delete : ");
 
-        fp = fopen("mystudents1.txt","r");
-        fp1 = fopen("temp.txt","w");
-        while(fread(&s1,sizeof(student),1,fp)){
-            if(s1.rno == timestamp){
+        log_fptr = fopen(log_file_name.c_str(),"r");
+        auto tmp_fptr = fopen(tmp_file_name.c_str(),"w");
+        while(fread(&update_tmp,sizeof(Update),1,log_fptr)){
+            if(update_tmp.timestamp == timestamp){
                 found = 1;
             }
             else
-                fwrite(&s1,sizeof(student),1,fp1);
+                fwrite(&update_tmp,sizeof(Update),1,tmp_fptr);
         }
-        fclose(fp);
-        fclose(fp1);
+        fclose(log_fptr);
+        fclose(tmp_fptr);
 
 
         if(found){
-            fp = fopen("mystudents1.txt","w");
-            fp1 = fopen("temp.txt","r");
+            log_fptr = fopen(log_file_name.c_str(),"w");
+            tmp_fptr = fopen(tmp_file_name.c_str(),"r");
 
-            while(fread(&s1,sizeof(student),1,fp1)){
-                fwrite(&s1,sizeof(student),1,fp);
+            while(fread(&update_tmp,sizeof(Update),1,tmp_fptr)){
+                fwrite(&update_tmp,sizeof(Update),1,log_fptr);
             }
-            fclose(fp);
-            fclose(fp1);
+            fclose(log_fptr);
+            fclose(tmp_fptr);
         }
         else
-            printf("\nNot Found.....\n");
+            cout << "File Err: Update with timestamp " << timestamp
+            << " is not fount on server " << server << "'s log file." << endl;
     }
 
 private:
