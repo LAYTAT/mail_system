@@ -63,6 +63,7 @@ public:
         << " emails in his inbox" << endl;
         vector<Mail_Header> ret;
         for(auto& mid : mailbox) {
+            assert(mail_id_2_email[mid] != nullptr);
             ret.push_back(mail_id_2_email[mid]->get_header_copy());
         }
         return ret;
