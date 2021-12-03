@@ -105,6 +105,8 @@ private:
         auto timestamp_file_ptr = fopen(timestamp_file_str.c_str(),"r");
         if (timestamp_file_ptr != nullptr)
             fread(&timestamp_tmp, sizeof(int), 1, timestamp_file_ptr);
+
+        cout << " this is the init timestamp for server " << server << " :  " << timestamp_tmp << endl;
         server_timestamp = timestamp_tmp;
         fclose(state_fptr);
 

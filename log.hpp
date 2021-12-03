@@ -66,7 +66,7 @@ private:
         if (log_fptr == nullptr) perror ("Error opening file");
         fseek(log_fptr,0,SEEK_END);
         int n = ftell(log_fptr)/sizeof(update_tmp);
-        cout << " Here is updates stored for server " << i << endl;
+        cout << " Here is number ofr updates stored for server " << i << " : " << n << endl;
         fclose(log_fptr);
     }
 
