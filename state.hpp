@@ -118,7 +118,7 @@ public:
         string timestamp_file_str = to_string(server) + "." + TIME_STAMP_FILE_NAME;
         auto timestamp_file_ptr = fopen(timestamp_file_str.c_str(),"w");
         if (timestamp_file_ptr == nullptr)
-            perror ("Error opening file");
+            perror ("1 Error opening file");
         fwrite(&server_timestamp, sizeof(int), 1, timestamp_file_ptr);
         fclose(state_fptr);
 
@@ -131,7 +131,7 @@ private:
         string state_file_str = to_string(server) + "." + STATE_FILE_NAME;
         state_fptr = fopen(state_file_str.c_str(),"r");
         if (state_fptr == nullptr) state_fptr = fopen(state_file_str.c_str(), "w");
-        if (state_fptr == nullptr) perror ("Error opening file");
+        if (state_fptr == nullptr) perror ("2 Error opening file");
         cout << "==================== state init ====================" << endl;
         cout << "       mail_id        user_name         subject"      << endl;
         while(fread(&email_tmp,sizeof(Email),1,state_fptr))
@@ -152,7 +152,7 @@ private:
         if (timestamp_file_ptr == nullptr) {
             server_timestamp = 0;
             timestamp_file_ptr = fopen(timestamp_file_str.c_str(),"w");
-            if (timestamp_file_ptr != nullptr) perror ("Error opening file");
+            if (timestamp_file_ptr != nullptr) perror ("3 Error opening file");
         } else
             fread(&server_timestamp, sizeof(int), 1, timestamp_file_ptr);
 
@@ -176,9 +176,9 @@ private:
                 string mail_id_str(update->mail_id);
 
                 state_fptr = fopen(state_file_str.c_str(),"r");
-                if (state_fptr == nullptr) perror ("Error opening file");
+                if (state_fptr == nullptr) perror ("4 Error opening file");
                 fp_tmp = fopen(tmp_state_file_str.c_str(), "w");
-                if (fp_tmp == nullptr) perror ("Error opening file");
+                if (fp_tmp == nullptr) perror ("12 Error opening file");
 
                 while(fread(&email_tmp,sizeof(Email),1,state_fptr)){
                     if(email_tmp.header.mail_id == mail_id_str){ // implicit conversion
@@ -193,9 +193,9 @@ private:
 
                 if(found){
                     state_fptr = fopen(state_file_str.c_str(),"w");
-                    if (state_fptr == nullptr) perror ("Error opening file");
+                    if (state_fptr == nullptr) perror ("12 Error opening file");
                     fp_tmp = fopen(tmp_state_file_str.c_str(), "r");
-                    if (fp_tmp == nullptr) perror ("Error opening file");
+                    if (fp_tmp == nullptr) perror ("13 Error opening file");
 
                     while(fread(&email_tmp, sizeof(Email), 1, fp_tmp)){
                         fwrite(&email_tmp,sizeof(Email),1, state_fptr);
@@ -212,7 +212,7 @@ private:
             case Update::TYPE::NEW_EMAIL: {
                 cout << "           Append new email in file" << endl;
                 state_fptr = fopen(state_file_str.c_str(),"a");
-                if (state_fptr == nullptr) perror ("Error opening file");
+                if (state_fptr == nullptr) perror ("14 Error opening file");
                 constexpr static int number_of_updates = 1;
                 fwrite(&update->email, sizeof(Email), number_of_updates, state_fptr);
                 fclose(state_fptr);
@@ -227,9 +227,9 @@ private:
                 string mail_id_str(update->mail_id);
 
                 state_fptr = fopen(state_file_str.c_str(),"r");
-                if (state_fptr == nullptr) perror ("Error opening file");
+                if (state_fptr == nullptr) perror ("15 Error opening file");
                 fp_tmp = fopen(tmp_state_file_str.c_str(), "w");
-                if (fp_tmp == nullptr) perror ("Error opening file");
+                if (fp_tmp == nullptr) perror ("16 Error opening file");
                 while(fread(&email_tmp,sizeof(Email),1,state_fptr)){
                     if(email_tmp.header.mail_id == mail_id_str){ // implicit conversion
                         found = 1;
@@ -243,9 +243,9 @@ private:
 
                 if(found){
                     state_fptr = fopen(state_file_str.c_str(),"w");
-                    if (state_fptr == nullptr) perror ("Error opening file");
+                    if (state_fptr == nullptr) perror ("17 Error opening file");
                     fp_tmp = fopen(tmp_state_file_str.c_str(), "r");
-                    if (fp_tmp == nullptr) perror ("Error opening file");
+                    if (fp_tmp == nullptr) perror ("18 Error opening file");
 
                     while(fread(&email_tmp, sizeof(Email), 1, fp_tmp)){
                         fwrite(&email_tmp,sizeof(Email),1, state_fptr);
