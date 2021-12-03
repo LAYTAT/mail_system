@@ -213,7 +213,7 @@ int main(int argc, char * argv[]){
                     if(!server_state.is_update_needed(rcvd_update)) {
                         break;
                     }
-                        
+
                     // save
                     server_log.add_to_log(rcvd_update);
 

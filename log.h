@@ -22,9 +22,10 @@ public:
     // add an update to the log file
     void add_to_log(shared_ptr<Update> update) {
         assert(update != nullptr);
+        assert(server_2_update_id[update->server_id].count(update->timestamp) == 0); // there is no such update before
+
         cout << "   Adding update to the log" << endl;
         server_2_update_id[update->server_id].insert(update->timestamp); // this update belongs to this server
-        assert(id_2_update.count(update->timestamp) == 0); // there is no such update before
         id_2_update[update->timestamp] = update; // preserve the update in the memory
         //TODO: add to file
     }
