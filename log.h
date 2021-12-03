@@ -7,7 +7,7 @@
 #include "common_include.h"
 class Log {
 public:
-    Log(){
+    Log():server_2_updates(){
         // TODO:read the file from drive to RAMs
     }
 
