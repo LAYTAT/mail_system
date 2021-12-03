@@ -30,7 +30,7 @@ public:
         for(const auto & p : server_2_update_id) {
             const auto & server_id_ = p.first;
             const auto & update_ids_ = p.second;
-            cout << "   Updates for server " << server_id_;
+            cout << "   Updates for server " << server_id_ << endl;
             if(update_ids_.empty()) {
                 cout << "       No updates stored for this server." << endl;
                 continue;
