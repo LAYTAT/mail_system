@@ -15,13 +15,35 @@ struct MyComp {
 
 class Log {
 public:
-    Log(int server_id):server_2_update_id(),id_2_update(), server_id(server_id){
+    Log(int server_id): server_2_update_id(), id_2_update(), server_id(server_id){
         cout << " =========log init========= " << endl;
         for(int server_ = 1; server_ < TOTAL_SERVER_NUMBER + 1; ++server_) { // shift by
             count(server_); // todo: delete this after debugging
             load_log_from_file_for_server(server_);
         }
         cout << " ========================== " << endl;
+        print_all_updates();
+    }
+
+    void print_all_updates() {
+        cout << " This is all the update on this server " << endl;
+        for(const auto & p : server_2_update_id) {
+            const auto & server_id_ = p.first;
+            const auto & update_ids_ = p.second;
+            cout << "   Updates for server " << server_id_;
+            if(update_ids_.empty()) {
+                cout << "       No updates stored for this server." << endl;
+                continue;
+            }
+            for(const auto & update_id: update_ids_)
+            {
+                if(id_2_update.count(update_id) == 0) {
+                    cout << "       No content stored for update " << update_id << endl;
+                    continue;
+                }
+                cout << "   timestamp = " << id_2_update[update_id]->timestamp << endl;
+            }
+        }
     }
 
     // add an update to the log file
