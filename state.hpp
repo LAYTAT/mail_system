@@ -18,6 +18,10 @@ public:
 
     const Email_Box& get_email_box(const string & username) {
         cout << " get email box of user " << username << endl;
+        if(user_2_mailbox.count(username)) {
+            cout << " Here is nothing for user " << username <<
+            ", creating a empty mailbox for it." << endl;
+        }
         return user_2_mailbox[username];
     }
 
@@ -99,7 +103,8 @@ private:
             cout << "         " << mail_id << "            " << user_name
             << "       " << email_tmp.header.subject << endl;
             user_2_mailbox[user_name].insert(user_name); // char[] to stirng, implicit conversion
-            mail_id_2_email[mail_id] = make_shared<Email>(email_tmp);
+            mail_id_2_email[mail_id] = make_shared<Email>();
+            memcpy(mail_id_2_email[mail_id].get(), &email_tmp, sizeof(Email));
         }
         cout << "====================================================" << endl;
         fclose(state_fptr);
