@@ -506,7 +506,6 @@ void variable_init(){
 void event_system_bind(){
     // bind keyboard event with user input function
     E_attach_fd(KEYBOARD_INPUT_FD, READ_FD, reinterpret_cast<void (*)(int, int, void *)>(user_command), 0, nullptr, LOW_PRIORITY );
-
     // bind spread message with message processing function
     E_attach_fd(spread_mbox, READ_FD, reinterpret_cast<void (*)(int, int, void *)>(response_to_spread), 0, nullptr, HIGH_PRIORITY );
 }

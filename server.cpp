@@ -33,6 +33,7 @@ string  servers_group_str(SERVERS_GROUP);
 State   server_state;
 Log     server_log;
 int64_t server_timestamp;
+Message snd_to_servers_grp_buf;
 
 // functions
 void reconcile();
@@ -45,6 +46,8 @@ void join_servers_group();
 void send_to_client(const char * client);
 int64_t get_server_timestamp();
 void send_headers_client(const char * client);
+void store_to_file();
+shared_ptr<Update> get_log_update();
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
@@ -95,28 +98,16 @@ int main(int argc, char * argv[]){
                 case Message::TYPE::NEW_EMAIL: { // add a new email in one user's mailbox and send this update to other servers
                     cout << sender_group << " has request a NEW_EMAIL." << endl;
 
-                    Update rcvd_new_update;
-                    memcpy(&rcvd_new_update, rcv_buf.data, sizeof(Update));
-                    rcvd_new_update.email.print();
+                    // receive
+                    auto rcvd_new_update = get_log_update();
 
-                    // if this server is the one to receive this update first
-                    // put on server time stamp
-                    if(rcvd_new_update.server_id == -1) {
-                        rcvd_new_update.server_id = server_id;
-                        rcvd_new_update.timestamp = get_server_timestamp();
-                        string mail_id_str_to_be_assign = to_string(server_id) + to_string(rcvd_new_update.timestamp);
-                        memcpy(rcvd_new_update.email.header.mail_id, mail_id_str_to_be_assign.c_str(), strlen(mail_id_str_to_be_assign.c_str()));
-                        rcvd_new_update.email.header.mail_id[strlen(mail_id_str_to_be_assign.c_str())] = 0; // null character
-                        rcvd_new_update.email.header.sendtime = get_time();
-                        cout << "       Server " << server_id
-                        << " put on it logicaltime stamp "
-                        << rcvd_new_update.timestamp << endl;
-                    }
+                    // save
+                    server_log.add_to_log(rcvd_new_update);
 
-                    // add update to log and email to state
-                    server_log.add_to_log(make_shared<Update>(rcvd_new_update));
-                    server_state.update(rcvd_new_update, Message::TYPE::NEW_EMAIL);
+                    // process
+                    server_state.update(rcvd_new_update);
 
+                    // send
                     snd_buf.type = Message::TYPE::NEW_EMAIL_SUCCESS;
                     send_to_client(sender_group);
                     break;
@@ -147,12 +138,18 @@ int main(int argc, char * argv[]){
 
                 case Message::TYPE::READ : { // mark email as read and send back the email content
                     cout << sender_group << " has request a READ." << endl;
-                    Update ret_update;
-                    cout << "   rcv_buf.size = " << rcv_buf.size << endl;
-                    memcpy(ret_update.email.header.mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
-                    cout << "   requested read on mail with mail_id " << ret_update.email.header.mail_id << endl;
-                    server_state.update(ret_update, Message::TYPE::READ);
-                    memcpy(snd_buf.data, &ret_update.email, sizeof(Email));
+
+                    // receive
+                    auto ret_update = get_log_update();
+
+                    // save
+                    server_log.add_to_log(ret_update);
+
+                    // process
+                    server_state.update(ret_update);
+
+                    // send
+                    memcpy(snd_buf.data, &ret_update->email, sizeof(Email));
                     snd_buf.type = Message::TYPE::READ;
                     send_to_client(sender_group);
                     break;
@@ -160,11 +157,15 @@ int main(int argc, char * argv[]){
 
                 case Message::TYPE::DELETE : { // delete email
                     cout << sender_group << " has request a DELETE." << endl;
-                    string mail_id_str;
-                    mail_id_str.resize(rcv_buf.size);
-                    memcpy(&mail_id_str[0], rcv_buf.data, rcv_buf.size); //used retrieval
-                    cout << "   requested deletion on mail with mail_id: " << mail_id_str << endl;
-                    server_state.update(mail_id_str, Message::TYPE::DELETE);
+
+                    // receive
+                    auto new_update = get_log_update();
+
+                    // save
+                    server_log.add_to_log(new_update);
+
+                    // process
+                    server_state.update(new_update);
                     snd_buf.type = Message::TYPE::DELETE_EMAIL_SUCCESS;
                     send_to_client(sender_group);
                     break;
@@ -378,4 +379,53 @@ void send_headers_client(const char * client) {
 int64_t get_server_timestamp(){
     server_timestamp++;
     return server_timestamp;
+}
+
+void send_to_other_server(){
+    cout << "sending the update to the other servers." << endl;
+    ret = SP_multicast(spread_mbox, AGREED_MESS, servers_group_str.c_str(), (short int)snd_to_servers_grp_buf.type, sizeof(Header_List), (const char *)&snd_to_servers_grp_buf);
+
+}
+
+// init an update and stamp it with the server stamp
+shared_ptr<Update> get_log_update(){
+    shared_ptr<Update> new_update = make_shared<Update>();
+
+    switch (rcv_buf.type) {
+        case Message::TYPE::READ: {
+            memcpy(new_update->email.header.mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
+            memcpy(new_update->mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
+            cout << "   requested read on mail with mail_id " << new_update->email.header.mail_id << endl;
+            new_update->server_id = server_id;
+            new_update->timestamp = get_server_timestamp();
+            break;
+        }
+        case Message::TYPE::DELETE: {
+            memcpy(new_update->email.header.mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
+            memcpy(new_update->mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
+            cout << "   requested delete on mail with mail_id " << new_update->email.header.mail_id << endl;
+            new_update->server_id = server_id;
+            new_update->timestamp = get_server_timestamp();
+            break;
+        }
+        case Message::TYPE::NEW_EMAIL: {
+            memcpy(new_update.get(), rcv_buf.data, sizeof(Update));
+            new_update->email.print();
+            new_update->server_id = server_id;
+            new_update->timestamp = get_server_timestamp();
+            string mail_id_str_to_be_assign = to_string(server_id) + to_string(new_update->timestamp);
+            memcpy(new_update->email.header.mail_id, mail_id_str_to_be_assign.c_str(), strlen(mail_id_str_to_be_assign.c_str()));
+            new_update->email.header.mail_id[strlen(mail_id_str_to_be_assign.c_str())] = 0; // null character
+            new_update->email.header.sendtime = get_time();
+            cout << "       Server " << server_id
+                 << " put on it logicaltime stamp "
+                 << new_update->timestamp << endl;
+            break;
+        }
+        default:
+            cout << "received a type that is not processed." << endl;
+            break;
+    }
+
+
 }

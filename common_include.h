@@ -76,12 +76,18 @@ struct Email{
 using Email_Box = unordered_set<string>;
 
 struct Update{
+    enum class TYPE {
+        READ,
+        NEW_EMAIL,
+        DELETE
+    };
     Update() = default;
     ~Update()= default;
     int server_id{-1};
     int64_t timestamp{};
-    int mail_id{};
+    char  mail_id[MAX_MAIL_ID_LEN];
     Email email;
+    TYPE type;
 };
 
 struct Message{
@@ -89,13 +95,13 @@ struct Message{
         UPDATE,
         LIST,
         MEMBERSHIPS,
-        READ,
-        NEW_EMAIL,
-        DELETE,
         NEW_CONNECTION,
         NEW_EMAIL_SUCCESS,
         HEADER,
-        DELETE_EMAIL_SUCCESS
+        DELETE_EMAIL_SUCCESS,
+        READ,
+        NEW_EMAIL,
+        DELETE
     };
     Message::TYPE type;
     char data[MSG_LEN];

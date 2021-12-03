@@ -22,25 +22,34 @@ public:
         return user_2_mailbox[username];
     }
 
-    void update(const string& mail_id, const Message::TYPE type) {
-        update_email(mail_id, type);
-    }
+//    void update(const string& mail_id, const Message::TYPE type) {
+//        update_email(mail_id, type);
+//    }
 
 
-    void update(Update& update, const Message::TYPE type) {
+    void update(shared_ptr<Update>& update) {
         // write this update to file
         cout << "       update the state." << endl;
-        switch (type) {
-            case Message::TYPE::NEW_EMAIL:
-                new_email(make_shared<Email>(update.email));
+        switch (update->type) {
+            case Update::TYPE::NEW_EMAIL:
+                new_email(make_shared<Email>(update->email));
                 break;
-            case Message::TYPE::DELETE:
-            case Message::TYPE::READ: {
-                string mail_id_str(update.email.header.mail_id, strlen(update.email.header.mail_id));
-                update_email(mail_id_str, type);
-                update.email = get_email(mail_id_str);
+            case Update::TYPE::READ: {
+                cout << "       read email " << update->mail_id << endl;
+                assert(mail_id_2_email.count(update->mail_id) == 1);
+                mail_id_2_email[update->mail_id]->header.read_state = true;
                 break;
             }
+
+            case Update::TYPE::DELETE: {
+                cout << "       delete email " << update->mail_id << endl;
+                assert(mail_id_2_email.count(update->mail_id) == 1);
+                assert(user_2_mailbox.count(mail_id_2_email[update->mail_id]->header.to_user_name) == 1);
+                user_2_mailbox[mail_id_2_email[update->mail_id]->header.to_user_name].erase(update->mail_id);
+                mail_id_2_email.erase(update->mail_id);
+                break;
+            }
+
             default:
                 cout << " a type is not dealt with " << endl;
                 break;
@@ -57,7 +66,6 @@ public:
         }
         return ret;
     }
-
     ~State(){}
 
 
@@ -70,24 +78,6 @@ private:
             << p.second->header.read_state << "   " << p.second->header.sendtime << endl;
         }
         cout << " ====================================== " << endl;
-    }
-
-    void update_email(const string& email_id, const Message::TYPE type) {
-        print_mails();
-        cout << "   Updating the email " << email_id << endl;
-        if(type == Message::TYPE::READ) {
-            cout << "       read email " << email_id << endl;
-            assert(mail_id_2_email.count(email_id) == 1);
-            mail_id_2_email[email_id]->header.read_state = true;
-        } else if(type == Message::TYPE::DELETE) {
-            cout << "       delete email " << email_id << endl;
-            assert(mail_id_2_email.count(email_id) == 1);
-            assert(user_2_mailbox.count(mail_id_2_email[email_id]->header.to_user_name) == 1);
-            user_2_mailbox[mail_id_2_email[email_id]->header.to_user_name].erase(email_id);
-            mail_id_2_email.erase(email_id);
-        }
-        print_mails();
-        // TODO: change to state file
     }
 
     void new_email(shared_ptr<Email> email_ptr) {
