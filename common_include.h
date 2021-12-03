@@ -13,7 +13,7 @@
 #include <cassert>
 
 #define SUBJECT_LEN (128)
-#define MSG_LEN (1300)
+#define MSG_LEN (1400)
 #define EMAIL_CONTENT_LEN (1000)
 #define USER_NAME_LEN (64)
 #define SPREAD_NAME (10040)  //10040 10280

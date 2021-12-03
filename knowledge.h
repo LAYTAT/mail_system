@@ -26,6 +26,11 @@ public:
         return {};
     }
 
+    bool is_update_needed(int server_id, const int64_t& timestamp) {
+        // TODO
+        return true;
+    }
+
 };
 
 #endif //MAIL_SYSTEM_KNOWLEDGE_H

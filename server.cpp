@@ -48,6 +48,7 @@ int64_t get_server_timestamp();
 void send_headers_client(const char * client);
 void store_to_file();
 shared_ptr<Update> get_log_update();
+void send_to_other_servers();
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
@@ -95,24 +96,6 @@ int main(int argc, char * argv[]){
                     break;
                 }
 
-                case Message::TYPE::NEW_EMAIL: { // add a new email in one user's mailbox and send this update to other servers
-                    cout << sender_group << " has request a NEW_EMAIL." << endl;
-
-                    // receive
-                    auto rcvd_new_update = get_log_update();
-
-                    // save
-                    server_log.add_to_log(rcvd_new_update);
-
-                    // process
-                    server_state.update(rcvd_new_update);
-
-                    // send
-                    snd_buf.type = Message::TYPE::NEW_EMAIL_SUCCESS;
-                    send_to_client(sender_group);
-                    break;
-                }
-
                 case Message::TYPE::LIST : { // send back headers for a user
                     cout << sender_group << " has request a LIST." << endl;
                     char read_request_user_name[rcv_buf.size];
@@ -136,6 +119,28 @@ int main(int argc, char * argv[]){
                     break;
                 }
 
+                case Message::TYPE::NEW_EMAIL: { // add a new email in one user's mailbox and send this update to other servers
+                    cout << sender_group << " has request a NEW_EMAIL." << endl;
+
+                    // receive
+                    auto rcvd_new_update = get_log_update();
+
+                    // save
+                    server_log.add_to_log(rcvd_new_update);
+
+                    // process
+                    server_state.update(rcvd_new_update);
+
+                    // response to client
+                    snd_buf.type = Message::TYPE::NEW_EMAIL_SUCCESS;
+                    send_to_client(sender_group);
+
+                    // share the update with other servers
+                    memcpy(snd_to_servers_grp_buf.data, rcvd_new_update.get(), sizeof(Update));
+                    send_to_other_servers();
+                    break;
+                }
+
                 case Message::TYPE::READ : { // mark email as read and send back the email content
                     cout << sender_group << " has request a READ." << endl;
 
@@ -148,10 +153,15 @@ int main(int argc, char * argv[]){
                     // process
                     server_state.update(ret_update);
 
-                    // send
+                    // response to client
                     memcpy(snd_buf.data, &ret_update->email, sizeof(Email));
                     snd_buf.type = Message::TYPE::READ;
                     send_to_client(sender_group);
+
+                    // share the update with other servers
+                    memcpy(snd_to_servers_grp_buf.data, ret_update.get(), sizeof(Update));
+                    send_to_other_servers();
+
                     break;
                 }
 
@@ -166,8 +176,15 @@ int main(int argc, char * argv[]){
 
                     // process
                     server_state.update(new_update);
+
+                    // response to client
                     snd_buf.type = Message::TYPE::DELETE_EMAIL_SUCCESS;
                     send_to_client(sender_group);
+
+                    // share the update with other servers
+                    memcpy(snd_to_servers_grp_buf.data, new_update.get(), sizeof(Update));
+                    send_to_other_servers();
+
                     break;
                 }
 
@@ -188,7 +205,21 @@ int main(int argc, char * argv[]){
 
                 case Message::TYPE::UPDATE : { // process update from the servers_group
                     cout << sender_group << " has request a Update." << endl;
-                    // TODO: process the update on the state
+
+                    // receive
+                    auto rcvd_update = make_shared<Update>();
+                    memcpy(rcvd_update.get(), rcv_buf.data, sizeof (Update));
+
+                    if(!server_state.is_update_needed(rcvd_update)) {
+                        break;
+                    }
+                        
+                    // save
+                    server_log.add_to_log(rcvd_update);
+
+                    // process
+                    server_state.update(rcvd_update);
+
                     break;
                 }
 
@@ -381,10 +412,10 @@ int64_t get_server_timestamp(){
     return server_timestamp;
 }
 
-void send_to_other_server(){
+void send_to_other_servers(){
     cout << "sending the update to the other servers." << endl;
-    ret = SP_multicast(spread_mbox, AGREED_MESS, servers_group_str.c_str(), (short int)snd_to_servers_grp_buf.type, sizeof(Header_List), (const char *)&snd_to_servers_grp_buf);
-
+    snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
+    ret = SP_multicast(spread_mbox, AGREED_MESS, servers_group_str.c_str(), (short int)Message::TYPE::UPDATE, sizeof(Message), (const char *)&snd_to_servers_grp_buf);
 }
 
 // init an update and stamp it with the server stamp

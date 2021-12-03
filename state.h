@@ -26,6 +26,9 @@ public:
 //        update_email(mail_id, type);
 //    }
 
+    bool is_update_needed(shared_ptr<Update> update) {
+        return knowledge.is_update_needed(update->server_id, update->timestamp);
+    }
 
     void update(shared_ptr<Update> update) {
         // write this update to file
@@ -85,7 +88,7 @@ private:
         cout << "   add new email to state." << endl;
         cout << "       new_mail_id = " << email_ptr->header.mail_id << endl;
         cout << "       user_name = " << email_ptr->header.to_user_name << endl;
-        
+
         mail_id_2_email[email_ptr->header.mail_id] = email_ptr;
         user_2_mailbox[email_ptr->header.to_user_name].insert(email_ptr->header.mail_id);
         // TODO: change to state file
@@ -97,6 +100,7 @@ private:
     }
     unordered_map<string, Email_Box> user_2_mailbox;
     unordered_map<string, shared_ptr<Email>> mail_id_2_email;
+    Knowledge knowledge;
 };
 
 #endif //MAIL_SYSTEM_LOG_H
