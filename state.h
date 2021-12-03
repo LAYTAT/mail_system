@@ -94,7 +94,6 @@ private:
     Email get_email(const string & mail_id) {
         return *mail_id_2_email[mail_id];
     }
-
     unordered_map<string, Email_Box> user_2_mailbox;
     unordered_map<string, shared_ptr<Email>> mail_id_2_email;
 };

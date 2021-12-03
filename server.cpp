@@ -398,6 +398,7 @@ shared_ptr<Update> get_log_update(){
             cout << "   requested read on mail with mail_id " << new_update->email.header.mail_id << endl;
             new_update->server_id = server_id;
             new_update->timestamp = get_server_timestamp();
+            new_update->type = Update::TYPE::READ;
             break;
         }
         case Message::TYPE::DELETE: {
@@ -406,6 +407,7 @@ shared_ptr<Update> get_log_update(){
             cout << "   requested delete on mail with mail_id " << new_update->email.header.mail_id << endl;
             new_update->server_id = server_id;
             new_update->timestamp = get_server_timestamp();
+            new_update->type = Update::TYPE::DELETE;
             break;
         }
         case Message::TYPE::NEW_EMAIL: {
@@ -420,6 +422,7 @@ shared_ptr<Update> get_log_update(){
             cout << "       Server " << server_id
                  << " put on it logicaltime stamp "
                  << new_update->timestamp << endl;
+            new_update->type = Update::TYPE::NEW_EMAIL;
             break;
         }
         default:
