@@ -350,7 +350,7 @@ void response_to_spread(){
                 break;
             }
             case Message::TYPE::MEMBERSHIPS: {
-                cout << "   received membership reply from server " << endl;
+//                cout << "   received membership reply from server " << endl;
                 char rcvd[rcv_buf.size];
                 memcpy(rcvd, rcv_buf.data, rcv_buf.size);
                 string rcvd_str(rcvd);

@@ -13,6 +13,7 @@ public:
     State& operator=(const State &) = delete;
     State(int server_id):user_2_mailbox(), mail_id_2_email(), server(server_id){
         load_state_from_file();
+        cout << "   STATE initialized" << endl;
     }
 
     const Email_Box& get_email_box(const string & username) {
@@ -33,7 +34,7 @@ public:
                 new_email(make_shared<Email>(update->email));
                 break;
             case Update::TYPE::READ: {
-                cout << "           read email from RAM" << update->mail_id << endl;
+                cout << "           read email " << update->mail_id << " from RAM" << endl;
                 assert(mail_id_2_email.count(update->mail_id) == 1);
                 mail_id_2_email[update->mail_id]->header.read_state = true;
                 update -> email = get_email(update->mail_id); // for return to user
@@ -86,10 +87,13 @@ private:
         state_fptr = fopen(state_file_str.c_str(),"r");
         if (state_fptr == nullptr) state_fptr = fopen(state_file_str.c_str(), "w");
         if (state_fptr == nullptr) perror ("Error opening file");
+        cout << "==================== state init ====================" << endl;
+        cout << "       mail_id        user_name         subject"      << endl;
         while(fread(&email_tmp,sizeof(Email),1,state_fptr))
         {
             auto mail_id = email_tmp.header.mail_id;
             auto user_name = email_tmp.header.to_user_name;
+            cout << "           " << mail_id << "          " << user_name << "          " << email_tmp.header.subject;
             user_2_mailbox[user_name].insert(user_name); // char[] to stirng, implicit conversion
             mail_id_2_email[mail_id] = make_shared<Email>(email_tmp);
         }

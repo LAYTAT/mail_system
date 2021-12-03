@@ -20,6 +20,7 @@ public:
             count(server_); // todo: delete this after debugging
             load_log_from_file_for_server(server_);
         }
+        cout << "   LOG initialized" << endl;
     }
 
     // add an update to the log file
