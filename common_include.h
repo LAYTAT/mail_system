@@ -62,18 +62,27 @@ struct Mail_Header{
 struct Email{
 
     Email() = default;
-    Email(Email&) = default;
+    Email(Email& others) {
+        if(&others != this) {
+            memcpy(&header, &others.header, sizeof(Mail_Header));
+            memcpy(&msg_str, &others.msg_str, sizeof(EMAIL_CONTENT_LEN));
+        } else {
+            cout << "DO NOT DO THIS, IT IS MEANINGLESS." << endl;
+        }
+    }
 
-    Mail_Header header;
     void print(){
         cout << "   This is the email:";
         header.print();
         cout << "       Content: " << msg_str << endl;
     }
-    Mail_Header get_header(){
+
+    Mail_Header get_header_copy(){
         return header;
     }
+
     char msg_str[EMAIL_CONTENT_LEN];
+    Mail_Header header;
 };
 
 using Email_Box = unordered_set<string>;
@@ -85,8 +94,16 @@ struct Update{
         DELETE
     };
     Update() = default;
-    Update(Update&) = default;
+    Update(Update& other):
+    server_id(other.server_id),
+    timestamp(other.timestamp),
+    email(other.email),
+    type(other.type)
+    {
+        memcpy(mail_id, other.mail_id, MAX_MAIL_ID_LEN);
+    }
     ~Update()= default;
+
     int server_id{-1};
     int64_t timestamp{};
     char  mail_id[MAX_MAIL_ID_LEN];
