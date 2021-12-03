@@ -59,9 +59,11 @@ public:
     vector<Mail_Header> get_header_list(const string & username){
         cout << " get header list for user " << username << endl;
         const auto& mailbox = get_email_box(username);
+        cout << "   user " << username << " has " << mailbox.size()
+        << " emails in his inbox" << endl;
         vector<Mail_Header> ret;
         for(auto& mid : mailbox) {
-            ret.push_back(mail_id_2_email[mid]->get_header());
+            ret.push_back(mail_id_2_email[mid]->get_header_copy());
         }
         return ret;
     }
@@ -93,7 +95,8 @@ private:
         {
             auto mail_id = email_tmp.header.mail_id;
             auto user_name = email_tmp.header.to_user_name;
-            cout << "         " << mail_id << "            " << user_name << "       " << email_tmp.header.subject;
+            cout << "         " << mail_id << "            " << user_name
+            << "       " << email_tmp.header.subject << endl;
             user_2_mailbox[user_name].insert(user_name); // char[] to stirng, implicit conversion
             mail_id_2_email[mail_id] = make_shared<Email>(email_tmp);
         }

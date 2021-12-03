@@ -90,7 +90,8 @@ int main(int argc, char * argv[]){
                     cout << "new connection from client." << endl;
                     char client_server_group[rcv_buf.size];
                     memcpy(client_server_group, rcv_buf.data, rcv_buf.size);
-                    cout << "   where I am server " << server_id << " and I am gonna join group: " << client_server_group << " now." << endl;
+                    cout << "   where I am server " << server_id << " and I am gonna join group: "
+                    << client_server_group << " now." << endl;
                     SP_join(spread_mbox, client_server_group);
                     break;
                 }
