@@ -44,7 +44,6 @@ void variable_init();
 void create_server_public_group();
 void join_servers_group();
 void send_to_client(const char * client);
-int64_t get_server_timestamp();
 void send_headers_client(const char * client);
 void store_to_file();
 shared_ptr<Update> get_log_update();
@@ -421,11 +420,6 @@ void send_headers_client(const char * client) {
     memset(&header_snd_buf, 0 , sizeof(Header_List));
 }
 
-int64_t get_server_timestamp(){
-    server_timestamp++;
-    return server_timestamp;
-}
-
 void send_to_other_servers(){
     cout << "sending the update to the other servers." << endl;
     snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
@@ -442,7 +436,7 @@ shared_ptr<Update> get_log_update(){
             memcpy(new_update->mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
             cout << "   requested read on mail with mail_id " << new_update->email.header.mail_id << endl;
             new_update->server_id = server_id;
-            new_update->timestamp = get_server_timestamp();
+            new_update->timestamp = server_state->get_server_timestamp();
             new_update->type = Update::TYPE::READ;
             new_update->email.header.read_state = true;
             break;
@@ -452,7 +446,7 @@ shared_ptr<Update> get_log_update(){
             memcpy(new_update->mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
             cout << "   requested delete on mail with mail_id " << new_update->email.header.mail_id << endl;
             new_update->server_id = server_id;
-            new_update->timestamp = get_server_timestamp();
+            new_update->timestamp = server_state->get_server_timestamp();
             new_update->type = Update::TYPE::DELETE;
             break;
         }
@@ -460,7 +454,7 @@ shared_ptr<Update> get_log_update(){
             memcpy(new_update.get(), rcv_buf.data, sizeof(Update));
             new_update->email.print();
             new_update->server_id = server_id;
-            new_update->timestamp = get_server_timestamp();
+            new_update->timestamp = server_state->get_server_timestamp();
             string mail_id_str_to_be_assign = to_string(server_id) + to_string(new_update->timestamp);
             memcpy(new_update->email.header.mail_id, mail_id_str_to_be_assign.c_str(), strlen(mail_id_str_to_be_assign.c_str()));
             new_update->email.header.mail_id[strlen(mail_id_str_to_be_assign.c_str())] = 0; // null character

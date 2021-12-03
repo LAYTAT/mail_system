@@ -31,6 +31,7 @@
 #define LOG_FILE_SUFFIX ".log"
 #define TEMP_FILE_SUFFIX ".temp"
 #define TEMP_FILE_NAME "tmp"
+#define TIME_STAMP_FILE_NAME "timestamp"
 
 using namespace std;
 

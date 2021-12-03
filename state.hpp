@@ -64,8 +64,20 @@ public:
         }
         return ret;
     }
-    ~State(){}
+    ~State()= default;
 
+    int64_t get_server_timestamp(){
+        server_timestamp++;
+
+        string timestamp_file_str = to_string(server) + "." + TIME_STAMP_FILE_NAME;
+        auto timestamp_file_ptr = fopen(timestamp_file_str.c_str(),"w");
+        if (timestamp_file_ptr != nullptr)
+            perror ("Error opening file");
+        fwrite(&server_timestamp, sizeof(int), 1, timestamp_file_ptr);
+        fclose(state_fptr);
+
+        return server_timestamp;
+    }
 
 private:
     void load_state_from_file(){
@@ -82,6 +94,18 @@ private:
             mail_id_2_email[mail_id] = make_shared<Email>(email_tmp);
         }
         fclose(state_fptr);
+
+        // load time stamp
+        int timestamp_tmp = 0;
+        string timestamp_file_str = to_string(server) + "." + TIME_STAMP_FILE_NAME;
+        auto timestamp_file_ptr = fopen(timestamp_file_str.c_str(),"r");
+        if (timestamp_file_ptr != nullptr)
+            fread(&timestamp_tmp, sizeof(int), 1, timestamp_file_ptr);
+        server_timestamp = timestamp_tmp;
+        fclose(state_fptr);
+
+        // TODO: load knowledge from file
+
     }
 
     void update_state_file(shared_ptr<Update>& update) {
@@ -213,6 +237,7 @@ private:
     Knowledge knowledge;
     FILE * state_fptr;
     int server;
+    int64_t server_timestamp;
 };
 
 #endif //MAIL_SYSTEM_LOG_H
