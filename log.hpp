@@ -61,6 +61,7 @@ private:
         Update update_tmp;
         string log_file_name = to_string(server_id) + "_" + to_string(i) + LOG_FILE_SUFFIX;
         log_fptr = fopen(log_file_name.c_str(),"r");
+        if (log_fptr == nullptr) log_fptr = fopen(log_file_name.c_str(), "w");
         if (log_fptr == nullptr) perror ("Error opening file");
         fseek(log_fptr,0,SEEK_END);
         int n = ftell(log_fptr)/sizeof(update_tmp);
