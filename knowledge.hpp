@@ -2,8 +2,8 @@
 // Created by Junjie Lei on 11/30/21.
 //
 
-#ifndef MAIL_SYSTEM_KNOWLEDGE_H
-#define MAIL_SYSTEM_KNOWLEDGE_H
+#ifndef MAIL_SYSTEM_KNOWLEDGE_HPP
+#define MAIL_SYSTEM_KNOWLEDGE_HPP
 
 class Knowledge {
 public:
@@ -33,4 +33,4 @@ public:
 
 };
 
-#endif //MAIL_SYSTEM_KNOWLEDGE_H
+#endif //MAIL_SYSTEM_KNOWLEDGE_HPP

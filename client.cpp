@@ -334,7 +334,6 @@ void response_to_spread(){
     {
         switch (rcv_buf.type) {
             case Message::TYPE::HEADER: {
-                // todo: print out list of headers
                 headers.resize(headers_buf.size);
                 memcpy(&headers[0], headers_buf.data, headers_buf.size * sizeof(Mail_Header));
                 cout << "This is you headers of all received emails:" << endl;
@@ -347,7 +346,7 @@ void response_to_spread(){
                     ((headers[i].read_state) ? "read" : "unread")  << "         " << headers[i].mail_id
                     << "            " <<headers[i].subject << endl;
                 }
-                // TODO(low priority) : sort the viewing order for their actual sending time, use the email.header.sendtime for sorting
+                // TODO: sort the viewing order for their actual sending time, use the email.header.sendtime for sorting
                 break;
             }
             case Message::TYPE::MEMBERSHIPS: {
@@ -365,7 +364,6 @@ void response_to_spread(){
                 break;
                 }
             case Message::TYPE::READ: {
-                // todo: print out the email content
                 Email received_email;
                 memcpy(&received_email, &rcv_buf.data, sizeof(Email));
                 cout << " This is the content of the email at idx:" << read_idx <<" you have requested:" << endl;

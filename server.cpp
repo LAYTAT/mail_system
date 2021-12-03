@@ -30,8 +30,8 @@ unsigned int     my_vsset_index;
 int      num_vs_sets;
 char     members[MAX_MEMBERS][MAX_GROUP_NAME];
 string  servers_group_str(SERVERS_GROUP);
-State   server_state;
-Log     server_log;
+State*   server_state;
+Log*     server_log;
 int64_t server_timestamp;
 Message snd_to_servers_grp_buf;
 
@@ -102,7 +102,7 @@ int main(int argc, char * argv[]){
                     memcpy(read_request_user_name, rcv_buf.data, rcv_buf.size);
                     string read_request_user_name_str(read_request_user_name, rcv_buf.size);
                     cout << "User " << read_request_user_name << " has request to list his email" << endl;
-                    auto headers_to_return = server_state.get_header_list(read_request_user_name_str);
+                    auto headers_to_return = server_state->get_header_list(read_request_user_name_str);
                     header_snd_buf.size = headers_to_return.size();
                     cout << "   return list size = " << headers_to_return.size();
                     cout << "   memcpy size = " << (sizeof(Mail_Header) * headers_to_return.size());
@@ -126,10 +126,10 @@ int main(int argc, char * argv[]){
                     auto rcvd_new_update = get_log_update();
 
                     // save
-                    server_log.add_to_log(rcvd_new_update);
+                    server_log->add_to_log(rcvd_new_update);
 
                     // process
-                    server_state.update(rcvd_new_update);
+                    server_state->update(rcvd_new_update);
 
                     // response to client
                     snd_buf.type = Message::TYPE::NEW_EMAIL_SUCCESS;
@@ -148,10 +148,10 @@ int main(int argc, char * argv[]){
                     auto ret_update = get_log_update();
 
                     // save
-                    server_log.add_to_log(ret_update);
+                    server_log->add_to_log(ret_update);
 
                     // process
-                    server_state.update(ret_update);
+                    server_state->update(ret_update);
 
                     // response to client
                     memcpy(snd_buf.data, &ret_update->email, sizeof(Email));
@@ -172,10 +172,10 @@ int main(int argc, char * argv[]){
                     auto new_update = get_log_update();
 
                     // save
-                    server_log.add_to_log(new_update);
+                    server_log->add_to_log(new_update);
 
                     // process
-                    server_state.update(new_update);
+                    server_state->update(new_update);
 
                     // response to client
                     snd_buf.type = Message::TYPE::DELETE_EMAIL_SUCCESS;
@@ -210,7 +210,7 @@ int main(int argc, char * argv[]){
                     auto rcvd_update = make_shared<Update>();
                     memcpy(rcvd_update.get(), rcv_buf.data, sizeof (Update));
 
-                    if(!server_state.is_update_needed(rcvd_update)) {
+                    if(!server_state->is_update_needed(rcvd_update)) {
                         cout << "update not needed." << endl;
                         break;
                     }
@@ -222,10 +222,10 @@ int main(int argc, char * argv[]){
                     }
 
                     // save
-                    server_log.add_to_log(rcvd_update);
+                    server_log->add_to_log(rcvd_update);
 
                     // process
-                    server_state.update(rcvd_update);
+                    server_state->update(rcvd_update);
 
                     break;
                 }
@@ -336,6 +336,11 @@ int main(int argc, char * argv[]){
             }else printf("received incorrecty membership message of type 0x%x\n", service_type );
         }else printf("received message of unknown message type 0x%x with ret %d\n", service_type, ret);
     }
+
+
+    delete server_state;
+    delete server_log;
+
     return 0;
 }
 
@@ -391,6 +396,8 @@ void variable_init(){
     spread_connect_timeout.sec = 5;
     spread_connect_timeout.usec = 0;
     server_timestamp = 0;
+    server_state = new State(server_id);
+    server_log = new Log(server_id);
 }
 
 void create_server_public_group(){

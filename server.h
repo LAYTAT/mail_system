@@ -12,7 +12,7 @@
 #include <cstring>
 #include "state.hpp"
 #include <unordered_set>
-#include "knowledge.h"
+#include "knowledge.hpp"
 #include "log.hpp"
 #include <memory>
 
