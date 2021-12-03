@@ -27,8 +27,8 @@
 #define MAX_MAIL_ID_LEN  (20)
 #define SERVER_USER_NAME_FOR_SPREAD "SVR_CKJL"
 #define SERVERS_GROUP "SERVERS_GROUP_CKJL"
-#define STATE_FILE_PREFIX "state_file_"
-#define LOG_FILE_PREFIX "log_file_"
+#define STATE_FILE_SUFFIX ".state"
+#define LOG_FILE_SUFFIX ".file"
 
 using namespace std;
 
@@ -82,6 +82,7 @@ struct Update{
         DELETE
     };
     Update() = default;
+    Update(Update&) = default;
     ~Update()= default;
     int server_id{-1};
     int64_t timestamp{};

@@ -10,10 +10,10 @@
 #include <sstream>
 #include <cctype>
 #include <cstring>
-#include "state.h"
+#include "state.hpp"
 #include <unordered_set>
 #include "knowledge.h"
-#include "log.h"
+#include "log.hpp"
 #include <memory>
 
 using namespace std;
