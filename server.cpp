@@ -239,7 +239,7 @@ int main(int argc, char * argv[]){
                     Knowledge rcvd_knowledge;
                     memcpy(&rcvd_knowledge, rcv_buf.data, sizeof (Knowledge));
 
-                    cout << "Knowledge: Received knowledge from server " << rcvd_knowledge.get_server();
+                    cout << "Knowledge: Received knowledge from server " << rcvd_knowledge.get_server() << endl;
                     knowledge_collection.push_back(rcvd_knowledge);
                     cout << "Knowledge: Current collection size = " << knowledge_collection.size() << endl;
 
