@@ -18,7 +18,7 @@ int     service_type;
 char    sender_group[MAX_GROUP_NAME];
 int     num_groups;
 char    target_groups[MAX_MEMBERS][MAX_GROUP_NAME];
-unordered_set<int> servers_group_member_set;
+set<int> servers_group_member_set;
 int16_t mess_type;
 int     endian_mismatch;
 Message rcv_buf;
@@ -34,9 +34,10 @@ State*   server_state;
 Log*     server_log;
 int64_t server_timestamp;
 Message snd_to_servers_grp_buf;
+vector<Knowledge> knowledge_collection;
 
 // functions
-void reconcile();
+void reconcile_start();
 void connect_to_spread();
 void Bye();
 bool command_input_check(int , char * []);
@@ -48,6 +49,7 @@ void send_headers_client(const char * client);
 void store_to_file();
 shared_ptr<Update> get_log_update();
 void send_to_other_servers();
+void knowledge_timer(); // TODO: exchange knowledge when group size is 5 for a while
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
@@ -137,6 +139,7 @@ int main(int argc, char * argv[]){
 
                     // share the update with other servers
                     memcpy(snd_to_servers_grp_buf.data, rcvd_new_update.get(), sizeof(Update));
+                    snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
                     send_to_other_servers();
                     break;
                 }
@@ -160,6 +163,7 @@ int main(int argc, char * argv[]){
 
                     // share the update with other servers
                     memcpy(snd_to_servers_grp_buf.data, ret_update.get(), sizeof(Update));
+                    snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
                     send_to_other_servers();
 
                     break;
@@ -183,6 +187,7 @@ int main(int argc, char * argv[]){
 
                     // share the update with other servers
                     memcpy(snd_to_servers_grp_buf.data, new_update.get(), sizeof(Update));
+                    snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
                     send_to_other_servers();
 
                     break;
@@ -230,7 +235,31 @@ int main(int argc, char * argv[]){
                     break;
                 }
 
+                case Message::TYPE::KNOWLEDGE_EXCHANGE: {
+                    Knowledge rcvd_knowledge;
+                    memcpy(&rcvd_knowledge, rcv_buf.data, sizeof (Knowledge));
+
+                    cout << "Knowledge: Received knowledge from server " << rcvd_knowledge.get_server();
+                    knowledge_collection.push_back(rcvd_knowledge);
+                    cout << "Knowledge: Current collection size = " << knowledge_collection.size() << endl;
+
+                    if(knowledge_collection.size() == servers_group_member_set.size()) {
+                        cout << " My knowledge is enought to reconcile now! " << endl;
+                        server_state->update_knowledge(knowledge_collection);
+                        server_log->log_file_cleanup_according_to_knowledge(server_state->get_knowledge());
+                        auto updates_to_be_sent = server_state->get_sending_updates(servers_group_member_set);
+                        for (const auto& update_info_pair : updates_to_be_sent) {
+                            auto update_to_send = server_log->get_update_ptr(update_info_pair);
+                            snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
+                            memcpy(snd_to_servers_grp_buf.data, update_to_send.get(), sizeof(Update));
+                            send_to_other_servers();
+                        }
+                    }
+
+                    break;
+                }
                 default:
+                    cout << "Received am undealt Message type, deal with it." << endl;
                     break;
             }
         }else if( Is_membership_mess( service_type ) )
@@ -249,8 +278,8 @@ int main(int argc, char * argv[]){
                 if(strcmp(sender_group, SERVERS_GROUP) == 0) { // if membership message from servers group
                     cout << "Membership change in servers_group: " << endl;
                     cout << "   New members in the servers_group : " << endl;
-                    unordered_set<int> cur_member_in_servers_group;
-                    unordered_set<int> new_member_in_servers_group; // TODO: reconcile on this
+                    set<int> cur_member_in_servers_group;
+                    set<int> new_member_in_servers_group;
                     for(int i=0; i < num_groups; i++ ) {
                         string member_in_servers_group(target_groups[i]);
                         int find_idx = member_in_servers_group.find(SERVER_USER_NAME_FOR_SPREAD);
@@ -268,6 +297,7 @@ int main(int argc, char * argv[]){
                     for(auto idx : servers_group_member_set) {
                         cout << "       " << idx << endl;
                     }
+                    reconcile_start();
                 }
 
                 printf("    grp id is %d %d %d\n",memb_info.gid.id[0], memb_info.gid.id[1], memb_info.gid.id[2] );
@@ -286,7 +316,7 @@ int main(int argc, char * argv[]){
                             cout << "The current members in the group : " << endl;
                             string new_member_in_servers_group(memb_info.changed_member);
                             cout << "Now we start reconcile with " << new_member_in_servers_group << endl;
-                            reconcile();
+                            reconcile_start();
                         } else {
                             cout << "Current server " << spread_user << " has join the servers_group !";
                         }
@@ -337,16 +367,21 @@ int main(int argc, char * argv[]){
         }else printf("received message of unknown message type 0x%x with ret %d\n", service_type, ret);
     }
 
-
     delete server_state;
     delete server_log;
-
     return 0;
 }
 
-void reconcile(){
+void reconcile_start(){
     cout << "reconciling!" << endl;
-    //TODO
+    knowledge_collection.clear();
+
+    // send knowledge to other servers
+    snd_to_servers_grp_buf.type = Message::TYPE::KNOWLEDGE_EXCHANGE;
+    auto my_knowledge = server_state->get_knowledge_copy();
+    memcpy(snd_to_servers_grp_buf.data, &my_knowledge, sizeof(Knowledge));
+
+    send_to_other_servers();
 }
 
 void connect_to_spread(){
@@ -422,9 +457,8 @@ void send_headers_client(const char * client) {
 }
 
 void send_to_other_servers(){
-    cout << "sending the update to the other servers." << endl;
-    snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
-    ret = SP_multicast(spread_mbox, AGREED_MESS, servers_group_str.c_str(), (short int)Message::TYPE::UPDATE, sizeof(Message), (const char *)&snd_to_servers_grp_buf);
+    cout << " sending my" <<   (snd_to_servers_grp_buf.type == Message::TYPE::UPDATE ? "update" : "knowledge" )  << " to the other servers." << endl;
+    ret = SP_multicast(spread_mbox, AGREED_MESS, servers_group_str.c_str(), (short int)snd_to_servers_grp_buf.type, sizeof(Message), (const char *)&snd_to_servers_grp_buf);
 }
 
 // init an update and stamp it with the server stamp

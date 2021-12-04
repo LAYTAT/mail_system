@@ -6,15 +6,34 @@
 #define MAIL_SYSTEM_LOG_H
 #include "common_include.h"
 #include "knowledge.hpp"
+#include <set>
 
 class State{
 public:
     State(const State&) = delete;
     State& operator=(const State &) = delete;
-    State(int server_id):user_2_mailbox(), mail_id_2_email(), server(server_id), server_timestamp(0){
+    State(int server_id):user_2_mailbox(), mail_id_2_email(), server(server_id), server_timestamp(0), server_knowledge(server_id){
         load_state_from_file();
         cout << "   STATE initialized" << endl;
         print_all_mails();
+    }
+
+    vector<vector<int64_t>> get_knowledge() const {
+        return server_knowledge.get_matrix();
+    }
+
+    Knowledge get_knowledge_copy(){
+        return server_knowledge;
+    }
+
+    void update_knowledge(const vector<Knowledge> & other_knowledges){
+        for(const auto & k : other_knowledges) {
+            server_knowledge.update_my_knowledge(k);
+        }
+    }
+
+    vector<pair<int, int64_t>> get_sending_updates(const set<int> & current_members){
+        return server_knowledge.get_sending_updates(current_members);
     }
 
     const Email_Box& get_email_box(const string & username) {
@@ -27,7 +46,7 @@ public:
     }
 
     bool is_update_needed(shared_ptr<Update> update) {
-        return knowledge.is_update_needed(update->server_id, update->timestamp);
+        return server_knowledge.is_update_needed(update->server_id, update->timestamp);
     }
 
     void update(shared_ptr<Update> update) {
@@ -127,6 +146,7 @@ public:
 
 private:
     void load_state_from_file(){
+        // load the email from file
         Email email_tmp;
         string state_file_str = to_string(server) + "." + STATE_FILE_NAME;
         state_fptr = fopen(state_file_str.c_str(),"r");
@@ -152,16 +172,22 @@ private:
         if (timestamp_file_ptr == nullptr) {
             server_timestamp = 0;
             timestamp_file_ptr = fopen(timestamp_file_str.c_str(),"w");
-            if (timestamp_file_ptr != nullptr) perror ("3 Error opening file");
+            if (timestamp_file_ptr == nullptr) perror ("3 Error opening file");
         } else
             fread(&server_timestamp, sizeof(int), 1, timestamp_file_ptr);
-
         cout << " this is the init timestamp for server " << server << " :  " << server_timestamp << endl;
-
         fclose(timestamp_file_ptr);
 
-        // TODO: load knowledge from file
-
+        //load knowledge from file
+        string knowledge_file_str = to_string(server) + KNOWLEDGE_FILE_SUFFIX;
+        auto konwledge_file_ptr = fopen(knowledge_file_str.c_str(),"r");
+        if (konwledge_file_ptr == nullptr) {
+            konwledge_file_ptr = fopen(timestamp_file_str.c_str(),"w");
+            if (konwledge_file_ptr == nullptr) perror ("20 Error opening file");
+        } else
+            fread(&server_knowledge, sizeof(int), 1, konwledge_file_ptr);
+        server_knowledge.print();
+        fclose(konwledge_file_ptr);
     }
 
     void update_state_file(shared_ptr<Update>& update) {
@@ -290,7 +316,7 @@ private:
 
     unordered_map<string, Email_Box> user_2_mailbox;
     unordered_map<string, shared_ptr<Email>> mail_id_2_email;
-    Knowledge knowledge;
+    Knowledge server_knowledge;
     FILE * state_fptr;
     int server;
     int64_t server_timestamp;

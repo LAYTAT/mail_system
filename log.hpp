@@ -6,6 +6,7 @@
 #define MAIL_SYSTEM_STATE_H
 #include "common_include.h"
 #include <set>
+#include <map>
 
 struct MyComp {
     bool operator() ( shared_ptr<Update>& a,  shared_ptr<Update>& b) {
@@ -15,10 +16,10 @@ struct MyComp {
 
 class Log {
 public:
-    Log(int server_id): server_2_update_id(), id_2_update(), server_id(server_id){
+    Log(int server_id): server_2_update_ids(), id_2_update(), server_id(server_id){
         cout << " =========log init========= " << endl;
-        for(int server_ = 1; server_ < TOTAL_SERVER_NUMBER + 1; ++server_) { // shift by
-            count(server_); // todo: delete this after debugging
+        for(int server_ = 1; server_ <= TOTAL_SERVER_NUMBER; ++server_) { // shift by
+            count(server_);
             load_log_from_file_for_server(server_);
         }
         cout << " ========================== " << endl;
@@ -27,7 +28,7 @@ public:
 
     void print_all_updates() {
         cout << " This is all the update on this server " << endl;
-        for(const auto & p : server_2_update_id) {
+        for(const auto & p : server_2_update_ids) {
             const auto & server_id_ = p.first;
             const auto & update_ids_ = p.second;
             cout << "   Updates for server " << server_id_ << endl;
@@ -37,32 +38,56 @@ public:
             }
             for(const auto & update_id: update_ids_)
             {
-                if(id_2_update.count(update_id) == 0) {
+                if(id_2_update.count({server_id_,update_id}) == 0) {
                     cout << "       No content stored for update " << update_id << endl;
                     continue;
                 }
-                cout << "   timestamp = " << id_2_update[update_id]->timestamp << endl;
+                cout << "   timestamp = " << id_2_update[{server_id_,update_id}]->timestamp << endl;
             }
+        }
+    }
+
+    void log_file_cleanup_according_to_knowledge(const vector<vector<int64_t>>& knowledge) {
+        vector<int64_t> min_update_from_server(TOTAL_SERVER_NUMBER + 1, 0);
+        for(int i = 1; i <= TOTAL_SERVER_NUMBER; ++i ){
+            for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
+                min_update_from_server[j] = min(min_update_from_server[j], knowledge[i][j]);
+            }
+        }
+
+        for( int s_id = 1; s_id <= TOTAL_SERVER_NUMBER; ++s_id ) {
+            auto updates_of_server = server_2_update_ids[s_id];
+            for(const auto & stmp :server_2_update_ids[s_id]) {
+                if(stmp < min_update_from_server[s_id]) {
+                    updates_of_server.erase(stmp);
+                    delete_update(s_id, stmp);
+                }
+            }
+            server_2_update_ids[s_id] = updates_of_server;
         }
     }
 
     // add an update to the log file
     void add_to_log(shared_ptr<Update> update) {
         assert(update != nullptr);
-        assert(server_2_update_id[update->server_id].count(update->timestamp) == 0); // there is no such update before
+        assert(server_2_update_ids[update->server_id].count(update->timestamp) == 0); // there is no such update before
 
         cout << "   Adding update to the log" << endl;
-        server_2_update_id[update->server_id].insert(update->timestamp); // this update belongs to this server
-        id_2_update[update->timestamp] = update; // preserve the update in the memory
+        server_2_update_ids[update->server_id].insert(update->timestamp); // this update belongs to this server
+        id_2_update[{update->server_id,update->timestamp}] = update; // preserve the update in the memory
         append_to_log(update);
     }
 
     // delete update to an update
-    void delete_update(const int server_id, const int64_t & timestamp) {
-        assert(server_2_update_id.count(server_id) == 1); // must have it before delete it
-        server_2_update_id[server_id].erase(timestamp); // do not preserve this update for this server
-        id_2_update.erase(timestamp); // do not preserve this update in memory
-        delete_from_log(server_id, timestamp);
+    void delete_update(const int server_id_, const int64_t & timestamp) {
+        assert(server_2_update_ids.count(server_id_) == 1); // must have it before delete it
+        server_2_update_ids[server_id_].erase(timestamp); // do not preserve this update for this server
+        id_2_update.erase({server_id_,timestamp}); // do not preserve this update in memory
+        delete_from_log(server_id_, timestamp);
+    }
+
+    shared_ptr<Update> get_update_ptr(const pair<int, int64_t> & key) {
+        return id_2_update[key];
     }
 
 private:
@@ -75,8 +100,8 @@ private:
         if (log_fptr == nullptr) perror ("5 Error opening file");
         while(fread(&update_tmp,sizeof(Update),1,log_fptr))
         {
-            server_2_update_id[i].insert(update_tmp.timestamp);
-            id_2_update[update_tmp.timestamp] = make_shared<Update>(update_tmp);
+            server_2_update_ids[i].insert(update_tmp.timestamp);
+            id_2_update[{update_tmp.server_id,update_tmp.timestamp}] = make_shared<Update>(update_tmp);
 //            memcpy(id_2_update[update_tmp.timestamp].get(), &update_tmp, sizeof(Update));
         }
         fclose(log_fptr);
@@ -144,8 +169,8 @@ private:
     }
 
 private:
-    unordered_map<int, set<int64_t>> server_2_update_id; // timestamp
-    unordered_map<int64_t, shared_ptr<Update>> id_2_update;
+    unordered_map<int, set<int64_t>> server_2_update_ids; // timestamp
+    map<pair<int, int64_t>, shared_ptr<Update>> id_2_update;
     FILE* log_fptr;
     int server_id;
 };

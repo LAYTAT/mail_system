@@ -33,6 +33,7 @@
 #define TEMP_FILE_SUFFIX ".temp"
 #define TEMP_FILE_NAME "tmp"
 #define TIME_STAMP_FILE_NAME "timestamp"
+#define KNOWLEDGE_FILE_SUFFIX ".know"
 
 using namespace std;
 
@@ -123,7 +124,8 @@ struct Message{
         DELETE_EMAIL_SUCCESS,
         READ,
         NEW_EMAIL,
-        DELETE
+        DELETE,
+        KNOWLEDGE_EXCHANGE
     };
     Message::TYPE type;
     char data[MSG_LEN];

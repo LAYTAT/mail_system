@@ -337,6 +337,11 @@ void response_to_spread(){
             case Message::TYPE::HEADER: {
                 headers.resize(headers_buf.size);
                 memcpy(&headers[0], headers_buf.data, headers_buf.size * sizeof(Mail_Header));
+
+                sort(headers.begin(), headers.end(),[](const Mail_Header & a, const Mail_Header & b) {
+                    return a.sendtime > b.sendtime;
+                });
+
                 cout << "This is you headers of all received emails:" << endl;
                 cout << "Username:" << user_name << endl;
                 cout << "Server:" << server << endl;
@@ -347,7 +352,6 @@ void response_to_spread(){
                     ((headers[i].read_state) ? "read" : "unread")  << "         " << headers[i].mail_id
                     << "            " <<headers[i].subject << endl;
                 }
-                // TODO: sort the viewing order for their actual sending time, use the email.header.sendtime for sorting
                 break;
             }
             case Message::TYPE::MEMBERSHIPS: {
@@ -437,6 +441,8 @@ void response_to_spread(){
             } else {
                 cout << "!!!!Received other type of message, deal with it" << endl;
             }
+        }else if( Is_transition_mess(   service_type ) ) {
+            printf("received TRANSITIONAL membership for group %s\n", sender_group);
         }else if( Is_caused_leave_mess( service_type ) ){
 //            printf("    2 received membership message that left group %s\n", sender_group );
             if( sender_group == client_server_group && connected) {
