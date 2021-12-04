@@ -134,7 +134,12 @@ public:
     vector<vector<int64_t>> get_matrix() const {
         cout << "Knowledge: copy out a matrix" << endl;
         vector<vector<int64_t>> ret(TOTAL_SERVER_NUMBER + 1, vector<int64_t>(TOTAL_SERVER_NUMBER + 1, 0));
-        memcpy(&ret[0][0], knowledge_vec, (TOTAL_SERVER_NUMBER + 1) * (TOTAL_SERVER_NUMBER + 1) * sizeof (int64_t));
+        for(int i = 0 ; i <= TOTAL_SERVER_NUMBER; ++i) {
+            for (int j = 0; j <= TOTAL_SERVER_NUMBER; ++j) {
+                ret[i][j] = knowledge_vec[i][j];
+            }
+        }
+//        memcpy(&ret[0][0], knowledge_vec, (TOTAL_SERVER_NUMBER + 1) * (TOTAL_SERVER_NUMBER + 1) * sizeof (int64_t));
         return ret;
     }
 private:
