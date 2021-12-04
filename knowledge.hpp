@@ -100,9 +100,11 @@ public:
 
         for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
             for(int i : current_members){
-                if(knowledge_vec[i][j] == max_update_from_server[j] && i == server) {
-                    for(auto k = min_update_from_server[j]; k <= max_update_from_server[j]; ++k) {
-                        ret.emplace_back(j, k);
+                if(knowledge_vec[i][j] == max_update_from_server[j]) {
+                    if(i == server) {
+                        for(auto k = min_update_from_server[j]; k <= max_update_from_server[j]; ++k) {
+                            ret.emplace_back(j, k);
+                        }
                     }
                     break;
                 }
