@@ -92,6 +92,7 @@ public:
 
 private:
     void load_log_from_file_for_server(int i){
+        cout << "LOG: loading log from the file" << endl;
         Update update_tmp;
         int j;
         string log_file_name = to_string(server_id) + "_" + to_string(i) + LOG_FILE_SUFFIX;
@@ -120,6 +121,7 @@ private:
     }
 
     void append_to_log(shared_ptr<Update>& update){
+        cout << "LOG: append update to the file" << endl;
         string log_file_name = to_string(server_id) + "_" + to_string(update->server_id) + LOG_FILE_SUFFIX;
         log_fptr = fopen(log_file_name.c_str(),"a");
         if (log_fptr == nullptr) perror ("7 Error opening file");
@@ -129,6 +131,7 @@ private:
     }
 
     void delete_from_log(const int server, const int64_t & timestamp){
+        cout << "LOG: delete update from the file" << endl;
         int found=0;
         string log_file_name = to_string(server_id) + "_" + to_string(server) + LOG_FILE_SUFFIX;
         string tmp_file_name = to_string(server_id) + "_" + to_string(server) + TEMP_FILE_SUFFIX;

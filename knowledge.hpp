@@ -72,12 +72,12 @@ public:
         cout << " server " << server << " knows that: server at [row] know the newest update from [col] server" << endl;
         cout << "============== The knowledge matrix =============== " << endl;
         for(int server_id = 1; server_id <= TOTAL_SERVER_NUMBER; ++server_id)
-            cout <<"         update from server " << server_id;
+            cout <<"       " << server_id;
         cout << endl;
         for(int server_id = 1; server_id <= TOTAL_SERVER_NUMBER; ++server_id) {
-            cout << "server " << server_id << endl;
+            cout << " " << server_id << endl;
             for(int konws_server_id = 1; konws_server_id <= TOTAL_SERVER_NUMBER; ++konws_server_id) {
-                cout << "                      " << knowledge_vec[server_id][konws_server_id];
+                cout << "       " << knowledge_vec[server_id][konws_server_id];
             }
         }
     }

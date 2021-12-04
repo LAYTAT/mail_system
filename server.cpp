@@ -500,7 +500,7 @@ shared_ptr<Update> get_log_update(){
             new_update->email.header.mail_id[strlen(mail_id_str_to_be_assign.c_str())] = 0; // null character
 //            new_update->email.header.sendtime = get_time();
             cout << "       Server " << server_id
-                 << " put on it logicaltime stamp "
+                 << " put on it logical time stamp "
                  << new_update->timestamp << endl;
             new_update->type = Update::TYPE::NEW_EMAIL;
             break;

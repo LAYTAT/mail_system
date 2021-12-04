@@ -67,7 +67,7 @@ struct Email{
     Email(Email& others) {
         if(&others != this) {
             memcpy(&header, &others.header, sizeof(Mail_Header));
-            memcpy(&msg_str, &others.msg_str, sizeof(EMAIL_CONTENT_LEN));
+            memcpy(&msg_str, &others.msg_str, sizeof(others.msg_str));
         } else {
             cout << "DO NOT DO THIS, IT IS MEANINGLESS." << endl;
         }
