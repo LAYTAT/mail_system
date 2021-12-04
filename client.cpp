@@ -169,7 +169,7 @@ void user_command()
             cin.getline(new_email.header.subject, SUBJECT_LEN);
             cout << "mail content: <content string>" << endl;
             cout << "mail content: ";
-            cin.getline(new_email.msg_str, strlen(new_email.msg_str));
+            cin.getline(new_email.msg_str, EMAIL_CONTENT_LEN);
             memcpy(new_email.header.from_user_name, user_name, strlen(user_name));
             new_email.header.sendtime = get_time();
             Update new_update;
@@ -341,8 +341,8 @@ void response_to_spread(){
                 sort(headers.begin(), headers.end(),[](const Mail_Header & a, const Mail_Header & b) {
                     return a.sendtime > b.sendtime;
                 });
-
-                cout << "/n=====================  Headers of received emails ====================" << endl;
+                cout << endl;
+                cout << "=====================  Headers of received emails ====================" << endl;
                 cout << "Username: " << user_name << endl;
                 cout << "Server: " << server << endl;
                 cout << "Mailbox size: " << headers_buf.size << endl;
