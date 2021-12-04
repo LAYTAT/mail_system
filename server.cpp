@@ -268,7 +268,7 @@ int main(int argc, char * argv[]){
                                 send_to_other_servers();
                             }
                         }
-
+                        
                         if(updates_to_be_sent_range.empty()) {
                             cout << "Reconcile: No need to send anything." << endl;
                         }
