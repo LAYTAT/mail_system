@@ -18,7 +18,7 @@ public:
         if (konwledge_file_ptr == nullptr) {
             cout << "there is no knowledge file, start it from scratch." << endl;
         } else {
-            fread(this, sizeof(int), 1, konwledge_file_ptr);
+            fread(knowledge_vec, sizeof(int), 1, konwledge_file_ptr);
             this->print();
             fclose(konwledge_file_ptr);
         }
@@ -86,7 +86,7 @@ public:
         for(const auto & i : max_update_from_server) cout << i << ", ";
         cout << "]" << endl;
         print();
-        
+
         for(int i : current_members){
             for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
                 if(knowledge_vec[i][j] == max_update_from_server[j] && i == server) {
@@ -137,7 +137,7 @@ private:
         string knowledge_file_str = to_string(server) + KNOWLEDGE_FILE_SUFFIX;
         auto konwledge_file_ptr = fopen(knowledge_file_str.c_str(),"w");
         if (konwledge_file_ptr == nullptr) perror ("20 Error opening file");
-        fwrite(this, sizeof(Knowledge), 1, konwledge_file_ptr);
+        fwrite(knowledge_vec, (TOTAL_SERVER_NUMBER + 1)*(TOTAL_SERVER_NUMBER + 1) , 1, konwledge_file_ptr);
         fclose(konwledge_file_ptr);
     }
 

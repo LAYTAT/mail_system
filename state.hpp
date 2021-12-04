@@ -12,7 +12,7 @@ class State{
 public:
     State(const State&) = delete;
     State& operator=(const State &) = delete;
-    State(int server_id):user_2_mailbox(), mail_id_2_email(), server(server_id), server_timestamp(0), server_knowledge(server_id){
+    State(int server_id):user_2_mailbox(), mail_id_2_email(), server_knowledge(server_id), server(server_id), server_timestamp(0){
         cout << "State: init from file" << endl;
         load_state_from_file();
         cout << "   STATE initialized" << endl;
