@@ -9,7 +9,8 @@
 
 class Knowledge {
 public:
-    Knowledge(int server_id = -1):server(server_id){
+    Knowledge() = default;
+    explicit Knowledge(int server_id):server(server_id){
         //load knowledge from file
         cout << "Knowledge: loading knowledge from file." << endl;
         string knowledge_file_str = to_string(server) + KNOWLEDGE_FILE_SUFFIX;
