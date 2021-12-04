@@ -110,9 +110,8 @@ public:
                 }
             }
         }
-        if(ret.empty()) {
-            cout << "Knowledge: server " << server << " does not need to send anything " << endl;
-        }
+        cout << "Knowledge: number of updates server " << server << " need to send: "<< ret.size() << endl;
+        return ret;
     }
 
     bool is_update_needed(int other_server_id, const int64_t& timestamp) {
