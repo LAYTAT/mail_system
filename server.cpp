@@ -89,7 +89,7 @@ int main(int argc, char * argv[]){
         if (Is_regular_mess( service_type )) {
             switch (rcv_buf.type) {
                 case Message::TYPE::NEW_CONNECTION: { //
-                    cout << "new connection from client." << endl;
+                    cout << "NEW_CONNECTION: new connection from client." << endl;
                     char client_server_group[rcv_buf.size];
                     memcpy(client_server_group, rcv_buf.data, rcv_buf.size);
                     cout << "   where I am server " << server_id << " and I am gonna join group: "
@@ -99,7 +99,7 @@ int main(int argc, char * argv[]){
                 }
 
                 case Message::TYPE::LIST : { // send back headers for a user
-                    cout << sender_group << " has request a LIST." << endl;
+                    cout << "LIST: " << sender_group << " has request a LIST." << endl;
                     char read_request_user_name[rcv_buf.size];
                     memcpy(read_request_user_name, rcv_buf.data, rcv_buf.size);
                     string read_request_user_name_str(read_request_user_name, rcv_buf.size);
@@ -122,7 +122,7 @@ int main(int argc, char * argv[]){
                 }
 
                 case Message::TYPE::NEW_EMAIL: { // add a new email in one user's mailbox and send this update to other servers
-                    cout << sender_group << " has request a NEW_EMAIL." << endl;
+                    cout << "NEW_EMAIL:" << sender_group << " has request a NEW_EMAIL." << endl;
 
                     // receive
                     auto rcvd_new_update = get_log_update();
@@ -145,7 +145,7 @@ int main(int argc, char * argv[]){
                 }
 
                 case Message::TYPE::READ : { // mark email as read and send back the email content
-                    cout << sender_group << " has request a READ." << endl;
+                    cout << "READ: " << sender_group << " has request a READ." << endl;
 
                     // receive
                     auto ret_update = get_log_update();
@@ -170,7 +170,7 @@ int main(int argc, char * argv[]){
                 }
 
                 case Message::TYPE::DELETE : { // delete email
-                    cout << sender_group << " has request a DELETE." << endl;
+                    cout << "DELETE: " << sender_group << " has request a DELETE." << endl;
 
                     // receive
                     auto new_update = get_log_update();
@@ -194,12 +194,12 @@ int main(int argc, char * argv[]){
                 }
 
                 case Message::TYPE::MEMBERSHIPS : { // user request for listing membership
-                    cout << sender_group << " has request a MEMBERSHIPS." << endl;
+                    cout << "MEMBERSHIPS" << sender_group << " has request a MEMBERSHIPS." << endl;
                     string ret_str = "000000";
                     for(auto server_idx : servers_group_member_set) {
                         ret_str[server_idx] = '1';
                     }
-                    cout << "     replying to " << sender_group << " with " << ret_str << endl;
+                    cout << "MEMBERSHIPS:     replying to " << sender_group << " with " << ret_str << endl;
                     int ret_str_len = strlen(ret_str.c_str());
                     snd_buf.size = ret_str_len;
                     snd_buf.type = Message::TYPE::MEMBERSHIPS;
@@ -216,13 +216,13 @@ int main(int argc, char * argv[]){
                     memcpy(rcvd_update.get(), rcv_buf.data, sizeof (Update));
 
                     if(!server_state->is_update_needed(rcvd_update)) {
-                        cout << "update not needed." << endl;
+                        cout << "UPDATE: update not needed." << endl;
                         break;
                     }
 
                     // if my own update
                     if(rcvd_update->server_id == server_id) {
-                        cout << "Received my own update, dismissed." << endl;
+                        cout << "UPDATE: Received my own update, dismissed." << endl;
                         break;
                     }
 
@@ -244,7 +244,7 @@ int main(int argc, char * argv[]){
                     cout << "Knowledge: Current collection size = " << knowledge_collection.size() << endl;
 
                     if(knowledge_collection.size() == servers_group_member_set.size()) {
-                        cout << " My knowledge is enought to reconcile now! " << endl;
+                        cout << "Reconcile: My knowledge is enough to reconcile now! " << endl;
                         server_state->update_knowledge(knowledge_collection);
                         server_log->log_file_cleanup_according_to_knowledge(server_state->get_knowledge());
                         auto updates_to_be_sent = server_state->get_sending_updates(servers_group_member_set);
@@ -253,6 +253,9 @@ int main(int argc, char * argv[]){
                             snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
                             memcpy(snd_to_servers_grp_buf.data, update_to_send.get(), sizeof(Update));
                             send_to_other_servers();
+                        }
+                        if(updates_to_be_sent.size() == 0) {
+                            cout << "Reconcile: No need to send anything." << endl;
                         }
                     }
 
