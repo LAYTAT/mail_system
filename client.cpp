@@ -342,7 +342,7 @@ void response_to_spread(){
                     return a.sendtime > b.sendtime;
                 });
 
-                cout << "=====================  Headers of received emails ====================" << endl;
+                cout << "/n=====================  Headers of received emails ====================" << endl;
                 cout << "Username: " << user_name << endl;
                 cout << "Server: " << server << endl;
                 cout << "Mailbox size: " << headers_buf.size << endl;

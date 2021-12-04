@@ -159,6 +159,8 @@ int main(int argc, char * argv[]){
                     // response to client
                     memcpy(snd_buf.data, &ret_update->email, sizeof(Email));
                     snd_buf.type = Message::TYPE::READ;
+                    cout << "This is the email content to return " << endl;
+                    ((Email*)snd_buf.data)->print();
                     send_to_client(sender_group);
 
                     // share the update with other servers

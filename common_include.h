@@ -74,9 +74,14 @@ struct Email{
     }
 
     void print(){
-        cout << "   This is the email:";
+        cout << "=========Email Print============" << endl;
+        cout << "This is the email:" << endl;
         header.print();
-        cout << "       Content: " << msg_str << endl;
+        cout << "   Content: " << msg_str << endl;
+        cout << "This is the email:" << endl;
+        header.print();
+        cout << "   Content: " << msg_str << endl;
+        cout << "================================" << endl;
     }
 
     Mail_Header get_header_copy(){
