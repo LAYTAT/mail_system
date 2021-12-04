@@ -75,12 +75,9 @@ struct Email{
 
     void print(){
         cout << "=========Email Print============" << endl;
-        cout << "This is the email:" << endl;
         header.print();
-        cout << "   Content: " << msg_str << endl;
-        cout << "This is the email:" << endl;
-        header.print();
-        cout << "   Content: " << msg_str << endl;
+        cout << "       Content: " << endl;
+        cout << "                " << msg_str << endl;
         cout << "================================" << endl;
     }
 

@@ -169,7 +169,7 @@ void user_command()
             cin.getline(new_email.header.subject, SUBJECT_LEN);
             cout << "mail content: <content string>" << endl;
             cout << "mail content: ";
-            cin.getline(new_email.msg_str, EMAIL_CONTENT_LEN);
+            cin.getline(new_email.msg_str, strlen(new_email.msg_str));
             memcpy(new_email.header.from_user_name, user_name, strlen(user_name));
             new_email.header.sendtime = get_time();
             Update new_update;

@@ -498,7 +498,7 @@ shared_ptr<Update> get_log_update(){
             string mail_id_str_to_be_assign = to_string(server_id) + to_string(new_update->timestamp);
             memcpy(new_update->email.header.mail_id, mail_id_str_to_be_assign.c_str(), strlen(mail_id_str_to_be_assign.c_str()));
             new_update->email.header.mail_id[strlen(mail_id_str_to_be_assign.c_str())] = 0; // null character
-            new_update->email.header.sendtime = get_time();
+//            new_update->email.header.sendtime = get_time();
             cout << "       Server " << server_id
                  << " put on it logicaltime stamp "
                  << new_update->timestamp << endl;
