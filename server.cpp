@@ -253,10 +253,10 @@ int main(int argc, char * argv[]){
                         server_log->log_file_cleanup_according_to_knowledge(server_state->get_knowledge());
                         auto updates_to_be_sent = server_state->get_sending_updates(servers_group_member_set);
                         for (const auto& update_info_pair : updates_to_be_sent) {
+                            cout << "Reconcile: need to send update " <<  update_info_pair.second << " from server " << update_info_pair.first << endl;
                             auto update_to_send = server_log->get_update_ptr(update_info_pair);
                             snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
-                            cout << "Reconcile: Sending update from " << update_to_send->server_id
-                            << " with timestamp " << update_to_send->timestamp << endl;
+                            cout << "Reconcile: Sending update from " << update_to_send->server_id << " with timestamp " << update_to_send->timestamp << endl;
                             memcpy(snd_to_servers_grp_buf.data, update_to_send.get(), sizeof(Update));
                             send_to_other_servers();
                         }
@@ -382,7 +382,6 @@ int main(int argc, char * argv[]){
 }
 
 void reconcile_start(){
-    cout << "reconciling!" << endl;
     knowledge_collection.clear();
 
     // send knowledge to other servers

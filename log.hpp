@@ -91,6 +91,7 @@ public:
     }
 
     shared_ptr<Update> get_update_ptr(const pair<int, int64_t> & key) {
+        assert(id_2_update.count(key) == 1);
         return id_2_update[key];
     }
 
