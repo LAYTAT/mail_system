@@ -110,7 +110,9 @@ public:
                 }
             }
         }
-
+        if(ret.empty()) {
+            cout << "Knowledge: server " << server << " does not need to send anything " << endl;
+        }
     }
 
     bool is_update_needed(int other_server_id, const int64_t& timestamp) {
