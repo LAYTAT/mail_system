@@ -90,6 +90,7 @@ public:
         cout << "]" << endl;
         print();
 
+        cout << "Knowledge: current server = " << server << endl;
         cout << "Knowledge: current_members = [";
         for(int i : current_members){
             cout << i << ", " ;
@@ -98,6 +99,7 @@ public:
                     for(auto k = min_update_from_server[j]; k <= max_update_from_server[j]; ++k) {
                         ret.emplace_back(j, k);
                     }
+                    break;
                 }
             }
         }
