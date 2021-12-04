@@ -139,7 +139,7 @@ public:
         if (timestamp_file_ptr == nullptr)
             perror ("1 Error opening file");
         fwrite(&server_timestamp, sizeof(int), 1, timestamp_file_ptr);
-        fclose(state_fptr);
+        fclose(timestamp_file_ptr);
 
         return server_timestamp;
     }
