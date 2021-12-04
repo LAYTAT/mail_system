@@ -117,6 +117,9 @@ void user_command()
             snd_buf.size = strlen(client_server_group.c_str());
             memcpy(&snd_buf.data, client_server_group.c_str(), strlen(client_server_group.c_str())); //email:   client_server_group + spread_private_group
             send_to_server();
+
+            connected = false; // only where the server join the client-server group is when client is connected to server
+
             break;
 
         case 'u': // login as user
