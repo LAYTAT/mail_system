@@ -18,7 +18,7 @@ public:
         if (konwledge_file_ptr == nullptr) {
             cout << "there is no knowledge file, start it from scratch." << endl;
         } else {
-            fread(knowledge_vec, sizeof(int), 1, konwledge_file_ptr);
+            fread(knowledge_vec, (TOTAL_SERVER_NUMBER + 1)*(TOTAL_SERVER_NUMBER + 1) * sizeof (int64_t), 1, konwledge_file_ptr);
             this->print();
             fclose(konwledge_file_ptr);
         }
@@ -117,7 +117,7 @@ public:
     }
 
     void print() const {
-        cout << " server " << server << " knows that: \n server at [row] know the newest update from [col] server" << endl;
+//        cout << " server " << server << " knows that: \n server at [row] know the newest update from [col] server" << endl;
         cout << "============== The knowledge matrix =============== " << endl;
         for(int server_id = 1; server_id <= TOTAL_SERVER_NUMBER; ++server_id)
             cout <<"       " << server_id;
@@ -134,7 +134,7 @@ public:
     vector<vector<int64_t>> get_matrix() const {
         cout << "Knowledge: copy out a matrix" << endl;
         vector<vector<int64_t>> ret(TOTAL_SERVER_NUMBER + 1, vector<int64_t>(TOTAL_SERVER_NUMBER + 1, 0));
-        memcpy(&ret[0][0], knowledge_vec, (TOTAL_SERVER_NUMBER + 1) * (TOTAL_SERVER_NUMBER + 1));
+        memcpy(&ret[0][0], knowledge_vec, (TOTAL_SERVER_NUMBER + 1) * (TOTAL_SERVER_NUMBER + 1) * sizeof (int64_t));
         return ret;
     }
 private:
@@ -143,7 +143,7 @@ private:
         string knowledge_file_str = to_string(server) + KNOWLEDGE_FILE_SUFFIX;
         auto konwledge_file_ptr = fopen(knowledge_file_str.c_str(),"w");
         if (konwledge_file_ptr == nullptr) perror ("20 Error opening file");
-        fwrite(knowledge_vec, (TOTAL_SERVER_NUMBER + 1)*(TOTAL_SERVER_NUMBER + 1) , 1, konwledge_file_ptr);
+        fwrite(knowledge_vec, (TOTAL_SERVER_NUMBER + 1)*(TOTAL_SERVER_NUMBER + 1) * sizeof (int64_t), 1, konwledge_file_ptr);
         fclose(konwledge_file_ptr);
     }
 
