@@ -30,7 +30,7 @@ public:
 
     // Update on the current server’s knowledge matrix
     // using the received knowledge matrix from other servers.
-    void update_my_knowledge_with_other_knowledge(const Knowledge & other_knowledge) {
+    void update_knowledge_with_other_knowledge(const Knowledge & other_knowledge) {
         cout << "Knowledge: update whole matrix with others matrix" << endl;
         const auto other_matrix = other_knowledge.get_matrix();
         for(int i = 1; i <= TOTAL_SERVER_NUMBER ; ++i ) {
@@ -42,15 +42,19 @@ public:
                 }
             }
         }
-        // TODO: write to file
-
+        //write to file
+        save_update_to_file();
     }
 
     // change knowledge only in the current server row
-    void update_my_own_knowledge(const shared_ptr<Update>& executed_update) {
+    void update_knowledge_with_update(const shared_ptr<Update>& executed_update) {
         cout << "Knowledge: update what this server know in the matrix" << endl;
+        cout << "current server(" << server <<") used to have newest update from " << executed_update->server_id
+        << " is " <<  knowledge_vec[server][executed_update->server_id]
+        << " now it is " << executed_update->timestamp << endl;
         knowledge_vec[server][executed_update->server_id] = executed_update->timestamp;
-        // TODO: write to file
+        //write to file
+        save_update_to_file();
     }
 
     int get_server() const{
@@ -95,13 +99,13 @@ public:
     }
 
     void print(){
-        cout << " server " << server << " knows that: server at [row] know the newest update from [col] server" << endl;
+        cout << " server " << server << " knows that: \n server at [row] know the newest update from [col] server" << endl;
         cout << "============== The knowledge matrix =============== " << endl;
         for(int server_id = 1; server_id <= TOTAL_SERVER_NUMBER; ++server_id)
             cout <<"       " << server_id;
         cout << endl;
         for(int server_id = 1; server_id <= TOTAL_SERVER_NUMBER; ++server_id) {
-            cout << " " << server_id;
+            cout << server_id;
             for(int konws_server_id = 1; konws_server_id <= TOTAL_SERVER_NUMBER; ++konws_server_id) {
                 cout << "       " << knowledge_vec[server_id][konws_server_id];
             }

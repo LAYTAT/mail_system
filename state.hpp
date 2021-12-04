@@ -32,7 +32,7 @@ public:
     void update_knowledge(const vector<Knowledge> & other_knowledges){
         cout << "State: update my knowledge " << endl;
         for(const auto & k : other_knowledges) {
-            server_knowledge.update_my_knowledge_with_other_knowledge(k);
+            server_knowledge.update_knowledge_with_other_knowledge(k);
         }
     }
 
@@ -98,7 +98,7 @@ public:
         }
 
         // update my own knowledge
-        server_knowledge.update_my_own_knowledge(update);
+        server_knowledge.update_knowledge_with_update(update);
     }
 
     vector<Mail_Header> get_header_list(const string & username){

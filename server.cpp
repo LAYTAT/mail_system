@@ -211,11 +211,13 @@ int main(int argc, char * argv[]){
                 }
 
                 case Message::TYPE::UPDATE : { // process update from the servers_group
-                    cout << sender_group << " has request a Update." << endl;
+                    cout << sender_group << "UPDATE: received an Update." << endl;
 
                     // receive
                     auto rcvd_update = make_shared<Update>();
                     memcpy(rcvd_update.get(), rcv_buf.data, sizeof (Update));
+                    cout << "from server " << rcvd_update->server_id
+                    << ", timestamp = " << rcvd_update->timestamp << endl;
 
                     if(!server_state->is_update_needed(rcvd_update)) {
                         cout << "UPDATE: update not needed." << endl;
