@@ -92,9 +92,14 @@ public:
 
         cout << "Knowledge: current server = " << server << endl;
         cout << "Knowledge: current_members = [";
-        for(int i : current_members){
+        for(int i : current_members) {
             cout << i << ", " ;
-            for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
+        }
+        cout << "]" << endl;
+
+
+        for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
+            for(int i : current_members){
                 if(knowledge_vec[i][j] == max_update_from_server[j] && i == server) {
                     for(auto k = min_update_from_server[j]; k <= max_update_from_server[j]; ++k) {
                         ret.emplace_back(j, k);
@@ -103,7 +108,7 @@ public:
                 }
             }
         }
-        cout << "]" << endl;
+
     }
 
     bool is_update_needed(int other_server_id, const int64_t& timestamp) {
