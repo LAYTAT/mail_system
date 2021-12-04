@@ -255,6 +255,8 @@ int main(int argc, char * argv[]){
                         for (const auto& update_info_pair : updates_to_be_sent) {
                             auto update_to_send = server_log->get_update_ptr(update_info_pair);
                             snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
+                            cout << "Reconcile: Sending update from " << update_to_send->server_id
+                            << " with timestamp " << update_to_send->timestamp << endl;
                             memcpy(snd_to_servers_grp_buf.data, update_to_send.get(), sizeof(Update));
                             send_to_other_servers();
                         }
