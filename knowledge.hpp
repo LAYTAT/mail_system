@@ -34,6 +34,8 @@ public:
     void update_knowledge_with_other_knowledge(const Knowledge & other_knowledge) {
         cout << "Knowledge: update whole matrix with matrix from server "<< other_knowledge.get_server() << endl;
         const auto other_matrix = other_knowledge.get_matrix();
+        cout << "Knowledge: this is the knowledge matrix from server "<< other_knowledge.get_server() << endl;
+        other_knowledge.print();
         for(int i = 1; i <= TOTAL_SERVER_NUMBER ; ++i ) {
             if(i == server)
                 continue;
@@ -43,6 +45,7 @@ public:
                 }
             }
         }
+        cout << "Knowledge: After update my matrix." << endl;
         print();
         //write to file
         save_update_to_file();
@@ -87,7 +90,9 @@ public:
         cout << "]" << endl;
         print();
 
+        cout << "Knowledge: current_members = [";
         for(int i : current_members){
+            cout << i << ", " ;
             for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
                 if(knowledge_vec[i][j] == max_update_from_server[j] && i == server) {
                     for(auto k = min_update_from_server[j]; k <= max_update_from_server[j]; ++k) {
@@ -96,6 +101,7 @@ public:
                 }
             }
         }
+        cout << "]" << endl;
     }
 
     bool is_update_needed(int other_server_id, const int64_t& timestamp) {
@@ -110,7 +116,7 @@ public:
         return true;
     }
 
-    void print(){
+    void print() const {
         cout << " server " << server << " knows that: \n server at [row] know the newest update from [col] server" << endl;
         cout << "============== The knowledge matrix =============== " << endl;
         for(int server_id = 1; server_id <= TOTAL_SERVER_NUMBER; ++server_id)
