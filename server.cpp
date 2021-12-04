@@ -247,7 +247,7 @@ int main(int argc, char * argv[]){
                     knowledge_collection.push_back(rcvd_knowledge);
                     cout << "Knowledge: Current collection size = " << knowledge_collection.size() << endl;
 
-                    if(knowledge_collection.size() == servers_group_member_set.size()) {
+                    if(servers_group_member_set.size() > 1 && knowledge_collection.size() == servers_group_member_set.size()) {
                         cout << "Reconcile: My knowledge is enough to reconcile now! " << endl;
                         server_state->update_knowledge(knowledge_collection);
                         server_log->log_file_cleanup_according_to_knowledge(server_state->get_knowledge());
