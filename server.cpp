@@ -238,7 +238,7 @@ int main(int argc, char * argv[]){
                 }
 
                 case Message::TYPE::KNOWLEDGE_EXCHANGE: {
-                    Knowledge rcvd_knowledge;
+                    Knowledge rcvd_knowledge(server_id);
                     memcpy(&rcvd_knowledge, rcv_buf.data, sizeof (Knowledge));
 
                     cout << "Knowledge: Received knowledge from server " << rcvd_knowledge.get_server() << endl;

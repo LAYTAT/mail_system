@@ -27,7 +27,7 @@ public:
     }
 
     void print_all_updates() {
-        cout << " This is all the update on this server " << endl;
+        cout << "Log: This is all the update on this server " << endl;
         for(const auto & p : server_2_update_ids) {
             const auto & server_id_ = p.first;
             const auto & update_ids_ = p.second;
@@ -48,6 +48,7 @@ public:
     }
 
     void log_file_cleanup_according_to_knowledge(const vector<vector<int64_t>>& knowledge) {
+        cout << "Log: garbage collection." << endl;
         vector<int64_t> min_update_from_server(TOTAL_SERVER_NUMBER + 1, 0);
         for(int i = 1; i <= TOTAL_SERVER_NUMBER; ++i ){
             for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
@@ -69,6 +70,7 @@ public:
 
     // add an update to the log file
     void add_to_log(shared_ptr<Update> update) {
+        cout << "Log: adding update to log." << endl;
         assert(update != nullptr);
         assert(server_2_update_ids[update->server_id].count(update->timestamp) == 0); // there is no such update before
 
@@ -80,6 +82,8 @@ public:
 
     // delete update to an update
     void delete_update(const int server_id_, const int64_t & timestamp) {
+        cout << "Log: delete update from log." << endl;
+
         assert(server_2_update_ids.count(server_id_) == 1); // must have it before delete it
         server_2_update_ids[server_id_].erase(timestamp); // do not preserve this update for this server
         id_2_update.erase({server_id_,timestamp}); // do not preserve this update in memory
@@ -121,7 +125,7 @@ private:
     }
 
     void append_to_log(shared_ptr<Update>& update){
-        cout << "LOG: append update to the file" << endl;
+        cout << "Log: append update to the file" << endl;
         string log_file_name = to_string(server_id) + "_" + to_string(update->server_id) + LOG_FILE_SUFFIX;
         log_fptr = fopen(log_file_name.c_str(),"a");
         if (log_fptr == nullptr) perror ("7 Error opening file");
@@ -131,7 +135,7 @@ private:
     }
 
     void delete_from_log(const int server, const int64_t & timestamp){
-        cout << "LOG: delete update from the file" << endl;
+        cout << "Log: delete update from the file" << endl;
         int found=0;
         string log_file_name = to_string(server_id) + "_" + to_string(server) + LOG_FILE_SUFFIX;
         string tmp_file_name = to_string(server_id) + "_" + to_string(server) + TEMP_FILE_SUFFIX;

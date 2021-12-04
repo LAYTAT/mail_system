@@ -13,22 +13,26 @@ public:
     State(const State&) = delete;
     State& operator=(const State &) = delete;
     State(int server_id):user_2_mailbox(), mail_id_2_email(), server(server_id), server_timestamp(0), server_knowledge(server_id){
+        cout << "State: init from file" << endl;
         load_state_from_file();
         cout << "   STATE initialized" << endl;
         print_all_mails();
     }
 
     vector<vector<int64_t>> get_knowledge() const {
+        cout << "State: copy out knowledge array." << endl;
         return server_knowledge.get_matrix();
     }
 
     Knowledge get_knowledge_copy(){
+        cout << "State: copy out knowledge," << endl;
         return server_knowledge;
     }
 
     void update_knowledge(const vector<Knowledge> & other_knowledges){
+        cout << "State: update my knowledge " << endl;
         for(const auto & k : other_knowledges) {
-            server_knowledge.update_my_knowledge(k);
+            server_knowledge.update_my_knowledge_with_other_knowledge(k);
         }
     }
 
@@ -37,7 +41,7 @@ public:
     }
 
     const Email_Box& get_email_box(const string & username) {
-        cout << " get email box of user " << username << endl;
+        cout << "State: get email box of user " << username << endl;
         if(user_2_mailbox.count(username) == 0) {
             cout << " Here is nothing for user " << username <<
             ", creating a empty mailbox for it." << endl;
@@ -51,8 +55,12 @@ public:
 
     void update(shared_ptr<Update> update) {
         // write this update to file
-        cout << "       update the state." << endl;
+        cout << "State: Update the state." << endl;
+
+        // change state in hard drive
         update_state_file(update);
+
+        // change state in ram
         switch (update->type) {
             case Update::TYPE::NEW_EMAIL:
                 new_email(make_shared<Email>(update->email));
@@ -88,10 +96,13 @@ public:
                 cout << " a type is not dealt with " << endl;
                 break;
         }
+
+        // update my own knowledge
+        server_knowledge.update_my_own_knowledge(update);
     }
 
     vector<Mail_Header> get_header_list(const string & username){
-        cout << " get header list for user " << username << endl;
+        cout << "State: get header list for user " << username << endl;
         const auto& mailbox = get_email_box(username);
         cout << "   user " << username << " has " << mailbox.size()
         << " emails in his inbox" << endl;
@@ -105,7 +116,7 @@ public:
     }
 
     void print_all_mails(){
-        cout << "This is all the mails on this server " << endl;
+        cout << "State: This is all the mails on this server " << endl;
         for(const auto & p : user_2_mailbox) {
             const auto & user = p.first;
             const auto & mailbox = p.second;
@@ -146,6 +157,8 @@ public:
 
 private:
     void load_state_from_file(){
+        cout << "State: load state from the file " << endl;
+
         // load the email from file
         Email email_tmp;
         string state_file_str = to_string(server) + "." + STATE_FILE_NAME;
@@ -177,20 +190,11 @@ private:
             fread(&server_timestamp, sizeof(int), 1, timestamp_file_ptr);
         cout << " this is the init timestamp for server " << server << " :  " << server_timestamp << endl;
         fclose(timestamp_file_ptr);
-
-        //load knowledge from file
-        string knowledge_file_str = to_string(server) + KNOWLEDGE_FILE_SUFFIX;
-        auto konwledge_file_ptr = fopen(knowledge_file_str.c_str(),"r");
-        if (konwledge_file_ptr == nullptr) {
-            konwledge_file_ptr = fopen(timestamp_file_str.c_str(),"w");
-            if (konwledge_file_ptr == nullptr) perror ("20 Error opening file");
-        } else
-            fread(&server_knowledge, sizeof(int), 1, konwledge_file_ptr);
-        server_knowledge.print();
-        fclose(konwledge_file_ptr);
     }
 
     void update_state_file(shared_ptr<Update>& update) {
+        cout << "State: update state with an update " << endl;
+
         string state_file_str = to_string(server) + "." + STATE_FILE_NAME;
         string tmp_state_file_str = to_string(server) + "." + TEMP_FILE_NAME;
         switch (update->type) {
@@ -310,6 +314,7 @@ private:
     }
 
     Email get_email(const string & mail_id) {
+        cout << "State: copy out email " << mail_id << endl;
         assert(mail_id_2_email.count(mail_id) == 1);
         return *mail_id_2_email[mail_id];
     }
