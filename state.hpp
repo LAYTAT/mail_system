@@ -36,8 +36,8 @@ public:
         }
     }
 
-    vector<pair<int, int64_t>> get_sending_updates(const set<int> & current_members){
-        return server_knowledge.get_sending_updates(current_members);
+    vector<tuple<int, int64_t, int64_t>> get_sending_updates_range(const set<int> & current_members){
+        return server_knowledge.get_sending_updates_range(current_members);
     }
 
     const Email_Box& get_email_box(const string & username) {

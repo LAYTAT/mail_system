@@ -95,6 +95,14 @@ public:
         return id_2_update[key];
     }
 
+    vector<shared_ptr<Update>> get_updates_of_server(int server_) {
+        vector<shared_ptr<Update>>  ret;
+        for (const auto & update_id : server_2_update_ids[server_]) {
+            ret.push_back(get_update_ptr({server_,update_id}));
+        }
+        return ret;
+    }
+
 private:
     void load_log_from_file_for_server(int i){
         cout << "LOG: loading log from the file" << endl;

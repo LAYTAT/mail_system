@@ -251,15 +251,24 @@ int main(int argc, char * argv[]){
                         cout << "Reconcile: My knowledge is enough to reconcile now! " << endl;
                         server_state->update_knowledge(knowledge_collection);
                         server_log->log_file_cleanup_according_to_knowledge(server_state->get_knowledge());
-                        auto updates_to_be_sent = server_state->get_sending_updates(servers_group_member_set);
-                        for (const auto& update_info_pair : updates_to_be_sent) {
-                            cout << "Reconcile: need to send update " <<  update_info_pair.second << " from server " << update_info_pair.first << endl;
-                            auto update_to_send = server_log->get_update_ptr(update_info_pair);
-                            snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
-                            cout << "Reconcile: Sending update from " << update_to_send->server_id << " with timestamp " << update_to_send->timestamp << endl;
-                            memcpy(snd_to_servers_grp_buf.data, update_to_send.get(), sizeof(Update));
-                            send_to_other_servers();
+                        auto updates_to_be_sent_range = server_state->get_sending_updates_range(servers_group_member_set);
+
+                        for(const auto & update_to_send_info : updates_to_be_sent_range) {
+                            auto server_    = get<0>(update_to_send_info);
+                            auto start_     = get<1>(update_to_send_info);
+                            auto end_       = get<2>(update_to_send_info);
+                            cout << "Reconcile: need to send update [" << start_ << ","
+                            << end_ << "] from server " << server_<< endl;
+
+                            const auto updates_to_send = server_log->get_updates_of_server(server_);
+                            for(const auto& update_to_send : updates_to_send) {
+                                snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
+                                cout << "Reconcile: Sending update from " << update_to_send->server_id << " with timestamp " << update_to_send->timestamp << endl;
+                                memcpy(snd_to_servers_grp_buf.data, update_to_send.get(), sizeof(Update));
+                                send_to_other_servers();
+                            }
                         }
+
                         if(updates_to_be_sent.size() == 0) {
                             cout << "Reconcile: No need to send anything." << endl;
                         }

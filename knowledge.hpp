@@ -70,9 +70,9 @@ public:
     // return all the updates that the current server should send to other server
     // for updates from each server, the one who knows the most and has the smaller
     // server_id will be the one who sends all these needed updates
-    vector<pair<int, int64_t>> get_sending_updates(const set<int> & current_members){
+    vector<tuple<int, int64_t, int64_t>> get_sending_updates_range(const set<int> & current_members){
         cout << "Knowledge: get needed updates from this server" << endl;
-        vector<pair<int, int64_t>> ret;
+        vector<tuple<int, int64_t, int64_t>> ret;
         vector<int64_t> max_update_from_server(TOTAL_SERVER_NUMBER + 1, 0);
         vector<int64_t> min_update_from_server(TOTAL_SERVER_NUMBER + 1, 0);
         for(int i : current_members){
@@ -104,9 +104,7 @@ public:
             for(int i : current_members){
                 if(knowledge_vec[i][j] == max_update_from_server[j]) {
                     if(i == server) {
-                        for(auto k = min_update_from_server[j]; k <= max_update_from_server[j]; ++k) {
-                            ret.emplace_back(j, k);
-                        }
+                        ret.emplace_back(j, min_update_from_server[j], max_update_from_server[j]);
                     }
                     break;
                 }
