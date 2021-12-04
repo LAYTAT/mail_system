@@ -25,7 +25,7 @@ public:
         print();
         cout << "load knowledge from file complete." << endl;
     }
-    
+
     ~Knowledge()= default;
     Knowledge& operator=(Knowledge &) = delete;
 
@@ -43,6 +43,7 @@ public:
                 }
             }
         }
+        print();
         //write to file
         save_update_to_file();
     }
@@ -77,6 +78,15 @@ public:
                 min_update_from_server[j] = min(min_update_from_server[j], knowledge_vec[i][j]);
             }
         }
+
+        cout << "Knowledge: This is the min update: [";
+        for(const auto & i : min_update_from_server) cout << i << ", ";
+        cout << "]" << endl;
+        cout << "Knowledge: This is the max update: [";
+        for(const auto & i : max_update_from_server) cout << i << ", ";
+        cout << "]" << endl;
+        print();
+        
         for(int i : current_members){
             for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
                 if(knowledge_vec[i][j] == max_update_from_server[j] && i == server) {
