@@ -12,6 +12,7 @@
 #include <ctime>
 #include "common_include.h"
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 
