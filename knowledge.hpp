@@ -25,7 +25,7 @@ public:
         print();
         cout << "load knowledge from file complete." << endl;
     }
-    Knowledge() = delete;
+    
     ~Knowledge()= default;
     Knowledge& operator=(Knowledge &) = delete;
 
