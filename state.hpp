@@ -8,6 +8,17 @@
 #include "knowledge.hpp"
 #include <set>
 
+struct Reconcile_Entry {
+    Reconcile_Entry() = default;
+    Reconcile_Entry(const string& mail_id_str, bool read) {
+        assert(strlen(mail_id_str.c_str()) < MAX_MAIL_ID_LEN);
+        memcpy(mail_id, mail_id_str.c_str(), strlen(mail_id_str.c_str()));
+        is_read = read;
+    }
+    char mail_id[MAX_MAIL_ID_LEN] = "default_mail_id";
+    bool is_read; // if not read, it is for deletion
+};
+
 class State{
 public:
     State(const State&) = delete;
@@ -15,7 +26,9 @@ public:
     State(int server_id):user_2_mailbox(), mail_id_2_email(), server_knowledge(server_id), server(server_id), server_timestamp(0){
         cout << "State: init from file" << endl;
         load_state_from_file();
-        cout << "   STATE initialized" << endl;
+        cout << "State: loading aux from file " << endl;
+        load_state_aux_from_file();
+        cout << "State: initialized" << endl;
         print_all_mails();
     }
 
@@ -57,36 +70,83 @@ public:
         // write this update to file
         cout << "State: Update the state." << endl;
 
-        // change state in hard drive
-        update_state_file(update);
-
         // change state in ram
         switch (update->type) {
             case Update::TYPE::NEW_EMAIL:
-                new_email(make_shared<Email>(update->email));
+                new_email(update);
                 break;
             case Update::TYPE::READ: {
-                cout << "           read email " << update->mail_id << " from RAM" << endl;
-                assert(mail_id_2_email.count(update->mail_id) == 1);
+                cout << "State:         read email " << update->mail_id << " from RAM" << endl;
+                if(mail_id_2_email.count(update->mail_id) == 0){
+                    cout << "State:             This mail is deleted already or not received." << endl;
+                    cout << "State:             Creating a dummy email." << endl;
+
+                    // create a dummy email in ram
+                    auto dummy_email = make_shared<Email>(update->email);
+                    memcpy(dummy_email->header.mail_id, update->mail_id, strlen(update->mail_id));
+                    dummy_email->header.read_state = true;
+                    read_emails.insert(update->mail_id); // mark this email as read
+                    mail_id_2_email[update->mail_id] = dummy_email;
+                    user_2_mailbox[update->email.header.to_user_name].insert(update->mail_id); // there is no content currently
+
+                    // add aux to file in case it crashes
+                    Reconcile_Entry entry_(update->mail_id, true);
+                    append_aux_to_file(entry_);
+
+                    // write dummy email into file in case of crashes
+                    cout << "State:                 Append new email in file" << endl;
+                    string state_file_str = to_string(server) + "." + STATE_FILE_NAME;
+                    state_fptr = fopen(state_file_str.c_str(),"a");
+                    if (state_fptr == nullptr) perror ("25 Error opening file");
+                    fwrite(dummy_email.get(), sizeof(Email), 1, state_fptr);
+                    fclose(state_fptr);
+                    break;
+                }
+
+                // change state in hard drive
+                update_state_file(update);
+
+                // Change state in RAM
                 mail_id_2_email[update->mail_id]->header.read_state = true;
-                update -> email = get_email(update->mail_id); // for return to user
+                update -> email = get_email(update->mail_id); // for return to user if needed
+
                 break;
             }
 
             case Update::TYPE::DELETE: {
-                cout << "           delete email from RAM " << update->mail_id << endl;
+                auto delete_mail_id_ = update->mail_id;
+                cout << "State:    delete email from RAM " << endl;
+
+                if(read_emails.count(delete_mail_id_)){ // if deletion on dummy email, the email_id in delete_emails will dismiss the possible new_email
+                    cout << "State:     deletion happen on a dummy mail, deleting it from file." << endl;
+                    read_emails.erase(delete_mail_id_); // so email_id in read_emails is not needed anymore, but the following
+                }
+
+                if(deleted_emails.count(delete_mail_id_) == 1) {
+                    cout << "State:          deletion on mail " << delete_mail_id_ << "already happened, dismiss" << endl;
+                    break;
+                }
+
                 if(mail_id_2_email.count(update->mail_id) == 0) {
-                    cout << "               deletion happens on a mail that this server does not have" << endl;
+                    deleted_emails.insert(update->mail_id);
+                    cout << "State:          deletion happens on a mail that this server does not have, dismiss" << endl;
                     break;
                 }
+
                 if (mail_id_2_email[update->mail_id] == nullptr) {
-                    cout << "               Do not have the content this mail with mail id " << update->mail_id << endl;
+                    cout << "State:          Do not have the content this mail with mail id " << update->mail_id << endl;
                     break;
                 }
+
                 if(user_2_mailbox.count(mail_id_2_email[update->mail_id]->header.to_user_name) == 0) {
-                    cout <<  "              This server does not have mail box for user "
+                    cout <<  "State:         This server does not have mail box for user "
                     <<  mail_id_2_email[update->mail_id]->header.to_user_name << endl;
+                    break;
                 }
+
+                // change state in hard drive
+                update_state_file(update);
+
                 user_2_mailbox[mail_id_2_email[update->mail_id]->header.to_user_name].erase(update->mail_id);
                 mail_id_2_email.erase(update->mail_id);
                 break;
@@ -99,6 +159,24 @@ public:
 
         // update my own knowledge
         server_knowledge.update_knowledge_with_update(update);
+        auto is_axu_garbage_collectable = server_knowledge.is_aux_disposable();
+        if (is_axu_garbage_collectable) {
+            cout << "State:          Conducting a garbage collection on aux infos." << endl;
+            for(const auto & email_id : read_emails) {
+                assert(mail_id_2_email.count(email_id) == 1);
+                mail_id_2_email.erase(email_id);
+                // we do not want unwanted dummy emails for the user, so we remove it from the user's mailbox
+                assert(user_2_mailbox.count(mail_id_2_email[email_id]->header.to_user_name) == 1);
+                user_2_mailbox[mail_id_2_email[email_id]->header.to_user_name].erase(email_id);
+
+                Reconcile_Entry entry_(email_id, true);
+                delete_aux_from_file(entry_);
+            }
+            for(const auto & email_id : deleted_emails) {
+                Reconcile_Entry entry_(email_id, true);
+                delete_aux_from_file(entry_);
+            }
+        }
     }
 
     vector<Mail_Header> get_header_list(const string & username){
@@ -156,6 +234,79 @@ public:
     }
 
 private:
+    void delete_aux_from_file(Reconcile_Entry& re){
+        cout << "State:      Delete aux from file" << endl;
+        int found=0;
+        string aux_file_str = to_string(server) + "." + STATE_AUX_FILE_NAME;
+        string tmp_aux_file_str = to_string(server) + "." + TEMP_FILE_NAME;
+        Reconcile_Entry entry_tmp{};
+        FILE *fp_tmp;
+        string mail_id_str(re.mail_id);
+
+        auto aux_fptr = fopen(aux_file_str.c_str(),"r");
+        if (aux_fptr == nullptr) perror ("31 Error opening file");
+        fp_tmp = fopen(tmp_aux_file_str.c_str(), "w");
+        if (fp_tmp == nullptr) perror ("32 Error opening file");
+        while(fread(&entry_tmp,sizeof(Reconcile_Entry),1, aux_fptr)){
+            if(entry_tmp.mail_id == mail_id_str && entry_tmp.is_read == re.is_read){ // implicit conversion
+                found = 1;
+            }
+            else
+                fwrite(&entry_tmp, sizeof(Reconcile_Entry), 1, fp_tmp);
+        }
+        fclose(aux_fptr);
+        fclose(fp_tmp);
+
+        if(found){
+            aux_fptr = fopen(aux_file_str.c_str(),"w");
+            if (aux_fptr == nullptr) perror ("33 Error opening file");
+            fp_tmp = fopen(tmp_aux_file_str.c_str(), "r");
+            if (fp_tmp == nullptr) perror ("34 Error opening file");
+
+            while(fread(&entry_tmp, sizeof(Reconcile_Entry), 1, fp_tmp)){
+                fwrite(&entry_tmp,sizeof(Reconcile_Entry),1, aux_fptr);
+            }
+            fclose(aux_fptr);
+            fclose(fp_tmp);
+        }
+        else
+            cout << "File Err: Reconcile with mail_id " << mail_id_str
+                 << " is not fount on server " << server << "'s state file." << endl;
+    }
+
+    void append_aux_to_file(Reconcile_Entry& re){
+        string aux_file_str = to_string(server) + "." + STATE_AUX_FILE_NAME;
+        cout << "State:      Append new aux in file" << endl;
+        auto aux_fptr = fopen(aux_file_str.c_str(),"a");
+        if (aux_fptr == nullptr) perror ("30 Error opening file");
+        fwrite(&re, sizeof(Reconcile_Entry), 1, aux_fptr);
+        fclose(aux_fptr);
+    }
+
+    void load_state_aux_from_file(){
+        cout << "State: load state_aux from the file " << endl;
+        // load the email from file
+        Reconcile_Entry entry_tmp{};
+        string aux_file_str = to_string(server) + "." + STATE_AUX_FILE_NAME;
+        auto aux_fptr = fopen(aux_file_str.c_str(),"r");
+        if (aux_fptr == nullptr) aux_fptr = fopen(aux_file_str.c_str(), "w");
+        if (aux_fptr == nullptr) perror ("29 Error opening file");
+        // read from hard drive
+        while(fread(&entry_tmp,sizeof(Reconcile_Entry),1,aux_fptr))
+        {
+            auto mail_id = entry_tmp.mail_id;
+            cout << "Reconcile Entry: email " << mail_id
+                 << ((entry_tmp.is_read) ? " is read. " : " is deleted.")  << endl;
+            // write to ram
+            if(entry_tmp.is_read){
+                read_emails.insert(entry_tmp.mail_id);
+            } else {
+                deleted_emails.insert(entry_tmp.mail_id);
+            }
+        }
+        fclose(aux_fptr);
+    }
+
     void load_state_from_file(){
         cout << "State: load state from the file " << endl;
 
@@ -199,7 +350,7 @@ private:
         string tmp_state_file_str = to_string(server) + "." + TEMP_FILE_NAME;
         switch (update->type) {
             case Update::TYPE::READ: {
-                cout << "           Read email in file" << endl;
+                cout << "State:     Read email in file" << endl;
                 int found=0;
                 Email email_tmp;
                 FILE *fp_tmp;
@@ -220,7 +371,6 @@ private:
                 fclose(state_fptr);
                 fclose(fp_tmp);
 
-
                 if(found){
                     state_fptr = fopen(state_file_str.c_str(),"w");
                     if (state_fptr == nullptr) perror ("12 Error opening file");
@@ -234,13 +384,13 @@ private:
                     fclose(fp_tmp);
                 }
                 else
-                    cout << "File Err: Email with mail_id " << mail_id_str
-                         << " is not fount on server " << server << "'s state file." << endl;
+                    cout << "State: Email with mail_id " << mail_id_str
+                         << " is not found on server " << server << "'s state file." << endl;
                 break;
             }
 
             case Update::TYPE::NEW_EMAIL: {
-                cout << "           Append new email in file" << endl;
+                cout << "State:      Append new email in file" << endl;
                 state_fptr = fopen(state_file_str.c_str(),"a");
                 if (state_fptr == nullptr) perror ("14 Error opening file");
                 constexpr static int number_of_updates = 1;
@@ -250,7 +400,7 @@ private:
             }
 
             case Update::TYPE::DELETE: {
-                cout << "           Delete email from file" << endl;
+                cout << "State:      Delete email from file" << endl;
                 int found=0;
                 Email email_tmp;
                 FILE *fp_tmp;
@@ -269,7 +419,6 @@ private:
                 }
                 fclose(state_fptr);
                 fclose(fp_tmp);
-
 
                 if(found){
                     state_fptr = fopen(state_file_str.c_str(),"w");
@@ -304,13 +453,70 @@ private:
         cout << " ====================================== " << endl;
     }
 
-    void new_email(shared_ptr<Email> email_ptr) {
-        cout << "   add new email to state." << endl;
-        cout << "       new_mail_id = " << email_ptr->header.mail_id << endl;
-        cout << "       user_name = " << email_ptr->header.to_user_name << endl;
+    void new_email(shared_ptr<Update>& update) {
+        cout << "State:   add new email to state." << endl;
+        cout << "State:     new_mail_id = " << update->email.header.mail_id << endl;
+        cout << "State:     user_name = " << update->email.header.to_user_name << endl;
 
-        mail_id_2_email[email_ptr->header.mail_id] = email_ptr;
-        user_2_mailbox[email_ptr->header.to_user_name].insert(email_ptr->header.mail_id);
+        auto email_ptr = make_shared<Email>(update->email);
+        auto new_mail_id = email_ptr->header.mail_id;
+
+        // is this email is already stored as a dummy email
+        if(read_emails.count(new_mail_id) == 1) {
+            cout << "State:     This email is already read, filling dummy email's content." << endl;
+            memcpy(mail_id_2_email[new_mail_id]->msg_str, email_ptr->msg_str, strlen(email_ptr->msg_str));
+            read_emails.erase(new_mail_id); // no longer a dummy node
+
+            // update file
+            cout << "State:     Update email content in file" << endl;
+            int found=0;
+            Email email_tmp;
+            FILE *fp_tmp;
+            string mail_id_str(new_mail_id);
+            string state_file_str = to_string(server) + "." + STATE_FILE_NAME;
+            string tmp_state_file_str = to_string(server) + "." + TEMP_FILE_NAME;
+            state_fptr = fopen(state_file_str.c_str(),"r");
+            if (state_fptr == nullptr) perror ("33 Error opening file");
+            fp_tmp = fopen(tmp_state_file_str.c_str(), "w");
+            if (fp_tmp == nullptr) perror ("34 Error opening file");
+            while(fread(&email_tmp,sizeof(Email),1,state_fptr)){
+                if(email_tmp.header.mail_id == mail_id_str){ // implicit conversion
+                    memcpy(&email_tmp, mail_id_2_email[new_mail_id].get(), sizeof(Email));
+                    found = 1;
+                }
+                fwrite(&email_tmp, sizeof(email_tmp), 1, fp_tmp);
+            }
+            fclose(state_fptr);
+            fclose(fp_tmp);
+            if(found){
+                state_fptr = fopen(state_file_str.c_str(),"w");
+                if (state_fptr == nullptr) perror ("35 Error opening file");
+                fp_tmp = fopen(tmp_state_file_str.c_str(), "r");
+                if (fp_tmp == nullptr) perror ("36 Error opening file");
+
+                while(fread(&email_tmp, sizeof(Email), 1, fp_tmp)){
+                    fwrite(&email_tmp,sizeof(Email),1, state_fptr);
+                }
+                fclose(state_fptr);
+                fclose(fp_tmp);
+            }
+            else
+                cout << "State:      Email with mail_id " << mail_id_str
+                     << " is not found on server " << server << "'s state file." << endl;
+            return;
+        }
+
+        if(deleted_emails.count(new_mail_id) == 1) {
+            cout << "State:     This email is already deleted, dismissed" << endl;
+            return;
+        }
+
+        // add new email to storage
+        update_state_file(update);
+
+        // add new email to ram
+        mail_id_2_email[new_mail_id] = email_ptr;
+        user_2_mailbox[email_ptr->header.to_user_name].insert(new_mail_id);
     }
 
     Email get_email(const string & mail_id) {
@@ -321,6 +527,10 @@ private:
 
     unordered_map<string, Email_Box> user_2_mailbox;
     unordered_map<string, shared_ptr<Email>> mail_id_2_email;
+    // one deletion on non-existent must have a later new_email if network gets better eventually. There could be multiple such deletions.
+    unordered_set<string> deleted_emails;
+    // one read on non-existent email may not have future new_email operation, it might already have happened
+    unordered_set<string> read_emails;
     Knowledge server_knowledge;
     FILE * state_fptr;
     int server;

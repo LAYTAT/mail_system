@@ -51,6 +51,22 @@ public:
         save_update_to_file();
     }
 
+    bool is_aux_disposable(){
+        vector<int64_t> max_update_from_server(TOTAL_SERVER_NUMBER + 1, 0);
+        for(int i = 1; i <= TOTAL_SERVER_NUMBER; ++i ){
+            for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
+                max_update_from_server[j] = max(max_update_from_server[j], knowledge_vec[i][j]);
+            }
+        }
+        for(int i = 1; i <= TOTAL_SERVER_NUMBER; ++i ){
+            if(i == server)
+                continue;
+            if(knowledge_vec[server][i] < max_update_from_server[i]) // still has some miss info
+                return false;
+        }
+        return true;
+    }
+
     // change knowledge only in the current server row
     void update_knowledge_with_update(const shared_ptr<Update>& executed_update) {
         cout << "Knowledge: update what this server know in the matrix" << endl;
@@ -124,6 +140,11 @@ public:
         cout << "This update timestamp " << timestamp
              << " is bigger than what I have from server, so needed " << other_server_id << endl;
         return true;
+    }
+
+    bool is_update_needed(const shared_ptr<Update>& executed_update) {
+        cout << "Knowledge: checking if update is needed" << endl;
+        return is_update_needed(executed_update->server_id, executed_update->timestamp);
     }
 
     void print() const {

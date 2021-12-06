@@ -484,18 +484,18 @@ shared_ptr<Update> get_log_update(){
 
     switch (rcv_buf.type) {
         case Message::TYPE::READ: {
-            memcpy(new_update->email.header.mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
-            memcpy(new_update->mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
             cout << "   requested read on mail with mail_id " << new_update->email.header.mail_id << endl;
             new_update->server_id = server_id;
             new_update->timestamp = server_state->get_server_timestamp();
             new_update->type = Update::TYPE::READ;
+            memcpy(&new_update->email.header, rcv_buf.data, sizeof(Mail_Header));
+            memcpy(new_update->mail_id, new_update->email.header.mail_id, strlen(new_update->email.header.mail_id)); //used for retrieval
             new_update->email.header.read_state = true;
             break;
         }
         case Message::TYPE::DELETE: {
-            memcpy(new_update->email.header.mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
-            memcpy(new_update->mail_id, rcv_buf.data, rcv_buf.size); //used retrieval
+            memcpy(new_update->email.header.mail_id, rcv_buf.data, rcv_buf.size);
+            memcpy(new_update->mail_id, rcv_buf.data, rcv_buf.size);
             cout << "   requested delete on mail with mail_id " << new_update->email.header.mail_id << endl;
             new_update->server_id = server_id;
             new_update->timestamp = server_state->get_server_timestamp();

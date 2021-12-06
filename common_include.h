@@ -26,6 +26,7 @@
 #define MAX_VSSETS      (10)
 #define TOTAL_SERVER_NUMBER (5)
 #define MAX_MAIL_ID_LEN  (20)
+#define MAX_STATE_AUX_ELEMENT_SIZE (1000)
 #define SERVER_USER_NAME_FOR_SPREAD "SVR_CKJL"
 #define SERVERS_GROUP "SERVERS_GROUP_CKJL"
 #define STATE_FILE_NAME "state"
@@ -34,6 +35,7 @@
 #define TEMP_FILE_NAME "tmp"
 #define TIME_STAMP_FILE_NAME "timestamp"
 #define KNOWLEDGE_FILE_SUFFIX ".know"
+#define STATE_AUX_FILE_NAME ".aux"
 
 using namespace std;
 

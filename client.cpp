@@ -246,12 +246,7 @@ void user_command()
             }
 
             snd_buf.type = Message::TYPE::READ;
-            char read_mail_id[MAX_MAIL_ID_LEN];
-            memcpy(read_mail_id, headers[read_idx].mail_id, strlen(headers[read_idx].mail_id));
-            snd_buf.size = strlen(read_mail_id);
-            cout << "   snd_buf.size  = " << snd_buf.size << endl;
-            memcpy(snd_buf.data, read_mail_id, strlen(read_mail_id));
-            cout << "   read email at idx : " << read_idx << " with mail_id " << read_mail_id  << " snd_buf.size = " << snd_buf.size  << endl;
+            memcpy(snd_buf.data, &headers[read_idx], sizeof (Mail_Header));
             send_to_server();
             if( ret < 0 ) SP_error( ret );
             break;
@@ -346,6 +341,7 @@ void response_to_spread(){
                 });
                 cout << endl;
                 cout << "=====================  Headers of received emails ====================" << endl;
+                cout << "Email order: the newer emails go before later ones in this header list." << endl;
                 cout << "Username: " << user_name << endl;
                 cout << "Server: " << server << endl;
                 cout << "Mailbox size: " << headers_buf.size << endl;
@@ -364,12 +360,13 @@ void response_to_spread(){
                 memcpy(rcvd, rcv_buf.data, rcv_buf.size);
                 string rcvd_str(rcvd);
                 cout << "       These are the mail servers in the current mail server's network component: " << endl;
+                cout << "[" ;
                 for(int server_idx = 1; server_idx < rcvd_str.size(); server_idx++) {
                     if(rcvd_str[server_idx] == '1') {
-                        cout << "       " << server_idx << endl;
+                        cout << "       " << server_idx;
                     }
                 }
-                cout << endl;
+                cout << "]" << endl;
                 break;
                 }
             case Message::TYPE::READ: {
@@ -473,6 +470,12 @@ void show_menu(){
     printf("==========\n");
     printf("Email Client Menu:\n");
     printf("----------\n");
+    if(connected) {
+        printf("Current connected server: %d \n", server);
+        printf("Current user name: %s \n", user_name);
+    } else {
+        printf("This client has not connected with server. \n");
+    }
     printf("\n");
     printf("\tu <user_name> -- login with a user name.\n");
     printf("\tc <server_number> -- connect with a server.\n");
