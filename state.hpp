@@ -163,6 +163,7 @@ public:
         if (is_axu_garbage_collectable) {
             cout << "State:          Conducting a garbage collection on aux infos." << endl;
             for(const auto & email_id : read_emails) {
+                cout << "State:          AUX: Removing dummy email " << email_id << endl;
                 assert(mail_id_2_email.count(email_id) == 1);
                 mail_id_2_email.erase(email_id);
                 // we do not want unwanted dummy emails for the user, so we remove it from the user's mailbox
@@ -173,6 +174,7 @@ public:
                 delete_aux_from_file(entry_);
             }
             for(const auto & email_id : deleted_emails) {
+                cout << "State:          AUX: Removing deleted email " << email_id << endl;
                 Reconcile_Entry entry_(email_id, true);
                 delete_aux_from_file(entry_);
             }

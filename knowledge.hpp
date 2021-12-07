@@ -99,10 +99,16 @@ public:
         }
 
         cout << "Knowledge: This is the min update: [";
-        for(const auto & i : min_update_from_server) cout << i << ", ";
+        for(const auto & i : min_update_from_server) {
+            if(i == 0) continue;
+            cout << i << ", ";
+        }
         cout << "]" << endl;
         cout << "Knowledge: This is the max update: [";
-        for(const auto & i : max_update_from_server) cout << i << ", ";
+        for(const auto & i : max_update_from_server){
+            if(i == 0) continue;
+            cout << i << ", ";
+        }
         cout << "]" << endl;
         print();
 
