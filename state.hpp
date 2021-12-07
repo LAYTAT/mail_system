@@ -77,8 +77,14 @@ public:
                 break;
             case Update::TYPE::READ: {
                 cout << "State:         read email " << update->mail_id << " from RAM" << endl;
+
+                if(deleted_emails.count(update->mail_id) == 1) {
+                    cout << "State:             This mail is already deleted, dismissed." << endl;
+                    break;
+                }
+
                 if(mail_id_2_email.count(update->mail_id) == 0){
-                    cout << "State:             This mail is deleted already or not received." << endl;
+                    cout << "State:             This mail is not received." << endl;
                     cout << "State:             Creating a dummy email." << endl;
 
                     // create a dummy email in ram
@@ -159,26 +165,6 @@ public:
 
         // update my own knowledge
         server_knowledge.update_knowledge_with_update(update);
-        auto is_axu_garbage_collectable = server_knowledge.is_aux_disposable();
-        if (is_axu_garbage_collectable) {
-            cout << "State:          Conducting a garbage collection on aux infos." << endl;
-            for(const auto & email_id : read_emails) {
-                cout << "State:          AUX: Removing dummy email " << email_id << endl;
-                assert(mail_id_2_email.count(email_id) == 1);
-                mail_id_2_email.erase(email_id);
-                // we do not want unwanted dummy emails for the user, so we remove it from the user's mailbox
-                assert(user_2_mailbox.count(mail_id_2_email[email_id]->header.to_user_name) == 1);
-                user_2_mailbox[mail_id_2_email[email_id]->header.to_user_name].erase(email_id);
-
-                Reconcile_Entry entry_(email_id, true);
-                delete_aux_from_file(entry_);
-            }
-            for(const auto & email_id : deleted_emails) {
-                cout << "State:          AUX: Removing deleted email " << email_id << endl;
-                Reconcile_Entry entry_(email_id, true);
-                delete_aux_from_file(entry_);
-            }
-        }
     }
 
     vector<Mail_Header> get_header_list(const string & username){
@@ -469,7 +455,12 @@ private:
             memcpy(mail_id_2_email[new_mail_id]->msg_str, email_ptr->msg_str, strlen(email_ptr->msg_str));
             read_emails.erase(new_mail_id); // no longer a dummy node
 
-            // update file
+            // delete this aux from file
+            cout << "State:          AUX: Removing read(dummy) email from aux" << new_mail_id << endl;
+            Reconcile_Entry entry_(new_mail_id, true);
+            delete_aux_from_file(entry_);
+
+            // update this email in file
             cout << "State:     Update email content in file" << endl;
             int found=0;
             Email email_tmp;
@@ -509,7 +500,14 @@ private:
         }
 
         if(deleted_emails.count(new_mail_id) == 1) {
-            cout << "State:     This email is already deleted, dismissed" << endl;
+            cout << "State:     This email to be newed is already deleted, dismissed" << endl;
+
+            deleted_emails.erase(new_mail_id);
+
+            // delete this aux from file
+            cout << "State:          AUX: Removing deleted email from aux" << new_mail_id << endl;
+            Reconcile_Entry entry_(new_mail_id, false);
+            delete_aux_from_file(entry_);
             return;
         }
 
