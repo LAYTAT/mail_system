@@ -345,7 +345,7 @@ void response_to_spread(){
                 cout << "index      from         read state      mail_id        subject" << endl;
                 for(int i = 0; i < headers.size(); i++) {
                     cout << "  " << i << "       "<< headers[i].from_user_name  << "         " <<
-                    ((headers[i].read_state) ? "read" : "unread")  << "         " << headers[i].mail_id
+                    ((headers[i].read_state) ? "read  " : "unread")  << "         " << headers[i].mail_id
                     << "            " <<headers[i].subject << endl;
                 }
                 cout << "=====================================================================" << endl;

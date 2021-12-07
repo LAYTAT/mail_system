@@ -100,13 +100,11 @@ public:
 
         cout << "Knowledge: This is the min update: [";
         for(const auto & i : min_update_from_server) {
-            if(i == 0) continue;
             cout << i << ", ";
         }
         cout << "]" << endl;
         cout << "Knowledge: This is the max update: [";
         for(const auto & i : max_update_from_server){
-            if(i == 0) continue;
             cout << i << ", ";
         }
         cout << "]" << endl;
@@ -126,10 +124,10 @@ public:
             for(int i : current_members){
                 if(knowledge_vec[i][j] == max_update_from_server[j]) {
                     if(i == server) {
+                        cout << "Knowledge: server " << server << " need to send update from "<< j << ", updates range in ["
+                             <<min_update_from_server[j] << "," <<  max_update_from_server[j] <<"]" << endl;
                         ret.emplace_back(j, min_update_from_server[j], max_update_from_server[j]);
                     }
-                    cout << "Knowledge: server " << server << " need to send update from "<< j << ", updates range in ["
-                    <<min_update_from_server[j] << "," <<  max_update_from_server[j] <<"]" << endl;
                     break;
                 }
             }
