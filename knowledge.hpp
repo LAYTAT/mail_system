@@ -122,7 +122,7 @@ public:
 
         for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
             if(max_update_from_server[j] == min_update_from_server[j])
-                break;
+                continue;
             for(int i : current_members){
                 if(knowledge_vec[i][j] == max_update_from_server[j]) {
                     if(i == server) {
