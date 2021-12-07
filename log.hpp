@@ -8,15 +8,9 @@
 #include <set>
 #include <map>
 
-struct MyComp {
-    bool operator() ( shared_ptr<Update>& a,  shared_ptr<Update>& b) {
-        return a->timestamp < b->timestamp;
-    }
-} myComp;
-
 class Log {
 public:
-    Log(int server_id): server_2_update_ids(), id_2_update(), server_id(server_id){
+    explicit Log(int server_id): server_2_update_ids(), id_2_update(), server_id(server_id){
         cout << " =========log init========= " << endl;
         for(int server_ = 1; server_ <= TOTAL_SERVER_NUMBER; ++server_) { // shift by
             count(server_);
@@ -108,7 +102,6 @@ private:
     void load_log_from_file_for_server(int i){
         cout << "LOG: loading log from the file" << endl;
         Update update_tmp;
-        int j;
         string log_file_name = to_string(server_id) + "_" + to_string(i) + LOG_FILE_SUFFIX;
         log_fptr = fopen(log_file_name.c_str(),"r");
         if (log_fptr == nullptr) log_fptr = fopen(log_file_name.c_str(), "w");
@@ -117,19 +110,17 @@ private:
         {
             server_2_update_ids[i].insert(update_tmp.timestamp);
             id_2_update[{update_tmp.server_id,update_tmp.timestamp}] = make_shared<Update>(update_tmp);
-//            memcpy(id_2_update[update_tmp.timestamp].get(), &update_tmp, sizeof(Update));
         }
         fclose(log_fptr);
     }
 
     void count(int i){
-        Update update_tmp;
         string log_file_name = to_string(server_id) + "_" + to_string(i) + LOG_FILE_SUFFIX;
         log_fptr = fopen(log_file_name.c_str(),"r");
         if (log_fptr == nullptr) log_fptr = fopen(log_file_name.c_str(), "w");
         if (log_fptr == nullptr) perror ("6 Error opening file");
         fseek(log_fptr,0,SEEK_END);
-        int n = ftell(log_fptr)/sizeof(update_tmp);
+        auto n = ftell(log_fptr)/sizeof(Update);
         cout << " Here is number ofr updates stored for server " << i << " : " << n << endl;
         fclose(log_fptr);
     }
@@ -150,7 +141,6 @@ private:
         string log_file_name = to_string(server_id) + "_" + to_string(server) + LOG_FILE_SUFFIX;
         string tmp_file_name = to_string(server_id) + "_" + to_string(server) + TEMP_FILE_SUFFIX;
         Update update_tmp;
-        FILE * new_log_fptr;
         printf("Enter RollNo to Delete : ");
 
         log_fptr = fopen(log_file_name.c_str(),"r");
@@ -188,7 +178,7 @@ private:
 private:
     unordered_map<int, set<int64_t>> server_2_update_ids; // timestamp
     map<pair<int, int64_t>, shared_ptr<Update>> id_2_update;
-    FILE* log_fptr;
+    FILE* log_fptr{};
     int server_id;
 };
 

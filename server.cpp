@@ -63,7 +63,7 @@ int main(int argc, char * argv[]){
 
     join_servers_group();
 
-    while(1){
+    while(true){
         // sp_receive
         ret = SP_receive(spread_mbox, &service_type, sender_group, MAX_MEMBERS, &num_groups, target_groups, &mess_type, &endian_mismatch, sizeof(Message), (char *)&rcv_buf);
         if( ret < 0 )
@@ -92,7 +92,7 @@ int main(int argc, char * argv[]){
                     cout << "NEW_CONNECTION: new connection from client." << endl;
                     char client_server_group[rcv_buf.size];
                     memcpy(client_server_group, rcv_buf.data, rcv_buf.size);
-                    cout << "   where I am server " << server_id << " and I am gonna join group: "
+                    cout << "NEW_CONNECTION: I am server " << server_id << " and I am gonna join group: "
                     << client_server_group << " now." << endl;
                     SP_join(spread_mbox, client_server_group);
                     break;

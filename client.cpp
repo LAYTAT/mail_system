@@ -61,7 +61,6 @@ void user_command()
     char	groups[10][MAX_GROUP_NAME];
     int	num_groups;
     unsigned int	mess_len;
-    int	ret;
     int	i;
 
     for( i=0; i < sizeof(command); i++ ) command[i] = 0;
@@ -239,7 +238,6 @@ void user_command()
                 break;
             }
 
-            read_idx;
             if( !(ss >> read_idx) ) {
                 cout << "please enter the read_idx idx." << endl;
                 break;
@@ -285,7 +283,6 @@ void user_command()
 }
 
 void response_to_spread(){
-    int                 ret;
     int                 service_type = 0;
     char	            sender_group[MAX_GROUP_NAME];
     static const int    MAX_GROUP_SIZE = 100;
@@ -307,7 +304,7 @@ void response_to_spread(){
     } else {
         memcpy(&rcv_buf, &headers_buf, sizeof(Message));
 //        cout << "Received: normal Message." << endl;
-    };
+    }
     if( ret < 0 )
     {
         if ( (ret == GROUPS_TOO_SHORT) || (ret == BUFFER_TOO_SHORT) ) {
@@ -385,12 +382,12 @@ void response_to_spread(){
             case Message::TYPE::NEW_EMAIL_SUCCESS: {
                 cout << "   Email sending success: You email is sent" << endl;
                 break;
-            };
+            }
 
             case Message::TYPE::DELETE_EMAIL_SUCCESS: {
                 cout << "   Email deletion success: Requested email is deleted" << endl;
                 break;
-            };
+            }
 
             default:
                 cout << "from the server: Unprocessed type." << endl;

@@ -16,14 +16,14 @@ struct Reconcile_Entry {
         is_read = read;
     }
     char mail_id[MAX_MAIL_ID_LEN] = "default_mail_id";
-    bool is_read; // if not read, it is for deletion
+    bool is_read{true}; // if not read, it is for deletion
 };
 
 class State{
 public:
     State(const State&) = delete;
     State& operator=(const State &) = delete;
-    State(int server_id):user_2_mailbox(), mail_id_2_email(), server_knowledge(server_id), server(server_id), server_timestamp(0){
+    explicit State(int server_id):user_2_mailbox(), mail_id_2_email(), server_knowledge(server_id), server(server_id), server_timestamp(0){
         cout << "State: init from file" << endl;
         load_state_from_file();
         cout << "State: loading aux from file " << endl;
@@ -62,7 +62,7 @@ public:
         return user_2_mailbox[username];
     }
 
-    bool is_update_needed(shared_ptr<Update> update) {
+    bool is_update_needed(const shared_ptr<Update>& update) {
         return server_knowledge.is_update_needed(update->server_id, update->timestamp);
     }
 
@@ -119,7 +119,7 @@ public:
 
                 if(read_emails.count(delete_mail_id_)){ // if deletion on dummy email, the email_id in delete_emails will dismiss the possible new_email
                     cout << "State:     deletion happen on a dummy mail, deleting it from file." << endl;
-                    read_emails.erase(delete_mail_id_); // so email_id in read_emails is not needed anymore, but the following
+                    read_emails.erase(delete_mail_id_); // so email_id in read_emails is not needed anymore
                 }
 
                 if(deleted_emails.count(delete_mail_id_) == 1) {
@@ -199,7 +199,7 @@ public:
             const auto & user = p.first;
             const auto & mailbox = p.second;
             cout << "   This is all the mails for user " << user << endl;
-            if(mailbox.size() == 0) {
+            if(mailbox.empty()) {
                 cout << "       user " << user << " has no emails." << endl;
             } else {
                 for(const auto & mid : mailbox) {
@@ -234,7 +234,7 @@ public:
     }
 
 private:
-    void delete_aux_from_file(Reconcile_Entry& re){
+    void delete_aux_from_file(Reconcile_Entry& re) const{
         cout << "State:      Delete aux from file" << endl;
         int found=0;
         string aux_file_str = to_string(server) + "." + STATE_AUX_FILE_NAME;
@@ -274,7 +274,7 @@ private:
                  << " is not fount on server " << server << "'s state file." << endl;
     }
 
-    void append_aux_to_file(Reconcile_Entry& re){
+    void append_aux_to_file(Reconcile_Entry& re) const{
         string aux_file_str = to_string(server) + "." + STATE_AUX_FILE_NAME;
         cout << "State:      Append new aux in file" << endl;
         auto aux_fptr = fopen(aux_file_str.c_str(),"a");
@@ -532,7 +532,7 @@ private:
     // one read on non-existent email may not have future new_email operation, it might already have happened
     unordered_set<string> read_emails;
     Knowledge server_knowledge;
-    FILE * state_fptr;
+    FILE * state_fptr{};
     int server;
     int64_t server_timestamp;
 };
