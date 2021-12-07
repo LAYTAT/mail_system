@@ -122,6 +122,8 @@ public:
                     if(i == server) {
                         ret.emplace_back(j, min_update_from_server[j], max_update_from_server[j]);
                     }
+                    cout << "Knowledge: server " << server << " need to send update from "<< j << ", updates range in ["
+                    <<min_update_from_server[j] << "," <<  max_update_from_server[j] <<"]" << endl;
                     break;
                 }
             }

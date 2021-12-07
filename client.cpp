@@ -360,10 +360,10 @@ void response_to_spread(){
                 cout << "[" ;
                 for(int server_idx = 1; server_idx < rcvd_str.size(); server_idx++) {
                     if(rcvd_str[server_idx] == '1') {
-                        cout << "       " << server_idx;
+                        cout << "       " << server_idx << ",";
                     }
                 }
-                cout << "]" << endl;
+                cout << "   ]" << endl;
                 break;
                 }
             case Message::TYPE::READ: {
