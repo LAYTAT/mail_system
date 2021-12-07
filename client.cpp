@@ -243,6 +243,11 @@ void user_command()
                 break;
             }
 
+            if(read_idx < 0 || read_idx >= headers.size()) {
+                cout << "please enter the correct read_idx idx "  << endl;
+                break;
+            }
+
             snd_buf.type = Message::TYPE::READ;
             memcpy(snd_buf.data, &headers[read_idx], sizeof (Mail_Header));
             send_to_server();
