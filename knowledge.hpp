@@ -154,8 +154,8 @@ public:
     vector<vector<int64_t>> get_matrix() const {
         cout << "Knowledge: copy out a matrix" << endl;
         vector<vector<int64_t>> ret(TOTAL_SERVER_NUMBER + 1, vector<int64_t>(TOTAL_SERVER_NUMBER + 1, 0));
-        for(int i = 0 ; i <= TOTAL_SERVER_NUMBER; ++i) {
-            for (int j = 0; j <= TOTAL_SERVER_NUMBER; ++j) {
+        for(int i = 1 ; i <= TOTAL_SERVER_NUMBER; ++i) {
+            for (int j = 1; j <= TOTAL_SERVER_NUMBER; ++j) {
                 ret[i][j] = knowledge_vec[i][j];
             }
         }

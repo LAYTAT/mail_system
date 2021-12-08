@@ -54,7 +54,7 @@ public:
         for(const auto & i : min_update_from_server) {
             cout << i << ", ";
         }
-        cout << endl;
+        cout << "]" << endl;
 
         for( int s_id = 1; s_id <= TOTAL_SERVER_NUMBER; ++s_id ) {
             auto updates_of_server = server_2_update_ids[s_id];
