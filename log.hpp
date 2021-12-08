@@ -88,8 +88,9 @@ public:
         if(server_2_update_ids.count(server_id_) == 1 && server_2_update_ids[server_id_].count(timestamp) == 1) {
             server_2_update_ids[server_id_].erase(timestamp); // do not preserve this update for this server
         }
-        if(id_2_update.count({server_id_,timestamp}) == 1) {
-            id_2_update.erase({server_id_,timestamp});
+        auto key_ = make_pair(server_id_,timestamp);
+        if(id_2_update.count(key_) == 1) {
+            id_2_update.erase(key_);
         }
         delete_from_log(server_id_, timestamp);
     }
