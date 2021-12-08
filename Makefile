@@ -24,3 +24,7 @@ client.o: client.cpp
 
 clean:
 	rm -f *.o server client
+
+clean_log:
+	rm *.log *.state *.know *tmp *.timestamp *.aux
+
