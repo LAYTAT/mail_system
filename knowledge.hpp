@@ -138,7 +138,6 @@ public:
     }
 
     void print() const {
-//        cout << " server " << server << " knows that: \n server at [row] know the newest update from [col] server" << endl;
         cout << "============== The knowledge matrix =============== " << endl;
         for(int server_id = 1; server_id <= TOTAL_SERVER_NUMBER; ++server_id)
             cout <<"       " << server_id;
@@ -160,7 +159,6 @@ public:
                 ret[i][j] = knowledge_vec[i][j];
             }
         }
-//        memcpy(&ret[0][0], knowledge_vec, (TOTAL_SERVER_NUMBER + 1) * (TOTAL_SERVER_NUMBER + 1) * sizeof (int64_t));
         return ret;
     }
 private:

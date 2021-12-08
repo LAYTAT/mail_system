@@ -37,6 +37,7 @@
 #define TIME_STAMP_FILE_NAME "timestamp"
 #define KNOWLEDGE_FILE_SUFFIX ".know"
 #define STATE_AUX_FILE_NAME "aux"
+#define REGULAR_KNOWLEDGE_EXCHANGE_FREQUENCY (1000000)
 
 using namespace std;
 

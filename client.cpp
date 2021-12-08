@@ -166,10 +166,10 @@ void user_command()
             cout << "to: <user name>" << endl;
             cout << "to: ";
             cin.getline(new_email.header.to_user_name, USER_NAME_LEN);
-            cout << "subject: <subject string>" << endl;
+            cout << "subject: <subject>" << endl;
             cout << "subject: ";
             cin.getline(new_email.header.subject, SUBJECT_LEN);
-            cout << "mail content: <content string>" << endl;
+            cout << "mail content: <content>" << endl;
             cout << "mail content: ";
             cin.getline(new_email.msg_str, EMAIL_CONTENT_LEN);
             memcpy(new_email.header.from_user_name, user_name, strlen(user_name));
@@ -178,8 +178,7 @@ void user_command()
             new_update.email = new_email;
             memcpy(snd_buf.data, &new_update, sizeof(Update));
             snd_buf.type = Message::TYPE::NEW_EMAIL;
-//            cout << "Before sending :" << endl;
-//            new_update.email.print();
+
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
@@ -304,11 +303,9 @@ void response_to_spread(){
     ret = SP_receive(spread_mbox, &service_type, sender_group, MAX_GROUP_SIZE, &num_groups, target_groups,
                      &mess_type, &endian_mismatch, sizeof(Header_List), (char *) &headers_buf);
     if((Message::TYPE)mess_type == Message::TYPE::HEADER) {
-//        cout << "Received: header list." << endl;
         rcv_buf.type =  Message::TYPE::HEADER;
     } else {
         memcpy(&rcv_buf, &headers_buf, sizeof(Message));
-//        cout << "Received: normal Message." << endl;
     }
     if( ret < 0 )
     {
@@ -357,7 +354,6 @@ void response_to_spread(){
                 break;
             }
             case Message::TYPE::MEMBERSHIPS: {
-//                cout << "   received membership reply from server " << endl;
                 char rcvd[rcv_buf.size];
                 memcpy(rcvd, rcv_buf.data, rcv_buf.size);
                 string rcvd_str(rcvd);
@@ -407,22 +403,15 @@ void response_to_spread(){
             }
         if( Is_reg_memb_mess( service_type ) )
         {
-//            cout << "Received REGULAR membership for group" << sender_group << "with " << num_groups  <<" members, where I am member " << mess_type << endl;
             if( Is_caused_join_mess( service_type ) )
             {
                 // if server has joined client-server-group, then client and server are connected
                 string joined_member_name_str(memb_info.changed_member);
-//                printf("    Due to the JOIN of %s\n", memb_info.changed_member );
-//                cout << "       New member: " << joined_member_name_str << " has joined the group " << sender_group << endl;
                 if(strcmp(sender_group, client_server_group.c_str()) == 0) {
                     if ( joined_member_name_str.find(server_name) != string::npos) {
                         connected = true;
                         cout << "connected to server:" << server << endl;
                     }
-//                    else if (joined_member_name_str.find(spread_user)) {
-//                        cout << "Current client joined the group" << endl;
-//                    }
-
                 } else {
                     cout << "Some strange member has joined the group " << sender_group << endl;
                 }
@@ -437,11 +426,9 @@ void response_to_spread(){
             }else if( Is_caused_disconnect_mess( service_type ) ){
                 if(string(memb_info.changed_member) != client_server_group && connected ) {
                     cout << "Server has been disconnected, please switch to another mail server " << endl;
-//                    cout << "       This server is also leaving group " << sender_group << endl;
                     SP_leave(spread_mbox, sender_group);
                     connected = false;
                 }
-//                printf("    Due to the DISCONNECT of %s\n", memb_info.changed_member );
             } else if( Is_caused_network_mess( service_type ) ){
                 cout << "Network Changed." << endl;
             } else {
@@ -455,7 +442,6 @@ void response_to_spread(){
                 cout << "The server is not reachable caused of the network, please switch to another mail server " << endl;
             }
         }else if( Is_caused_leave_mess( service_type ) ){
-//            printf("    2 received membership message that left group %s\n", sender_group );
             if( sender_group == client_server_group && connected) {
                 connected = false;
                 SP_leave(spread_mbox, client_server_group.c_str());
@@ -515,8 +501,8 @@ void connect_to_spread(){
     cout << "Email Client: connected to "<< spread_name <<" with private group " <<  spread_private_group << endl;
 }
 
+// local variables init
 void variable_init(){
-    // local variables init
     srand(time(nullptr));
     spread_name = to_string(SPREAD_NAME);
     spread_user = to_string(rand()% RAND_MAX);

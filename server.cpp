@@ -57,14 +57,13 @@ int main(int argc, char * argv[]){
 
     variable_init();
 
-    connect_to_spread(); // the programm will exit if connection to spread has failed
+    connect_to_spread(); // the program will exit if connection to spread has failed
 
     create_server_public_group();
 
     join_servers_group();
 
     while(true){
-        // sp_receive
         ret = SP_receive(spread_mbox, &service_type, sender_group, MAX_MEMBERS, &num_groups, target_groups, &mess_type, &endian_mismatch, sizeof(Message), (char *)&rcv_buf);
         if( ret < 0 )
         {
@@ -88,7 +87,7 @@ int main(int argc, char * argv[]){
 
         if (Is_regular_mess( service_type )) {
             switch (rcv_buf.type) {
-                case Message::TYPE::NEW_CONNECTION: { //
+                case Message::TYPE::NEW_CONNECTION: {
                     cout << "NEW_CONNECTION: new connection from client." << endl;
                     char client_server_group[rcv_buf.size];
                     memcpy(client_server_group, rcv_buf.data, rcv_buf.size);
@@ -111,16 +110,16 @@ int main(int argc, char * argv[]){
                     cout << "User " << read_request_user_name << " has request to list his email" << endl;
                     auto headers_to_return = server_state->get_header_list(read_request_user_name_str);
                     header_snd_buf.size = headers_to_return.size();
-                    cout << "   return list size = " << headers_to_return.size();
-                    cout << "   memcpy size = " << (sizeof(Mail_Header) * headers_to_return.size());
+                    cout << "LIST:   return list size = " << headers_to_return.size();
+                    cout << "LIST:   memcpy size = " << (sizeof(Mail_Header) * headers_to_return.size());
                     memcpy(header_snd_buf.data, headers_to_return.data(), (sizeof(Mail_Header) * headers_to_return.size()));
-                    vector<Mail_Header> ret;
-                    ret.resize(header_snd_buf.size);
-                    memcpy(&ret[0], header_snd_buf.data, header_snd_buf.size * sizeof(Mail_Header));
-                    cout << "   Headers to return:" << endl;
+                    vector<Mail_Header> ret_headers;
+                    ret_headers.resize(header_snd_buf.size);
+                    memcpy(&ret_headers[0], header_snd_buf.data, header_snd_buf.size * sizeof(Mail_Header));
+                    cout << "LIST:   Headers to return:" << endl;
                     cout << "Index      from        subject" << endl;
-                    for(int i = 0; i < ret.size(); i++) {
-                        cout << "  " << i << "       "<< ret[i].from_user_name << "     " <<ret[i].subject << endl;
+                    for(int i = 0; i < ret_headers.size(); i++) {
+                        cout << "  " << i << "       " << ret_headers[i].from_user_name << "     " << ret_headers[i].subject << endl;
                     }
                     send_headers_client(sender_group);
                     break;
@@ -164,7 +163,7 @@ int main(int argc, char * argv[]){
                     // response to client
                     memcpy(snd_buf.data, &ret_update->email, sizeof(Email));
                     snd_buf.type = Message::TYPE::READ;
-                    cout << "This is the email content to return " << endl;
+                    cout << "READ: This is the email content to return " << endl;
                     ((Email*)snd_buf.data)->print();
                     send_to_client(sender_group);
 
@@ -282,7 +281,7 @@ int main(int argc, char * argv[]){
                     break;
                 }
                 default:
-                    cout << "Received am undealt Message type, deal with it." << endl;
+                    cout << "Received am undealt Message type." << endl;
                     break;
             }
         }else if( Is_membership_mess( service_type ) )
@@ -331,20 +330,6 @@ int main(int argc, char * argv[]){
                     cout << " Group: " << sender_group << ", joined member = " << memb_info.changed_member << endl;
                     string joined_member_name(memb_info.changed_member);
                     cout << "   joined_member_name = " << joined_member_name << endl;
-                    /*if (strcmp(sender_group, SERVERS_GROUP) == 0 ) //from the servers group
-                    {
-                        cout << "==================== servers group ======================" << endl;
-                        if(joined_member_name.find(spread_user) == string::npos) { //ot the server itself
-                            cout << "Another server has join the servers_group ======= " << endl;
-                            cout << "The current members in the group : " << endl;
-                            string new_member_in_servers_group(memb_info.changed_member);
-                            cout << "Now we start reconcile with " << new_member_in_servers_group << endl;
-                            reconcile_start();
-                        } else {
-                            cout << "Current server " << spread_user << " has join the servers_group !";
-                        }
-                    }*/
-
                 }else if( Is_caused_leave_mess( service_type ) ){
                     printf("Due to the LEAVE of %s\n", memb_info.changed_member );
                     if(sender_group != servers_group_str ) { // client has leaved
@@ -515,7 +500,6 @@ shared_ptr<Update> get_log_update(){
             string mail_id_str_to_be_assign = to_string(server_id) + to_string(new_update->timestamp);
             memcpy(new_update->email.header.mail_id, mail_id_str_to_be_assign.c_str(), strlen(mail_id_str_to_be_assign.c_str()));
             new_update->email.header.mail_id[strlen(mail_id_str_to_be_assign.c_str())] = 0; // null character
-//            new_update->email.header.sendtime = get_time();
             cout << "       Server " << server_id
                  << " put on it logical time stamp "
                  << new_update->timestamp << endl;

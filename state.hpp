@@ -503,13 +503,6 @@ private:
 
         if(deleted_emails.count(new_mail_id) == 1) {
             cout << "State:     This email to be newed is already deleted, dismissed" << endl;
-
-            deleted_emails.erase(new_mail_id);
-
-            // delete this aux from file
-//            cout << "State:          AUX: Removing deleted email from aux" << new_mail_id << endl;
-//            Reconcile_Entry entry_(new_mail_id, false);
-//            delete_aux_from_file(entry_);
             return;
         }
 
@@ -529,9 +522,7 @@ private:
 
     unordered_map<string, Email_Box> user_2_mailbox;
     unordered_map<string, shared_ptr<Email>> mail_id_2_email;
-    // one deletion on non-existent must have a later new_email if network gets better eventually. There could be multiple such deletions.
     unordered_set<string> deleted_emails;
-    // one read on non-existent email may not have future new_email operation, it might already have happened
     unordered_set<string> read_emails;
     Knowledge server_knowledge;
     FILE * state_fptr{};
