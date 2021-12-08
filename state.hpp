@@ -134,7 +134,10 @@ public:
                 }
 
                 if(mail_id_2_email.count(update->mail_id) == 0) {
-                    deleted_emails.insert(update->mail_id);
+                    if(deleted_emails.insert(update->mail_id).second) {
+                        Reconcile_Entry entry_(update->mail_id, false);
+                        append_aux_to_file(entry_);
+                    }
                     cout << "State:          deletion happens on a mail that this server does not have, dismiss" << endl;
                     break;
                 }
@@ -153,7 +156,10 @@ public:
                 // change state in hard drive
                 update_state_file(update);
 
-                deleted_emails.insert(update->mail_id);
+                if(deleted_emails.insert(update->mail_id).second) {
+                    Reconcile_Entry entry_(update->mail_id, false);
+                    append_aux_to_file(entry_);
+                }
 
                 user_2_mailbox[mail_id_2_email[update->mail_id]->header.to_user_name].erase(update->mail_id);
                 mail_id_2_email.erase(update->mail_id);
@@ -272,7 +278,7 @@ private:
             fclose(fp_tmp);
         }
         else
-            cout << "File Err: Reconcile with mail_id " << mail_id_str
+            cout << "State:         Aux: Deletion on Reconcile with mail_id " << mail_id_str
                  << " is not found on server " << server << "'s state file." << endl;
     }
 
@@ -435,7 +441,7 @@ private:
                     fclose(fp_tmp);
                 }
                 else
-                    cout << "File Err: Email with mail_id " << mail_id_str
+                    cout << "Reconcile with mail_iFile Err: Email with mail_id " << mail_id_str
                          << " is not found on server " << server << "'s state file." << endl;
                 break;
             }

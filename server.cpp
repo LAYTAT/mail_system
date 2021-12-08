@@ -532,6 +532,7 @@ void garbage_collection(){
         if(server_id == 1) {
             ret = SP_leave( spread_mbox, SERVERS_GROUP );
             if( ret < 0 ) SP_error( ret );
+            servers_group_member_set.erase(1);
             ret = SP_join( spread_mbox, SERVERS_GROUP );
             if( ret < 0 ) SP_error( ret );
         }

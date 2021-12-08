@@ -178,7 +178,7 @@ private:
             fclose(tmp_fptr);
         }
         else
-            cout << "File Err: Update with timestamp " << timestamp
+            cout << "Log:       Deletion: Update with timestamp " << timestamp
             << " is not found on server " << server << "'s log file." << endl;
     }
 
