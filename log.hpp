@@ -43,14 +43,14 @@ public:
 
     void log_file_cleanup_according_to_knowledge(const vector<vector<int64_t>>& knowledge) {
         cout << "Log: garbage collection." << endl;
-        vector<int64_t> min_update_from_server(TOTAL_SERVER_NUMBER + 1, 0);
+        vector<int64_t> min_update_from_server(TOTAL_SERVER_NUMBER + 1, INT_MAX);
         for(int i = 1; i <= TOTAL_SERVER_NUMBER; ++i ){
             for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
                 min_update_from_server[j] = min(min_update_from_server[j], knowledge[i][j]);
             }
         }
 
-        cout << "Log: This is the min update: [";
+        cout << "Log: This is the min update: [" << endl;
         for(const auto & i : min_update_from_server) {
             cout << i << ", ";
         }
