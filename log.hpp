@@ -77,7 +77,7 @@ public:
 
     // delete update to an update
     void delete_update(const int server_id_, const int64_t & timestamp) {
-        cout << "Log: delete update from log." << endl;
+        cout << "Log: delete update from log file." << endl;
 
         assert(server_2_update_ids.count(server_id_) == 1); // must have it before delete it
         server_2_update_ids[server_id_].erase(timestamp); // do not preserve this update for this server
