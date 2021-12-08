@@ -26,5 +26,5 @@ clean:
 	rm -f *.o server client
 
 clean_log:
-	rm *.log *.state *.know *tmp *.timestamp *.aux
+	rm *.log *.state *.know *.temp *.timestamp *.aux
 
