@@ -363,6 +363,7 @@ private:
                 while(fread(&email_tmp,sizeof(Email),1,state_fptr)){
                     if(email_tmp.header.mail_id == mail_id_str){ // implicit conversion
                         memcpy(&email_tmp, &update->email, sizeof(Email));
+                        cout << "State:     Read email content: " << email_tmp.msg_str << endl;
                         found = 1;
                     }
                     fwrite(&email_tmp, sizeof(email_tmp), 1, fp_tmp);
