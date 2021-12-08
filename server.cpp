@@ -35,8 +35,9 @@ Log*     server_log;
 int64_t server_timestamp;
 Message snd_to_servers_grp_buf;
 vector<Knowledge> knowledge_collection;
+int64_t full_member_update_counter;
 
-// functions
+// server functions
 void reconcile_start();
 void connect_to_spread();
 void Bye();
@@ -46,10 +47,9 @@ void create_server_public_group();
 void join_servers_group();
 void send_to_client(const char * client);
 void send_headers_client(const char * client);
-void store_to_file();
 shared_ptr<Update> get_log_update();
 void send_to_other_servers();
-void knowledge_timer(); // TODO: exchange knowledge when group size is 5 for a while
+void garbage_collection(); // TODO: exchange knowledge when group size is 5 for a while
 
 int main(int argc, char * argv[]){
     if(!command_input_check(argc, argv))
@@ -216,6 +216,7 @@ int main(int argc, char * argv[]){
 
                 case Message::TYPE::UPDATE : { // process update from the servers_group
                     cout << sender_group << "UPDATE: received an Update." << endl;
+                    garbage_collection();
 
                     // receive
                     auto rcvd_update = make_shared<Update>();
@@ -440,6 +441,7 @@ void variable_init(){
     server_timestamp = 0;
     server_state = new State(server_id);
     server_log = new Log(server_id);
+    full_member_update_counter = 0;
 }
 
 void create_server_public_group(){
@@ -511,4 +513,26 @@ shared_ptr<Update> get_log_update(){
             break;
     }
     return new_update;
+}
+
+void garbage_collection(){
+    if(servers_group_member_set.size() == TOTAL_SERVER_NUMBER) {
+        full_member_update_counter++;
+    } else {
+        full_member_update_counter = 0;
+    }
+    if(full_member_update_counter == REGULAR_KNOWLEDGE_EXCHANGE_FREQUENCY) {
+        cout << "GC: garbage collection starts." << endl;
+        // conduct knowledge exchange for garbage collection on log updates
+        ret = SP_leave( spread_mbox, SERVERS_GROUP );
+        if( ret < 0 ) SP_error( ret );
+        ret = SP_join( spread_mbox, SERVERS_GROUP );
+        if( ret < 0 ) SP_error( ret );
+
+        // conduct aux cleanup
+        server_state->aux_cleanup();
+
+        full_member_update_counter = 0;
+        cout << "GC: garbage collection ends." << endl;
+    }
 }

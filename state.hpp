@@ -223,6 +223,15 @@ public:
         return server_timestamp;
     }
 
+    void aux_cleanup(){
+        cout << "State: Conducting aux cleanup." << endl;
+        for(const auto & mail_id : deleted_emails) {
+            Reconcile_Entry entry_(mail_id, false);
+            delete_aux_from_file(entry_);
+        }
+        deleted_emails.clear();
+    }
+
 private:
     void delete_aux_from_file(Reconcile_Entry& re) const{
         cout << "State:      Delete aux from file" << endl;
