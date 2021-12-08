@@ -521,13 +521,15 @@ void garbage_collection(){
     } else {
         full_member_update_counter = 0;
     }
-    if(full_member_update_counter == REGULAR_KNOWLEDGE_EXCHANGE_FREQUENCY) {
+    if(full_member_update_counter == REGULAR_KNOWLEDGE_EXCHANGE_FREQUENCY ) {
         cout << "GC: garbage collection starts." << endl;
         // conduct knowledge exchange for garbage collection on log updates
-        ret = SP_leave( spread_mbox, SERVERS_GROUP );
-        if( ret < 0 ) SP_error( ret );
-        ret = SP_join( spread_mbox, SERVERS_GROUP );
-        if( ret < 0 ) SP_error( ret );
+        if(server_id == 1) {
+            ret = SP_leave( spread_mbox, SERVERS_GROUP );
+            if( ret < 0 ) SP_error( ret );
+            ret = SP_join( spread_mbox, SERVERS_GROUP );
+            if( ret < 0 ) SP_error( ret );
+        }
 
         // conduct aux cleanup
         server_state->aux_cleanup();

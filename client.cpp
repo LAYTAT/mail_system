@@ -370,13 +370,13 @@ void response_to_spread(){
             case Message::TYPE::READ: {
                 Email received_email;
                 memcpy(&received_email, &rcv_buf.data, sizeof(Email));
-                cout << " This is the content of the email at idx:" << read_idx <<" you have requested:" << endl;
+                cout << " This is the content of the email at idx:" << read_idx <<" you have requested" << endl;
                 cout << " from        read state         subject" << endl;
-                cout << string(received_email.header.from_user_name, USER_NAME_LEN)  << "         "
+                cout << string(received_email.header.from_user_name, strlen(received_email.header.from_user_name))  << "         "
                 <<  ((received_email.header.read_state) ? "read  " : "unread") << "             "
-                << string(received_email.header.subject, SUBJECT_LEN) << endl;
+                << string(received_email.header.subject, strlen(received_email.header.subject)) << endl;
                 cout << " content: " << endl;
-                string email_content_string(received_email.msg_str, EMAIL_CONTENT_LEN);
+                string email_content_string(received_email.msg_str, strlen(received_email.msg_str));
                 cout << " " << email_content_string << endl;
                 break;
             }
