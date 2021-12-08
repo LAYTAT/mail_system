@@ -50,6 +50,11 @@ public:
             }
         }
 
+        cout << "Log: This is the min update: [";
+        for(const auto & i : min_update_from_server) {
+            cout << i << ", ";
+        }
+
         for( int s_id = 1; s_id <= TOTAL_SERVER_NUMBER; ++s_id ) {
             auto updates_of_server = server_2_update_ids[s_id];
             for(const auto & stmp :server_2_update_ids[s_id]) {
