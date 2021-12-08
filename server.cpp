@@ -94,7 +94,12 @@ int main(int argc, char * argv[]){
                     memcpy(client_server_group, rcv_buf.data, rcv_buf.size);
                     cout << "NEW_CONNECTION: I am server " << server_id << " and I am gonna join group: "
                     << client_server_group << " now." << endl;
-                    SP_join(spread_mbox, client_server_group);
+                    ret = SP_join(spread_mbox, client_server_group);
+                    while(ret < 0) {
+                        cout << "NEW_CONNECTION: Cannot join group with client: "
+                             << client_server_group << " trying again now." << endl;
+                        ret = SP_join(spread_mbox, client_server_group);
+                    }
                     break;
                 }
 

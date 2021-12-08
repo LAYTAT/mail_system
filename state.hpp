@@ -153,6 +153,8 @@ public:
                 // change state in hard drive
                 update_state_file(update);
 
+                deleted_emails.insert(update->mail_id);
+
                 user_2_mailbox[mail_id_2_email[update->mail_id]->header.to_user_name].erase(update->mail_id);
                 mail_id_2_email.erase(update->mail_id);
                 break;
@@ -505,9 +507,9 @@ private:
             deleted_emails.erase(new_mail_id);
 
             // delete this aux from file
-            cout << "State:          AUX: Removing deleted email from aux" << new_mail_id << endl;
-            Reconcile_Entry entry_(new_mail_id, false);
-            delete_aux_from_file(entry_);
+//            cout << "State:          AUX: Removing deleted email from aux" << new_mail_id << endl;
+//            Reconcile_Entry entry_(new_mail_id, false);
+//            delete_aux_from_file(entry_);
             return;
         }
 
