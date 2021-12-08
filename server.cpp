@@ -222,12 +222,12 @@ int main(int argc, char * argv[]){
                     cout << "from server " << rcvd_update->server_id
                     << ", timestamp = " << rcvd_update->timestamp << endl;
 
+                    garbage_collection();
+
                     if(!server_state->is_update_needed(rcvd_update)) {
                         cout << "UPDATE: update not needed." << endl;
                         break;
                     }
-
-                    garbage_collection();
 
                     // if my own update
                     if(rcvd_update->server_id == server_id) {
