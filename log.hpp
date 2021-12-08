@@ -149,7 +149,6 @@ private:
         string log_file_name = to_string(server_id) + "_" + to_string(server) + LOG_FILE_SUFFIX;
         string tmp_file_name = to_string(server_id) + "_" + to_string(server) + TEMP_FILE_SUFFIX;
         Update update_tmp;
-        printf("Enter RollNo to Delete : ");
 
         log_fptr = fopen(log_file_name.c_str(),"r");
         if (log_fptr == nullptr) perror ("8 Error opening file");

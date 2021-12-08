@@ -216,8 +216,6 @@ int main(int argc, char * argv[]){
 
                 case Message::TYPE::UPDATE : { // process update from the servers_group
                     cout << sender_group << "UPDATE: received an Update." << endl;
-                    garbage_collection();
-
                     // receive
                     auto rcvd_update = make_shared<Update>();
                     memcpy(rcvd_update.get(), rcv_buf.data, sizeof (Update));
@@ -228,6 +226,8 @@ int main(int argc, char * argv[]){
                         cout << "UPDATE: update not needed." << endl;
                         break;
                     }
+
+                    garbage_collection();
 
                     // if my own update
                     if(rcvd_update->server_id == server_id) {
@@ -524,7 +524,7 @@ void garbage_collection(){
         full_member_update_counter = 0;
     }
     if(full_member_update_counter == REGULAR_KNOWLEDGE_EXCHANGE_FREQUENCY ) {
-        cout << "GC: regular garbage collection starts." << endl;
+            cout << "GC: regular garbage collection starts." << endl;
         // conduct knowledge exchange for garbage collection on log updates
         if(server_id == 1) {
             ret = SP_leave( spread_mbox, SERVERS_GROUP );
