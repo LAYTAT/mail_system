@@ -243,7 +243,10 @@ private:
         string mail_id_str(re.mail_id);
 
         auto aux_fptr = fopen(aux_file_str.c_str(),"r");
-        if (aux_fptr == nullptr) perror ("31 Error opening file");
+        if (aux_fptr == nullptr) {
+            cout << "State:      Aux: aux file does not exist, dismiss." << endl;
+            return;
+        }
         fp_tmp = fopen(tmp_aux_file_str.c_str(), "w");
         if (fp_tmp == nullptr) perror ("32 Error opening file");
         while(fread(&entry_tmp,sizeof(Reconcile_Entry),1, aux_fptr)){
