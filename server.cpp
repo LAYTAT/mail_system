@@ -322,7 +322,9 @@ int main(int argc, char * argv[]){
                     for(auto idx : servers_group_member_set) {
                         cout << "       " << idx << endl;
                     }
-                    reconcile_start();
+                    if(new_member_in_servers_group.size() > 0) {
+                        reconcile_start();
+                    }
                 }
 
                 printf("    grp id is %d %d %d\n",memb_info.gid.id[0], memb_info.gid.id[1], memb_info.gid.id[2] );
