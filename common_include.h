@@ -33,7 +33,7 @@
 #define STATE_FILE_NAME "state"
 #define LOG_FILE_SUFFIX ".log"
 #define TEMP_FILE_SUFFIX ".temp"
-#define TEMP_FILE_NAME "tmp"
+#define TEMP_FILE_NAME "temp"
 #define TIME_STAMP_FILE_NAME "timestamp"
 #define KNOWLEDGE_FILE_SUFFIX ".know"
 #define STATE_AUX_FILE_NAME "aux"
