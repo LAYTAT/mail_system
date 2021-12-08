@@ -316,13 +316,13 @@ private:
         if (state_fptr == nullptr) state_fptr = fopen(state_file_str.c_str(), "w");
         if (state_fptr == nullptr) perror ("2 Error opening file");
         cout << "==================== state init ====================" << endl;
-        cout << "       mail_id        user_name         subject"      << endl;
+        cout << "       mail_id        user_name         subject      content"      << endl;
         while(fread(&email_tmp,sizeof(Email),1,state_fptr))
         {
             auto mail_id = email_tmp.header.mail_id;
             auto user_name = email_tmp.header.to_user_name;
             cout << "         " << mail_id << "            " << user_name
-            << "       " << email_tmp.header.subject << endl;
+            << "       " << email_tmp.header.subject << "      " << email_tmp.msg_str <<endl;
             user_2_mailbox[user_name].insert(mail_id); // char[] to stirng, implicit conversion
             mail_id_2_email[mail_id] = make_shared<Email>(email_tmp);
         }
@@ -392,8 +392,7 @@ private:
                 cout << "State:      Append new email in file" << endl;
                 state_fptr = fopen(state_file_str.c_str(),"a");
                 if (state_fptr == nullptr) perror ("14 Error opening file");
-                constexpr static int number_of_updates = 1;
-                fwrite(&update->email, sizeof(Email), number_of_updates, state_fptr);
+                fwrite(&update->email, sizeof(Email), 1, state_fptr);
                 fclose(state_fptr);
                 break;
             }
