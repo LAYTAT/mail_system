@@ -85,9 +85,12 @@ public:
     void delete_update(const int server_id_, const int64_t & timestamp) {
         cout << "Log: delete update from log." << endl;
 
-        assert(server_2_update_ids.count(server_id_) == 1); // must have it before delete it
-        server_2_update_ids[server_id_].erase(timestamp); // do not preserve this update for this server
-        id_2_update.erase({server_id_,timestamp}); // do not preserve this update in memory
+        if(server_2_update_ids.count(server_id_) == 1 && server_2_update_ids[server_id_].count(timestamp) == 1) {
+            server_2_update_ids[server_id_].erase(timestamp); // do not preserve this update for this server
+        }
+        if(id_2_update.count({server_id_,timestamp}) == 1) {
+            id_2_update.erase({server_id_,timestamp});
+        }
         delete_from_log(server_id_, timestamp);
     }
 
