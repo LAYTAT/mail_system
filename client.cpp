@@ -221,7 +221,7 @@ void user_command()
             send_to_server();
             if( ret < 0 ) SP_error( ret );
 
-            cout << "delete an email with email_id " << delete_mail_id <<  " at idx " << delete_idx << endl;
+            headers.clear();
             break;
         }
 
@@ -332,6 +332,7 @@ void response_to_spread(){
     {
         switch (rcv_buf.type) {
             case Message::TYPE::HEADER: {
+                headers.clear();
                 headers.resize(headers_buf.size);
                 memcpy(&headers[0], headers_buf.data, headers_buf.size * sizeof(Mail_Header));
 

@@ -110,8 +110,8 @@ int main(int argc, char * argv[]){
                     cout << "User " << read_request_user_name << " has request to list his email" << endl;
                     auto headers_to_return = server_state->get_header_list(read_request_user_name_str);
                     header_snd_buf.size = headers_to_return.size();
-                    cout << "LIST:   return list size = " << headers_to_return.size();
-                    cout << "LIST:   memcpy size = " << (sizeof(Mail_Header) * headers_to_return.size());
+                    cout << "LIST:   return list size = " << headers_to_return.size() << endl;
+                    cout << "LIST:   memcpy size = " << (sizeof(Mail_Header) * headers_to_return.size()) << endl;
                     memcpy(header_snd_buf.data, headers_to_return.data(), (sizeof(Mail_Header) * headers_to_return.size()));
                     vector<Mail_Header> ret_headers;
                     ret_headers.resize(header_snd_buf.size);
