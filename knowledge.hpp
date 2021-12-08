@@ -16,14 +16,14 @@ public:
         string knowledge_file_str = to_string(server) + KNOWLEDGE_FILE_SUFFIX;
         auto konwledge_file_ptr = fopen(knowledge_file_str.c_str(),"r");
         if (konwledge_file_ptr == nullptr) {
-            cout << "there is no knowledge file, start it from scratch." << endl;
+            cout << "Knowledge:     there is no knowledge file, start it from scratch." << endl;
         } else {
             fread(knowledge_vec, (TOTAL_SERVER_NUMBER + 1)*(TOTAL_SERVER_NUMBER + 1) * sizeof (int64_t), 1, konwledge_file_ptr);
             this->print();
             fclose(konwledge_file_ptr);
         }
         print();
-        cout << "load knowledge from file complete." << endl;
+        cout << "Knowledge: load knowledge from file complete." << endl;
     }
 
     ~Knowledge()= default;
@@ -54,9 +54,6 @@ public:
     // change knowledge only in the current server row
     void update_knowledge_with_update(const shared_ptr<Update>& executed_update) {
         cout << "Knowledge: update what this server know in the matrix" << endl;
-//        cout << "current server(" << server <<") used to have newest update from " << executed_update->server_id
-//        << " is " <<  knowledge_vec[server][executed_update->server_id]
-//        << " now it is " << executed_update->timestamp << endl;
         knowledge_vec[server][executed_update->server_id] = executed_update->timestamp;
         print();
         //write to file
@@ -123,11 +120,11 @@ public:
     bool is_update_needed(int other_server_id, const int64_t& timestamp) {
         cout << "Knowledge: checking if update is needed" << endl;
         if(knowledge_vec[server][other_server_id] >= timestamp) {
-            cout << "This update timestamp " << timestamp
+            cout << "Knowledge:     This update timestamp " << timestamp
             << " is smaller than what I have from server " << other_server_id << ", so not needed " << endl;
             return false;
         }
-        cout << "This update timestamp " << timestamp
+        cout << "Knowledge:     This update timestamp " << timestamp
              << " is bigger than what I have from server " << other_server_id << ", so needed " << endl;
         return true;
     }

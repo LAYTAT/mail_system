@@ -106,6 +106,7 @@ int main(int argc, char * argv[]){
                     cout << "LIST: " << sender_group << " has request a LIST." << endl;
                     char read_request_user_name[rcv_buf.size];
                     memcpy(read_request_user_name, rcv_buf.data, rcv_buf.size);
+                    read_request_user_name[rcv_buf.size] = 0;
                     string read_request_user_name_str(read_request_user_name, rcv_buf.size);
                     cout << "User " << read_request_user_name << " has request to list his email" << endl;
                     auto headers_to_return = server_state->get_header_list(read_request_user_name_str);

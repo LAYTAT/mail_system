@@ -206,7 +206,7 @@ void user_command()
 
             if(delete_idx < 0 || delete_idx >= headers.size()) {
                 if(headers.size() == 0) {
-                    cout << "there is no mail to be deleted" << endl;
+                    cout << "there is no mail to be deleted, try list headers" << endl;
                     break;
                 }
                 cout << "please enter the right idx to be deleted" << endl;

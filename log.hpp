@@ -25,15 +25,15 @@ public:
         for(const auto & p : server_2_update_ids) {
             const auto & server_id_ = p.first;
             const auto & update_ids_ = p.second;
-            cout << "   Updates for server " << server_id_ << endl;
+            cout << "Log:    Updates for server " << server_id_ << endl;
             if(update_ids_.empty()) {
-                cout << "       No updates stored for this server." << endl;
+                cout << "Log:        No updates stored for this server." << endl;
                 continue;
             }
             for(const auto & update_id: update_ids_)
             {
                 if(id_2_update.count({server_id_,update_id}) == 0) {
-                    cout << "       No content stored for update " << update_id << endl;
+                    cout << "Log:       No content stored for update " << update_id << endl;
                     continue;
                 }
                 cout << "   timestamp = " << id_2_update[{server_id_,update_id}]->timestamp << endl;
