@@ -90,9 +90,11 @@ public:
         return id_2_update[key];
     }
 
-    vector<shared_ptr<Update>> get_updates_of_server(int server_) {
+    vector<shared_ptr<Update>> get_updates_of_server(int server_, long long start) {
         vector<shared_ptr<Update>>  ret;
         for (const auto & update_id : server_2_update_ids[server_]) {
+            if(update_id <= start)
+                continue;
             ret.push_back(get_update_ptr({server_,update_id}));
         }
         return ret;

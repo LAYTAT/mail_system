@@ -260,7 +260,7 @@ int main(int argc, char * argv[]){
                             cout << "Reconcile: need to send update [" << start_ << ","
                             << end_ << "] from server " << server_<< endl;
 
-                            const auto updates_to_send = server_log->get_updates_of_server(server_);
+                            const auto updates_to_send = server_log->get_updates_of_server(server_, start_);
                             for(const auto& update_to_send : updates_to_send) {
                                 snd_to_servers_grp_buf.type = Message::TYPE::UPDATE;
                                 cout << "Reconcile: Sending update from " << update_to_send->server_id << " with timestamp " << update_to_send->timestamp << endl;

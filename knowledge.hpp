@@ -74,7 +74,7 @@ public:
         cout << "Knowledge: get needed updates from this server" << endl;
         vector<tuple<int, int64_t, int64_t>> ret;
         vector<int64_t> max_update_from_server(TOTAL_SERVER_NUMBER + 1, 0);
-        vector<int64_t> min_update_from_server(TOTAL_SERVER_NUMBER + 1, 0);
+        vector<int64_t> min_update_from_server(TOTAL_SERVER_NUMBER + 1, INT_MAX);
         for(int i : current_members){
             for(int j = 1; j <= TOTAL_SERVER_NUMBER; ++j ){
                 max_update_from_server[j] = max(max_update_from_server[j], knowledge_vec[i][j]);
@@ -124,11 +124,11 @@ public:
         cout << "Knowledge: checking if update is needed" << endl;
         if(knowledge_vec[server][other_server_id] >= timestamp) {
             cout << "This update timestamp " << timestamp
-            << " is smaller than what I have from server " << other_server_id << endl;
+            << " is smaller than what I have from server " << other_server_id << ", so not needed " << endl;
             return false;
         }
         cout << "This update timestamp " << timestamp
-             << " is bigger than what I have from server, so needed " << other_server_id << endl;
+             << " is bigger than what I have from server " << other_server_id << ", so needed " << endl;
         return true;
     }
 
