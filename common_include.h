@@ -12,6 +12,7 @@
 #include <unordered_set>
 #include <cassert>
 #include <cstring>
+#include <climits>
 
 #define SUBJECT_LEN (128)
 #define MSG_LEN (1400)
