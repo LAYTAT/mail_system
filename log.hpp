@@ -179,7 +179,7 @@ private:
         }
         else
             cout << "File Err: Update with timestamp " << timestamp
-            << " is not fount on server " << server << "'s log file." << endl;
+            << " is not found on server " << server << "'s log file." << endl;
     }
 
 private:

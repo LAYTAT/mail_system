@@ -322,7 +322,7 @@ int main(int argc, char * argv[]){
                     for(auto idx : servers_group_member_set) {
                         cout << "       " << idx << endl;
                     }
-                    if(new_member_in_servers_group.size() > 0) {
+                    if(!new_member_in_servers_group.empty()) {
                         reconcile_start();
                     }
                 }
@@ -387,6 +387,7 @@ int main(int argc, char * argv[]){
 
 void reconcile_start(){
     knowledge_collection.clear();
+    cout << "Reconcile:  reconcile starts." << endl;
 
     // send knowledge to other servers
     snd_to_servers_grp_buf.type = Message::TYPE::KNOWLEDGE_EXCHANGE;

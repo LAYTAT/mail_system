@@ -15,7 +15,7 @@ struct Reconcile_Entry {
         memcpy(mail_id, mail_id_str.c_str(), strlen(mail_id_str.c_str()));
         is_read = read;
     }
-    char mail_id[MAX_MAIL_ID_LEN] = "default_mail_id";
+    char mail_id[MAX_MAIL_ID_LEN]{};
     bool is_read{true}; // if not read, it is for deletion
 };
 
@@ -273,7 +273,7 @@ private:
         }
         else
             cout << "File Err: Reconcile with mail_id " << mail_id_str
-                 << " is not fount on server " << server << "'s state file." << endl;
+                 << " is not found on server " << server << "'s state file." << endl;
     }
 
     void append_aux_to_file(Reconcile_Entry& re) const{
@@ -406,7 +406,7 @@ private:
                 int found=0;
                 Email email_tmp;
                 FILE *fp_tmp;
-                string mail_id_str(update->mail_id);
+                string mail_id_str(update->mail_id, strlen(update->mail_id));
 
                 state_fptr = fopen(state_file_str.c_str(),"r");
                 if (state_fptr == nullptr) perror ("15 Error opening file");
@@ -436,7 +436,7 @@ private:
                 }
                 else
                     cout << "File Err: Email with mail_id " << mail_id_str
-                         << " is not fount on server " << server << "'s state file." << endl;
+                         << " is not found on server " << server << "'s state file." << endl;
                 break;
             }
             default:
