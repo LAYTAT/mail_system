@@ -377,7 +377,7 @@ private:
                     if (fp_tmp == nullptr) perror ("13 Error opening file");
 
                     while(fread(&email_tmp, sizeof(Email), 1, fp_tmp)){
-                        fwrite(&email_tmp,sizeof(Email),1, state_fptr);
+                        fwrite(&email_tmp, sizeof(Email),1, state_fptr);
                     }
                     fclose(state_fptr);
                     fclose(fp_tmp);
@@ -390,6 +390,7 @@ private:
 
             case Update::TYPE::NEW_EMAIL: {
                 cout << "State:      Append new email in file" << endl;
+                cout << "State:         email content: " << update->email.msg_str << endl;
                 state_fptr = fopen(state_file_str.c_str(),"a");
                 if (state_fptr == nullptr) perror ("14 Error opening file");
                 fwrite(&update->email, sizeof(Email), 1, state_fptr);
