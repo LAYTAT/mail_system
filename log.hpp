@@ -58,7 +58,7 @@ public:
 
         for( int s_id = 1; s_id <= TOTAL_SERVER_NUMBER; ++s_id ) {
             auto updates_of_server = server_2_update_ids[s_id];
-            for(const auto & stmp :server_2_update_ids[s_id]) {
+            for(const int64_t & stmp :server_2_update_ids[s_id]) {
                 if(stmp < min_update_from_server[s_id]) {
                     cout << "Log: garbage collection on {" <<s_id << ", " << stmp << "}" << endl;
                     updates_of_server.erase(stmp);
@@ -155,7 +155,14 @@ private:
         Update update_tmp;
 
         log_fptr = fopen(log_file_name.c_str(),"r");
-        if (log_fptr == nullptr) perror ("8 Error opening file");
+        if (log_fptr == nullptr) {
+            cout << "Log: log file is not init, creating the file " << log_file_name << endl;
+            log_fptr = fopen(log_file_name.c_str(),"w");
+            if(log_fptr!=nullptr)
+                fclose(log_fptr);
+            cout << "Log: dissmissing this deletion" << endl;
+            return;
+        }
         auto tmp_fptr = fopen(tmp_file_name.c_str(),"w");
         if (tmp_fptr == nullptr) perror ("9Error opening file");
         while(fread(&update_tmp,sizeof(Update),1,log_fptr)){
