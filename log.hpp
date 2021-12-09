@@ -82,12 +82,9 @@ public:
     }
 
     // delete update to an update
-    void delete_update(const int server_id_, const int64_t timestamp) {
+    void delete_update(const int server_id_, const int64_t& timestamp) {
         cout << "Log: delete update from log." << endl;
 
-        if(server_2_update_ids.count(server_id_) == 1 && server_2_update_ids[server_id_].count(timestamp) == 1) {
-            server_2_update_ids[server_id_].erase(timestamp); // do not preserve this update for this server
-        }
         auto key_ = make_pair(server_id_,timestamp);
         if(id_2_update.count(key_) == 1) {
             id_2_update.erase(key_);
@@ -147,7 +144,7 @@ private:
         fclose(log_fptr);
     }
 
-    void delete_from_log(const int server, const int64_t timestamp){
+    void delete_from_log(const int server, const int64_t& timestamp){
         cout << "Log: delete update from the file" << endl;
         int found=0;
         string log_file_name = to_string(server_id) + "_" + to_string(server) + LOG_FILE_SUFFIX;
