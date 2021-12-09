@@ -58,7 +58,7 @@ public:
 
         for( int s_id = 1; s_id <= TOTAL_SERVER_NUMBER; ++s_id ) {
             auto updates_of_server = server_2_update_ids[s_id];
-            for(const int64_t & stmp :server_2_update_ids[s_id]) {
+            for(const int64_t stmp :server_2_update_ids[s_id]) {
                 if(stmp < min_update_from_server[s_id]) {
                     cout << "Log: garbage collection on {" <<s_id << ", " << stmp << "}" << endl;
                     updates_of_server.erase(stmp);
