@@ -303,8 +303,8 @@ private:
         while(fread(&entry_tmp,sizeof(Reconcile_Entry),1,aux_fptr))
         {
             auto mail_id = entry_tmp.mail_id;
-            cout << "Reconcile Entry: email " << mail_id
-                 << ((entry_tmp.is_read) ? " is read. " : " is deleted.")  << endl;
+//            cout << "Reconcile Entry: email " << mail_id
+//                 << ((entry_tmp.is_read) ? " is read. " : " is deleted.")  << endl;
             // write to ram
             if(entry_tmp.is_read){
                 read_emails.insert(entry_tmp.mail_id);
